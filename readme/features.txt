@@ -1,0 +1,4 @@
+profile dev prod
+spring mvc
+i18
+redis
