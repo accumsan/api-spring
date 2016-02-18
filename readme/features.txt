@@ -2,3 +2,7 @@ profile dev prod
 spring mvc
 i18
 redis
+
+
+Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
+Java 8, Spring Security 3.2, Maven 3, SLF4J, Logback, Bootstrap 3.3.4, jQuery 1.11.2, i18n, etc
