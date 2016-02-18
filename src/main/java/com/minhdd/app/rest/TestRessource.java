@@ -19,7 +19,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/rest/test")
 public class TestRessource {
-    private final Logger LOG = LoggerFactory.getLogger(TestRessource.class);
+    private final Logger logger = LoggerFactory.getLogger(TestRessource.class);
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, String>> get(@PathVariable int id){
