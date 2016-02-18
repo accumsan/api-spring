@@ -1,8 +1,12 @@
 $ mvn clean install  
 $ mvn spring-boot:run
 
-Navigate to [http://localhost:8080](http://localhost:8080).  
-Navigate to [http://localhost:8080/home] too see good bootstrap for htmlread
+Navigate to [http://localhost:8080/book]
+Navigate to [http://localhost:8080/home]
+
+remote debugging
+$ mvn spring-boot:run -Drun.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
+and use remote intellij default configuration and run this config
 
 The application can also be deployed by running the `Application.java` class.
 But I tried without sucess :(

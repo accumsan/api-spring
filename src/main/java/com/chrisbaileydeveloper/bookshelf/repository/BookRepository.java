@@ -20,9 +20,12 @@ public class BookRepository {
 	
 	@Inject
 	private RedisTemplate<String, Book> redisTemplate;
+
+	final private String BOOK_KEY_PREFIX = "book-";
+	final private String BOOK_KEY_REGREX = "book-*";
 	
 	public void save(Book book) {
-		redisTemplate.opsForValue().set(book.getId(), book);
+		redisTemplate.opsForValue().set(BOOK_KEY_PREFIX+book.getId(), book);
 	}
  
 	public Book findById(String key) {
@@ -32,7 +35,7 @@ public class BookRepository {
 	public List<Book> findAll() {
 		List<Book> books = new ArrayList<>();
 		
-		Set<String> keys = redisTemplate.keys("*");
+		Set<String> keys = redisTemplate.keys(BOOK_KEY_REGREX);
 		Iterator<String> it = keys.iterator();
 		
 		while(it.hasNext()){
@@ -49,7 +52,7 @@ public class BookRepository {
 	
 	 
 	public void deleteAll() {
-		Set<String> keys = redisTemplate.keys("*");
+		Set<String> keys = redisTemplate.keys(BOOK_KEY_REGREX);
 		Iterator<String> it = keys.iterator();
 		
 		while(it.hasNext()){

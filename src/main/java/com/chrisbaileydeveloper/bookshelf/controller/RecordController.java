@@ -15,6 +15,10 @@
  */
 package com.chrisbaileydeveloper.bookshelf.controller;
 
+import com.chrisbaileydeveloper.bookshelf.domain.Record;
+import com.chrisbaileydeveloper.bookshelf.service.RecordService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -22,32 +26,35 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.inject.Inject;
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
-@RequestMapping("/home")
-public class HomeController {
+@RequestMapping("/record")
+public class RecordController {
 
-    //private RecordRepository repository;
+    final Logger logger = LoggerFactory.getLogger(RecordController.class);
 
-//    @Autowired
-//    public HomeController(RecordRepository repository) {
-//        //this.repository = repository;
-//    }
+    @Inject
+    private RecordService recordService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String home(ModelMap model) {
+        List<String> records = recordService.findAll();
+        model.addAttribute("records", records);
+        model.addAttribute("insertRecord", new Record());
+        logger.info("No. of records: " + records.size());
         return "home";
     }
 
-//    @RequestMapping(method = RequestMethod.POST)
-//    public String insertData(ModelMap model,
-//                             @ModelAttribute("insertRecord") @Valid Record record,
-//                             BindingResult result) {
-//        if (!result.hasErrors()) {
-//            repository.save(record);
-//        }
-//        System.out.println(record.getData());
-//        return home(model);
-//    }
+    @RequestMapping(method = RequestMethod.POST)
+    public String insertData(ModelMap model,
+                             @ModelAttribute("insertRecord") @Valid Record record,
+                             BindingResult result) {
+        if (!result.hasErrors()) {
+            recordService.save(record.getData());
+        }
+        return home(model);
+    }
 }

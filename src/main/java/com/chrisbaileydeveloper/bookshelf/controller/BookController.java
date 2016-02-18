@@ -31,7 +31,7 @@ import com.chrisbaileydeveloper.bookshelf.web.util.ImageUtil;
 import com.chrisbaileydeveloper.bookshelf.web.util.Message;
 import com.chrisbaileydeveloper.bookshelf.web.util.UrlUtil;
 
-@RequestMapping("/")
+@RequestMapping("/book")
 @Controller
 public class BookController { 
 

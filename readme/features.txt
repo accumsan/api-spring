@@ -1,5 +1,10 @@
+remote debugging : http://docs.spring.io/spring-boot/docs/current/maven-plugin/examples/run-debug.html
+
+
+
 profile dev prod
 spring mvc
+spring security
 i18
 redis
 
