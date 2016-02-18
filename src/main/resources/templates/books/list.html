@@ -37,8 +37,7 @@
 				</thead>
 				<tbody>
 					<tr th:each="book : ${books}">
-						<td><a href="show-book.html" th:href="@{/{id}(id=${book.id})}" th:text="${book.name}">Book
-								name</a></td>
+						<td><a href="show-book.html" th:href="@{/book/{id}(id=${book.id})}" th:text="${book.name}">Book name</a></td>
 						<td th:text="${book.publisher}">Book publisher</td>
 						<td th:text="${#joda.mediumDate(book.dateOfPublication)}">Date of publication</td>
 					</tr>
@@ -47,7 +46,7 @@
 		</div>
 	
 		<div sec:authorize="hasRole('ROLE_ADMIN')">
-			<a href="addBook.html" th:href="@{/create}" id="btnAddBook"
+			<a href="addBook.html" th:href="@{/book/create}" id="btnAddBook"
 			class="btn btn-success btn-lg" th:text="#{menu_add_book}">Menu add book</a>
 			<br/> <br/> <br/> <br/>
 		</div>
@@ -56,7 +55,7 @@
 		<p th:utext="#{book_reset_all}">If you don't see any books above, or you would like to reset
 			the application, please click on the 'Reset' button.</p>
 			
-		<a href="resetBooks.html" th:href="@{/reset}" class="btn btn-primary"
+		<a href="resetBooks.html" th:href="@{/book/reset}" class="btn btn-primary"
 			th:text="#{label_book_reset_all}">Label Book Reset All</a>
 	</div>
 

@@ -9,9 +9,9 @@
 		 <relativePath />
 	</parent>
 
-	<groupId>com.chrisbaileydeveloper</groupId>
-	<artifactId>dev-bookshelf-heroku-redis</artifactId>
-	<version>0.0.1</version>
+	<groupId>com.minhdd</groupId>
+	<artifactId>minhdd-spring-app</artifactId>
+	<version>dev</version>
 	<packaging>jar</packaging>
 
     <prerequisites>

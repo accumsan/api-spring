@@ -26,7 +26,7 @@
 			<h1 th:text="(${book.id == null}? #{label_book_new}: #{label_book_update})">Form Title</h1>
 
 			<form action="#" th:object="${book}" enctype="multipart/form-data"
-				method="post" th:action="@{/create}">
+				method="post" th:action="@{/book/create}">
 				
 				<div th:if="${message}">
 					<div id="message" th:class="${message.type}" th:text="${message.message}">Message area</div>

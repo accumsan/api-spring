@@ -43,15 +43,15 @@
 			</tr>
 			<tr>
 				<td th:text="#{label_book_photo}">Label Book Photo</td>
-				<td><img th:src="@{/photo/{id}(id=${book.id})}"></img></td>
+				<td><img height="168" th:src="@{/book/photo/{id}(id=${book.id})}"></img></td>
 			</tr>
 		</table>
 
 		<div sec:authorize="hasRole('ROLE_ADMIN')">
-			<a id="btnEditBook" href="edit-book.html" th:href="@{/update/{id}(id=${book.id})}"
+			<a id="btnEditBook" href="edit-book.html" th:href="@{/book/update/{id}(id=${book.id})}"
 				class="btn btn-primary" th:text="#{label_book_update}">Label Book Update</a> 
 			
-			<a id="btnDeleteBook" href="delete-book.html" th:href="@{/delete/{id}(id=${book.id})}"
+			<a id="btnDeleteBook" href="delete-book.html" th:href="@{/book/delete/{id}(id=${book.id})}"
 				class="btn btn-danger" th:text="#{label_book_delete}">Label Book Delete</a>
 		</div>
 		
