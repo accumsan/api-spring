@@ -45,7 +45,7 @@ public class RecordController {
         model.addAttribute("records", records);
         model.addAttribute("insertRecord", new Record());
         logger.info("No. of records: " + records.size());
-        return "home";
+        return "record";
     }
 
     @RequestMapping(method = RequestMethod.POST)
