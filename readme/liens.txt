@@ -1,0 +1,2 @@
+https://github.com/chris-bailey/dev-bookshelf-redis-heroku
+http://chrisbaileydeveloper.com/projects/spring-boot-redis-heroku-demo/

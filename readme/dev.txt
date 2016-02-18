@@ -1,0 +1,8 @@
+$ mvn clean install  
+$ mvn spring-boot:run
+
+Navigate to [http://localhost:8080](http://localhost:8080).  
+Navigate to [http://localhost:8080/home] too see good bootstrap for htmlread
+
+The application can also be deployed by running the `Application.java` class.
+But I tried without sucess :(
