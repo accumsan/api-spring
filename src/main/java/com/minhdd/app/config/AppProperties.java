@@ -56,7 +56,7 @@ public class AppProperties {
         logger.debug("Properties file load for profile " + profile);
         try {
             ClassPathResource resource = new ClassPathResource("/config/"+profile+".properties");
-            input = new FileInputStream(resource.getFile());
+            input = resource.getInputStream();
             properties.load(input);
         } catch (IOException e) {
             logger.error("Properties file loading error ", e);
