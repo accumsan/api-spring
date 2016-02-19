@@ -26,6 +26,11 @@ public class AppProperties {
     private static boolean reload = false;
     private static final Object MUTEX = new Object();
     private Properties properties;
+    private static String profile;
+
+    public static void setProfile(String profile) {
+        AppProperties.profile = profile;
+    }
 
     public static AppProperties getInstance() {
         if (instance == null || reload) {
@@ -48,10 +53,6 @@ public class AppProperties {
     private void load() throws IOException {
         properties = new Properties();
         InputStream input = null;
-        String profile = System.getProperty("spring.profiles.active");
-        if (profile == null) {
-            profile = Constants.SPRING_PROFILE_DEVELOPMENT;
-        }
         logger.debug("Properties file load for profile " + profile);
         try {
             ClassPathResource resource = new ClassPathResource("/config/"+profile+".properties");

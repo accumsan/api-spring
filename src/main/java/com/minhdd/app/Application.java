@@ -8,6 +8,7 @@ import java.util.Arrays;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.minhdd.app.config.AppProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -31,8 +32,10 @@ public class Application {
     public void initApplication() throws IOException {
         if (env.getActiveProfiles().length == 0) {
             log.warn("No Spring profile configured, running with default configuration");
+            AppProperties.setProfile(Constants.SPRING_PROFILE_DEVELOPMENT);
         } else {
             log.info("Running with Spring profile(s) : {}", Arrays.toString(env.getActiveProfiles()));
+            AppProperties.setProfile(env.getActiveProfiles()[0]);
         }
     }
                                                                                                                                                                          
