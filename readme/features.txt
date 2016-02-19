@@ -1,11 +1,11 @@
 remote debugging : http://docs.spring.io/spring-boot/docs/current/maven-plugin/examples/run-debug.html
-
-
+web application (index.html in pulic)
+properties en fonction du profile (dev, ou prod) et qui permet de recharger les properties quand on redéploie le resource. testé sur /home
 
 profile dev prod
 spring mvc
 spring security
-i18
+
 redis
 
 
