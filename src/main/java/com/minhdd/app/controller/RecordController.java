@@ -16,7 +16,7 @@
 package com.minhdd.app.controller;
 
 import com.minhdd.app.domain.Record;
-import com.minhdd.app.service.RecordService;
+import com.minhdd.app.repository.StringRedisRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -37,11 +37,11 @@ public class RecordController {
     final Logger logger = LoggerFactory.getLogger(RecordController.class);
 
     @Inject
-    private RecordService recordService;
+    private StringRedisRepository recordRepository;
 
     @RequestMapping(method = RequestMethod.GET)
     public String home(ModelMap model) {
-        List<String> records = recordService.findAll();
+        List<String> records = recordRepository.findAll();
         model.addAttribute("records", records);
         model.addAttribute("insertRecord", new Record());
         logger.info("No. of records: " + records.size());
@@ -53,7 +53,7 @@ public class RecordController {
                              @ModelAttribute("insertRecord") @Valid Record record,
                              BindingResult result) {
         if (!result.hasErrors()) {
-            recordService.save(record.getData());
+            recordRepository.save(record.getData());
         }
         return home(model);
     }

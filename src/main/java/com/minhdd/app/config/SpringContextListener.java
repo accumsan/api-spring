@@ -2,7 +2,7 @@ package com.minhdd.app.config;
 
 import javax.inject.Inject;
 
-import com.minhdd.app.service.RecordService;
+import com.minhdd.app.repository.StringRedisRepository;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,10 @@ public class SpringContextListener implements ApplicationListener<ContextRefresh
 	private BookService bookService;
 
 	@Inject
-	private RecordService recordService;
+	private StringRedisRepository recordRepository;
+
+	@Inject
+	private StringRedisRepository userRepository;
 
 	/**
 	 * This method will run on application startup and load up the default book
@@ -24,6 +27,7 @@ public class SpringContextListener implements ApplicationListener<ContextRefresh
 	 */
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		bookService.restoreDefaultBooks();
-		recordService.init();
+		recordRepository.init();
+		userRepository.init();
 	};
 }
