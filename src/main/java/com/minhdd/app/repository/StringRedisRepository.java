@@ -45,8 +45,11 @@ public abstract class StringRedisRepository {
         stringTemplate.opsForValue().set(NEXTVAL, String.valueOf(nextVal));
     }
 
-    private String findById(String key) {
+    private String findByKey(String key) {
         return stringTemplate.opsForValue().get(key);
+    }
+    public String findById(String id) {
+        return stringTemplate.opsForValue().get(KEY_PREFIX+id);
     }
 
     public List<String> findAll() {
@@ -55,7 +58,7 @@ public abstract class StringRedisRepository {
         Iterator<String> it = keys.iterator();
 
         while(it.hasNext()){
-            records.add(findById(it.next()));
+            records.add(findByKey(it.next()));
         }
         return records;
     }
@@ -66,6 +69,10 @@ public abstract class StringRedisRepository {
     }
 
     public void save(String id, String record) {
-        stringTemplate.opsForValue().set(KEY_PREFIX+id, record);
+        stringTemplate.opsForValue().set(KEY_PREFIX + id, record);
+    }
+
+    public void delete(String id) {
+        stringTemplate.opsForValue().getOperations().delete(KEY_PREFIX + id);
     }
 }
