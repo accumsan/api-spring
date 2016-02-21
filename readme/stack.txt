@@ -1,0 +1,5 @@
+maven 3
+redis redistogo
+SLF4J
+spring core, boot, security 3.2, rest
+no-xml Spring MVC 4 web application for Servlet 3.0 environment, Thymeleaf

@@ -1,0 +1,17 @@
+--------------------------------------------------
+ANO1 : Bad synchronysation of redis operation :
+
+when launch user creation on a same time with
+-------
+DataUsers.get().forEach(function (user, index, ar){
+  promises.push(Users.create(user).then(function(){
+    console.log(index)
+  }))
+})
+$q.all(promises).then(function() {
+  console.log('fetch')
+  fetch()
+})
+-------
+we can see that all promise is finished before fetch launched
+but there were only 9/11 users created -> bad synchronization of redis operations

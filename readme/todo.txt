@@ -1,0 +1,29 @@
+spring security
+redis
+    http://redis.io/topics/data-types
+    Spring Data Redis
+Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
+Logback
+java 8 fp, java performance
+--------------------------------------------------
+quicksign : rest, atmosphere
+Websocket atmosphere, maj users par server
+spring task
+sse
+guava
+Thrift
+spark (heroku java getting started), mllib
+
+js : angularjs 1.5 component, underscore ...
+--------------------------------------------------
+integrate all technical skills (from your cv and from your wiki, quicksign)
+ssh heroku
+
+
+
+
+
+
+
+
+
