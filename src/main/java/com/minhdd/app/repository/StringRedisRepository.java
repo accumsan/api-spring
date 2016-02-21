@@ -4,10 +4,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by minhdao on 20/02/16.
@@ -45,14 +42,11 @@ public abstract class StringRedisRepository {
         stringTemplate.opsForValue().set(NEXTVAL, String.valueOf(nextVal));
     }
 
-    private String findByKey(String key) {
+    public String findByKey(String key) {
         return stringTemplate.opsForValue().get(key);
     }
-    public String findById(String id) {
-        return stringTemplate.opsForValue().get(KEY_PREFIX+id);
-    }
 
-    public List<String> findAll() {
+    public List<String> findAllToList() {
         List<String> records = new ArrayList<>();
         Set<String> keys = stringTemplate.keys(KEY_REGREX);
         Iterator<String> it = keys.iterator();
@@ -63,16 +57,26 @@ public abstract class StringRedisRepository {
         return records;
     }
 
+    public Map<String, String> findAllToMap() {
+        Map<String, String> records = new HashMap<>();
+        Set<String> keys = stringTemplate.keys(KEY_REGREX);
+        for (String key : keys){
+            records.put(key, findByKey(key));
+        }
+        return records;
+    }
+
     public void save(String record) {
         stringTemplate.opsForValue().set(nextKey(), record);
         setNextKey();
     }
 
-    public void save(String id, String record) {
-        stringTemplate.opsForValue().set(KEY_PREFIX + id, record);
+    public void save(String key, String record) {
+        stringTemplate.opsForValue().set(key, record);
     }
 
-    public void delete(String id) {
-        stringTemplate.opsForValue().getOperations().delete(KEY_PREFIX + id);
+    public void delete(String key) {
+        stringTemplate.opsForValue().getOperations().delete(key);
     }
+
 }

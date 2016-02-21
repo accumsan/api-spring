@@ -41,7 +41,7 @@ public class RecordController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String home(ModelMap model) {
-        List<String> records = recordRepository.findAll();
+        List<String> records = recordRepository.findAllToList();
         model.addAttribute("records", records);
         model.addAttribute("insertRecord", new Record());
         logger.info("No. of records: " + records.size());
