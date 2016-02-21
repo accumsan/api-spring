@@ -13,10 +13,9 @@ sse
 guava
 Thrift
 spark (heroku java getting started), mllib
-
-js : angularjs 1.5 component, underscore ...
 --------------------------------------------------
 integrate all technical skills (from your cv and from your wiki, quicksign)
+js : angularjs 1.5 component, underscore, requirejs ...
 ssh heroku
 
 
