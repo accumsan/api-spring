@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity // As of Spring Security 4.0, @EnableWebMvcSecurity is deprecated
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	/**
