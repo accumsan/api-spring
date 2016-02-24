@@ -2,11 +2,14 @@ package com.minhdd.app.partials.comment;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.inject.Inject;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,21 +19,19 @@ import java.util.List;
  */
 @RestController
 public class CommentController {
+    @Inject
+    CommentsService commentsService;
 
-    List<SseEmitter> sseEmitters = new ArrayList<>();
 
-    @RequestMapping("/comments")
-    SseEmitter subscribeComments() {
+    @RequestMapping("/comments/{id}")
+    SseEmitter subscribeComments(@PathVariable String id) {
         SseEmitter sseEmitter = new SseEmitter();
-        this.sseEmitters.add(sseEmitter);
+        commentsService.addSseEmitter(sseEmitter, id);
         return sseEmitter;
     }
 
-    @RequestMapping(path = "/comment/{comment}", method = RequestMethod.GET)
-    String create(@PathVariable String comment) throws IOException {
-        for (SseEmitter sseEmitter : this.sseEmitters) {
-            sseEmitter.send(comment, MediaType.APPLICATION_JSON);
-        }
-        return comment;
+    @RequestMapping(path = "/comment/{id}", method = RequestMethod.POST)
+    void post(@PathVariable String id, @RequestBody @Valid Comment comment) throws IOException {
+        commentsService.postComment(comment, id);
     }
 }
