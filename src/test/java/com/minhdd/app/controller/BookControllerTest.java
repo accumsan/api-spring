@@ -8,7 +8,8 @@ import javax.inject.Inject;
 
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.repository.BookRepository;
+import com.minhdd.app.partials.book.BookController;
+import com.minhdd.app.partials.book.BookRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.minhdd.app.service.BookService;
+import com.minhdd.app.partials.book.BookService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)

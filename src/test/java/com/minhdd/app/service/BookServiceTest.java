@@ -6,7 +6,8 @@ import javax.inject.Inject;
 
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.domain.Book;
+import com.minhdd.app.partials.book.Book;
+import com.minhdd.app.partials.book.BookService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
