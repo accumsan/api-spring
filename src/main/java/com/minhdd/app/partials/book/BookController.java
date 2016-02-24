@@ -1,4 +1,4 @@
-package com.minhdd.app.controller;
+package com.minhdd.app.partials.book;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,8 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.minhdd.app.domain.Book;
-import com.minhdd.app.service.BookService;
 import com.minhdd.app.web.util.ImageUtil;
 import com.minhdd.app.web.util.Message;
 import com.minhdd.app.web.util.UrlUtil;

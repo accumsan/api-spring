@@ -7,7 +7,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import com.minhdd.app.service.BookService;
+import com.minhdd.app.partials.book.BookService;
 
 @Component
 public class SpringContextListener implements ApplicationListener<ContextRefreshedEvent> {

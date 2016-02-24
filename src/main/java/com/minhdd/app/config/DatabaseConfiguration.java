@@ -2,7 +2,7 @@ package com.minhdd.app.config;
 
 import javax.inject.Inject;
 
-import com.minhdd.app.domain.Book;
+import com.minhdd.app.partials.book.Book;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;

@@ -1,4 +1,4 @@
-package com.minhdd.app.domain;
+package com.minhdd.app.partials.book;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package com.minhdd.app.service;
+package com.minhdd.app.partials.book;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,8 +7,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import com.minhdd.app.domain.Book;
-import com.minhdd.app.repository.BookRepository;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

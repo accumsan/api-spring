@@ -1,4 +1,4 @@
-package com.minhdd.app.repository;
+package com.minhdd.app.partials.book;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,7 +7,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import com.minhdd.app.domain.Book;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
