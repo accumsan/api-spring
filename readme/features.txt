@@ -7,4 +7,4 @@ PropertyPlaceholderConfigurer : @PropertySource
 - API User
 - spring schedule
 - organisation by features (partials)
-- sse (comment) : illustrated in front-end application
+- sse event source (comment) : illustrated in front-end application
