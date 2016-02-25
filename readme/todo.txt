@@ -6,21 +6,7 @@ Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
 java 8 fp, guava, java performance
 --------------------------------------------------
-sse
-https://spring.io/blog/2012/05/16/spring-mvc-3-2-preview-chat-sample
-https://github.com/rstoyanchev/spring-mvc-chat
-https://spring.io/blog/2012/05/07/spring-mvc-3-2-preview-introducing-servlet-3-async-support
-
-http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#mvc-ann-async-sse
-
-SseEmitter
-http://www.programcreek.com/java-api-examples/index.php?api=org.springframework.web.servlet.mvc.method.annotation.SseEmitter
-http://docs.spring.io/spring/docs/4.2.0.RC2/spring-framework-reference/htmlsingle/#mvc-ann-async-http-streaming
-https://github.com/sdeleuze/spring-react-isomorphic/blob/master/src/main/java/io/spring/isomorphic/CommentController.java#L73
-https://github.com/spring-projects/spring-reactive/issues/9
-http://www.nurkiewicz.com/2015/07/server-sent-events-with-rxjava-and.html
-
-
+ng table
 com : kafka, websocket
 quicksign : rest, atmosphere, maj users par server
 python server
