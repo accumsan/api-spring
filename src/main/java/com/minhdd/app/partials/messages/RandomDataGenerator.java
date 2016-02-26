@@ -27,7 +27,7 @@ public class RandomDataGenerator implements Runnable {
     @Override
     public void run() {
         int random = new Random().nextInt(100);
-        String text = RandomStringUtils.randomAlphanumeric(100);
+        String text = RandomStringUtils.randomAlphanumeric(50);
         Message message = new Message(random, text);
         this.messagingTemplate.convertAndSend("/topic/message", new OutputMessage(message, new Date()));
     }
