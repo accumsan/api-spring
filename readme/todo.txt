@@ -6,13 +6,17 @@ Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
 java 8 fp, guava, java performance
 --------------------------------------------------
+sse native
+move book, records to front-end
+
 kafka
 python server websocket, kafka
 spark (heroku java getting started), mllib
 --------------------------------------------------
 integrate all technical skills (from your cv and from your wiki, quicksign)
+clean pom and not interesting technos
 jbehave
-js : angularjs 1.5 component, underscore, requirejs ...
+js : angularjs 1.5 component, requirejs ...
 ssh heroku
 
 
