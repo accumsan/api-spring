@@ -6,10 +6,7 @@ Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
 java 8 fp, guava, java performance
 --------------------------------------------------
-sse native
-move book, records to front-end
-
-kafka
+kafka spring mvc
 python server websocket, kafka
 spark (heroku java getting started), mllib
 --------------------------------------------------

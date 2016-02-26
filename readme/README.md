@@ -1,3 +1,6 @@
+https://github.com/chris-bailey/dev-bookshelf-redis-heroku
+http://chrisbaileydeveloper.com/projects/spring-boot-redis-heroku-demo/
+
 ##Spring Boot + Thymeleaf + Redis + Heroku##
 This demo application has been created as an example of deploying Spring Boot + Thymeleaf + Redis on Heroku.
 
