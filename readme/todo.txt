@@ -6,10 +6,8 @@ Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
 java 8 fp, guava, java performance
 --------------------------------------------------
-quicksign rest pratique
-websocket, atmosphere maj users par server
-python server websocket
 kafka
+python server websocket, kafka
 spark (heroku java getting started), mllib
 --------------------------------------------------
 integrate all technical skills (from your cv and from your wiki, quicksign)
