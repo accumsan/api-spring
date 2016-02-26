@@ -6,13 +6,14 @@ Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
 java 8 fp, guava, java performance
 --------------------------------------------------
-ng table
-com : kafka, websocket
-quicksign : rest, atmosphere, maj users par server
-python server
+quicksign rest pratique
+websocket, atmosphere maj users par server
+python server websocket
+kafka
 spark (heroku java getting started), mllib
 --------------------------------------------------
 integrate all technical skills (from your cv and from your wiki, quicksign)
+jbehave
 js : angularjs 1.5 component, underscore, requirejs ...
 ssh heroku
 

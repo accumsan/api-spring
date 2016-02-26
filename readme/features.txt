@@ -8,3 +8,4 @@ PropertyPlaceholderConfigurer : @PropertySource
 - spring schedule
 - organisation by features (partials)
 - sse event source (comment) : illustrated in front-end application
+- websocket
