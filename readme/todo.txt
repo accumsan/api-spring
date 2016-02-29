@@ -6,14 +6,13 @@ Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
 java 8 fp, guava, java performance
 --------------------------------------------------
-kafka spring mvc
-python server websocket, kafka
+python server websocket scikit-learn that communicate to minhdd-spring
 spark (heroku java getting started), mllib
 --------------------------------------------------
-integrate all technical skills (from your cv and from your wiki, quicksign)
 clean pom and not interesting technos
 jbehave
 js : angularjs 1.5 component, requirejs ...
+parkaging : selectionner seulement les fichiers nécessaires
 ssh heroku
 
 
