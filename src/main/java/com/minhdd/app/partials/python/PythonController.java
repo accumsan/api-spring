@@ -1,6 +1,7 @@
 package com.minhdd.app.partials.python;
 
 import com.neovisionaries.ws.client.WebSocket;
+import com.neovisionaries.ws.client.WebSocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -20,6 +21,15 @@ public class PythonController {
     private final Logger logger = LoggerFactory.getLogger(PythonController.class);
     @Inject
     private WebSocket outWsPython;
+
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public void get() {
+        try {
+            outWsPython.connect();
+        } catch (WebSocketException e) {
+            logger.error("Error connecting outbox for python server with websockets", e);
+        }
+    }
 
     @RequestMapping(method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public void post(@RequestBody String message) {
