@@ -1,9 +1,9 @@
 package com.minhdd.app.partials.python;
 
-import com.minhdd.app.config.AppConfiguration;
 import com.minhdd.app.config.AppProperties;
 import com.neovisionaries.ws.client.WebSocket;
 import com.neovisionaries.ws.client.WebSocketAdapter;
+import com.neovisionaries.ws.client.WebSocketException;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,16 +30,22 @@ public class WsToPythonHandler extends TextWebSocketHandler {
     private WebSocket websocket;
 
     @PostConstruct
-    public void init() throws Exception {
-        websocket = new WebSocketFactory()
-                .createSocket("ws://" + AppProperties.getInstance().getProperty("python.server") + "/tojava")
-                .addListener(new WebSocketAdapter() {
-                    @Override
-                    public void onTextMessage(WebSocket ws, String message) {
-                        System.out.println("Received msg from python: " + message);
-                        sendMessage(message);
-                    }
-                }).connect();
+    public void init() {
+        try {
+            websocket = new WebSocketFactory()
+                    .createSocket("ws://" + AppProperties.getInstance().getProperty("python.server") + "/tojava")
+                    .addListener(new WebSocketAdapter() {
+                        @Override
+                        public void onTextMessage(WebSocket ws, String message) {
+                            System.out.println("Received msg from python: " + message);
+                            sendMessage(message);
+                        }
+                    }).connect();
+        } catch (IOException e) {
+            logger.error("Error initializing websockets inbox for python server", e);
+        } catch (WebSocketException e) {
+            logger.error("Error connecting websockets inbox for python server", e);
+        }
     }
 
     @Override
