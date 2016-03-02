@@ -9,3 +9,4 @@ PropertyPlaceholderConfigurer : @PropertySource
 - organisation by features (partials)
 - sse event source (comment) : illustrated in front-end application
 - websocket spring
+- websocket communication with python scikitlearn

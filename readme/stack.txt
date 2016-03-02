@@ -3,7 +3,7 @@ redis redistogo
 SLF4J
 spring core, boot, security 3.2, schedule, rest,
 no-xml Spring MVC 4 web application for Servlet 3.0 environment, Thymeleaf
-spring websocket, spring websocket SockJS
+spring websocket, websocket client (com.neovisionaries) spring websocket SockJS
 (spring websocket WebSockets are not yet working in all browsers.
 Many WebSockets libraries (for example SockJS and Socket.io) provide fallback-options using long polling, polling, ...
 This is why choosing SockJS as the client is a good idea.)
