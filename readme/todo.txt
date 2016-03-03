@@ -6,7 +6,7 @@ Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
 java 8 fp, guava, java performance
 --------------------------------------------------
-spark (heroku java getting started), mllib
+spark mllib
 --------------------------------------------------
 jbehave
 js : angularjs 1.5 component, requirejs ...
