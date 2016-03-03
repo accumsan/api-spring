@@ -37,6 +37,9 @@
     <logger name="org.xnio" level="WARN"/>
     <logger name="liquibase" level="WARN"/>
     <logger name="sun.rmi.transport" level="WARN"/>
+    <logger name="org.spark-project.jetty" level="INFO"/>
+    <logger name="io.netty" level="INFO"/>
+    <logger name="org.jboss.netty.channel.socket.nio" level="INFO"/>
 
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>
