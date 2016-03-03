@@ -42,9 +42,9 @@ public class WsToPythonHandler extends TextWebSocketHandler {
                         }
                     }).connect();
         } catch (IOException e) {
-            logger.error("Error initializing websockets inbox for python server", e);
+            logger.error("Error initializing websockets inbox for python server");
         } catch (WebSocketException e) {
-            logger.error("Error connecting websockets inbox for python server", e);
+            logger.error("Error connecting websockets inbox for python server");
         }
     }
 

@@ -27,7 +27,7 @@ public class PythonController {
         try {
             outWsPython.connect();
         } catch (WebSocketException e) {
-            logger.error("Error connecting outbox for python server with websockets", e);
+            logger.error("Error connecting outbox for python server with websockets");
         }
     }
 

@@ -37,7 +37,7 @@ public class WebsocketConfiguration implements WebSocketConfigurer {
         try {
             websocket = new WebSocketFactory().createSocket("ws://" + AppProperties.getInstance().getProperty("python.server") + "/java");
         } catch (IOException e) {
-            logger.error("Error initializing websockets outbox for python server", e);
+            logger.error("Error initializing websockets outbox for python server");
         } finally {
             return websocket;
         }
