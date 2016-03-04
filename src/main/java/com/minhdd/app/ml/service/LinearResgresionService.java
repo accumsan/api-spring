@@ -1,11 +1,13 @@
 package com.minhdd.app.ml.service;
 
+import com.minhdd.app.config.Constants;
 import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.ml.regression.LinearRegressionModel;
 import org.apache.spark.ml.regression.LinearRegressionTrainingSummary;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import java.util.Map;
  * Created by mdao on 04/03/2016.
  */
 @Component
+@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class LinearResgresionService implements MLService {
     private final Logger logger = LoggerFactory.getLogger(LinearResgresionService.class);
 
