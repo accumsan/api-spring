@@ -38,7 +38,7 @@ public class LinearResgresionService extends MlServiceAbstract implements MLServ
                 .setMaxIter(10)
                 .setRegParam(0.3)
                 .setElasticNetParam(0.8);
-        return (Object o) -> {return lr.fit( (DataFrame) o);};
+        return (Object o) -> lr.fit( (DataFrame) o);
     }
 
     @Override
