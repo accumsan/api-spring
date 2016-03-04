@@ -3,6 +3,7 @@ package com.minhdd.app.ml;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.service.LinearResgresionService;
+import com.minhdd.app.ml.service.MLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -30,8 +31,9 @@ public class MlRessource {
 
     @RequestMapping(value = "/lr", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> get() {
-        ml.loadFile("src/main/resources/data/mllib/sample_linear_regression_data.txt");
-        ml.train();
+        MLConfiguration conf = new MLConfiguration();
+        conf.setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
+        ml.loadFile("libsvm", "src/main/resources/data/mllib/sample_linear_regression_data.txt").configure(conf).train();
         Map<String, Object> responses = ml.getResults();
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }

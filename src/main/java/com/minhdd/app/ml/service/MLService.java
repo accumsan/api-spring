@@ -7,7 +7,8 @@ import java.util.Map;
  */
 
 public interface MLService {
-    void loadFile(String path);
-    void train();
+    MLService loadFile(String fileType, String filePath);
+    MLService configure(MLConfiguration configuration);
+    MLService train();
     Map<String, Object> getResults();
 }

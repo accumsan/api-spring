@@ -24,20 +24,20 @@ public class LinearResgresionService extends MlServiceAbstract implements MLServ
     private final Logger logger = LoggerFactory.getLogger(LinearResgresionService.class);
 
     @Inject
-    SQLContext sqlContext;
+    private SQLContext sqlContext;
 
     @Override
     protected Object loadDataSet() {
-        DataFrame training = sqlContext.read().format("libsvm").load(path);
+        DataFrame training = sqlContext.read().format(getFileType()).load(getFilePath());
         return training;
     }
 
     @Override
     protected MLAlgorithm<DataFrame, LinearRegressionModel> algorithm() {
         LinearRegression lr = new LinearRegression()
-                .setMaxIter(10)
-                .setRegParam(0.3)
-                .setElasticNetParam(0.8);
+                .setMaxIter(getConfiguration().getMaxIteration())
+                .setRegParam(getConfiguration().getRegParam())
+                .setElasticNetParam(getConfiguration().getElasticNetParam());
         return (DataFrame o) -> lr.fit(o);
     }
 
@@ -45,7 +45,6 @@ public class LinearResgresionService extends MlServiceAbstract implements MLServ
     public Map<String, Object> getResults() {
         LinearRegressionModel lrModel = (LinearRegressionModel) model;
         logger.info("Coefficients: " + lrModel.coefficients() + " Intercept: " + lrModel.intercept());
-
         // Summarize the model over the training set and print out some metrics
         LinearRegressionTrainingSummary trainingSummary = lrModel.summary();
         logger.info("numIterations: " + trainingSummary.totalIterations());
