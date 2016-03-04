@@ -1,3 +1,4 @@
+spark mllib
 spring security
 redis
     http://redis.io/topics/data-types
@@ -5,8 +6,6 @@ redis
 Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
 java 8 fp, guava, java performance
---------------------------------------------------
-spark mllib
 --------------------------------------------------
 jbehave
 js : angularjs 1.5 component, requirejs ...
