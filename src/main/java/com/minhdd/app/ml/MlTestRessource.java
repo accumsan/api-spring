@@ -1,23 +1,22 @@
 package com.minhdd.app.ml;
 
-import org.apache.spark.api.java.JavaSparkContext;
+
 import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.ml.regression.LinearRegressionModel;
 import org.apache.spark.ml.regression.LinearRegressionTrainingSummary;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
-import org.apache.spark.sql.execution.columnar.ObjectColumnStats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,10 +28,11 @@ import java.util.Map;
 public class MlTestRessource {
     private final Logger logger = LoggerFactory.getLogger(MlTestRessource.class);
 
+    @Inject
+    SQLContext sqlContext;
+
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> get(){
-        JavaSparkContext sc = new JavaSparkContext("local", "basicmap", System.getenv("SPARK_HOME"), System.getenv("JARS"));
-        SQLContext sqlContext = new SQLContext(sc);
         DataFrame training = sqlContext.read().format("libsvm").load("src/main/resources/data/mllib/sample_linear_regression_data.txt");
 
         LinearRegression lr = new LinearRegression()
