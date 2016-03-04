@@ -7,12 +7,8 @@ public abstract class MlServiceAbstract implements MLService {
     protected String path;
     protected Object model;
 
-    protected Object loadDataSet(){
-        return null;
-    };
-    protected MLAlgorithm algorithm(){
-        return null;
-    };
+    protected abstract Object loadDataSet();
+    protected abstract MLAlgorithm algorithm();
 
     @Override
     public void loadFile(String path) {

@@ -33,12 +33,12 @@ public class LinearResgresionService extends MlServiceAbstract implements MLServ
     }
 
     @Override
-    protected MLAlgorithm algorithm() {
+    protected MLAlgorithm<DataFrame, LinearRegressionModel> algorithm() {
         LinearRegression lr = new LinearRegression()
                 .setMaxIter(10)
                 .setRegParam(0.3)
                 .setElasticNetParam(0.8);
-        return (Object o) -> lr.fit( (DataFrame) o);
+        return (DataFrame o) -> lr.fit(o);
     }
 
     @Override
