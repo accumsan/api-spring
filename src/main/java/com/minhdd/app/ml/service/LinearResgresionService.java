@@ -20,36 +20,30 @@ import java.util.Map;
  */
 @Component
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
-public class LinearResgresionService implements MLService {
+public class LinearResgresionService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(LinearResgresionService.class);
 
     @Inject
     SQLContext sqlContext;
 
-    private DataFrame training;
-    private LinearRegression lr;
-    private LinearRegressionModel lrModel;
-
     @Override
-    public void loadDataSet(String path) {
-        training = sqlContext.read().format("libsvm").load(path);
+    protected Object loadDataSet() {
+        DataFrame training = sqlContext.read().format("libsvm").load(path);
+        return training;
     }
 
     @Override
-    public void configure() {
-        lr = new LinearRegression()
+    protected MLAlgorithm algorithm() {
+        LinearRegression lr = new LinearRegression()
                 .setMaxIter(10)
                 .setRegParam(0.3)
                 .setElasticNetParam(0.8);
-    }
-
-    @Override
-    public void train() {
-        lrModel = lr.fit(training);
+        return (Object o) -> {return lr.fit( (DataFrame) o);};
     }
 
     @Override
     public Map<String, Object> getResults() {
+        LinearRegressionModel lrModel = (LinearRegressionModel) model;
         logger.info("Coefficients: " + lrModel.coefficients() + " Intercept: " + lrModel.intercept());
 
         // Summarize the model over the training set and print out some metrics

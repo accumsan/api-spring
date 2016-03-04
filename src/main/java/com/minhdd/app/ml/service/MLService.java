@@ -1,7 +1,5 @@
 package com.minhdd.app.ml.service;
 
-import org.springframework.stereotype.Component;
-
 import java.util.Map;
 
 /**
@@ -9,8 +7,7 @@ import java.util.Map;
  */
 
 public interface MLService {
-    void loadDataSet(String path);
-    void configure();
+    void loadFile(String path);
     void train();
     Map<String, Object> getResults();
 }

@@ -30,8 +30,7 @@ public class MlRessource {
 
     @RequestMapping(value = "/lr", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> get() {
-        ml.loadDataSet("src/main/resources/data/mllib/sample_linear_regression_data.txt");
-        ml.configure();
+        ml.loadFile("src/main/resources/data/mllib/sample_linear_regression_data.txt");
         ml.train();
         Map<String, Object> responses = ml.getResults();
         return new ResponseEntity<>(responses, HttpStatus.OK);
