@@ -1,6 +1,7 @@
 package com.minhdd.app.ml;
 
 
+import com.minhdd.app.config.Constants;
 import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.ml.regression.LinearRegressionModel;
 import org.apache.spark.ml.regression.LinearRegressionTrainingSummary;
@@ -9,6 +10,7 @@ import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import java.util.Map;
  * Created by minhdao on 18/02/16.
  */
 @RestController
+@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 @RequestMapping("/spark/ml/lr")
 public class MlTestRessource {
     private final Logger logger = LoggerFactory.getLogger(MlTestRessource.class);
