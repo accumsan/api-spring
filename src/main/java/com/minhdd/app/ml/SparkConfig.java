@@ -1,6 +1,8 @@
 package com.minhdd.app.ml;
 
 import com.minhdd.app.config.Constants;
+import com.minhdd.app.ml.service.LinearResgresionService;
+import com.minhdd.app.ml.service.MLService;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SQLContext;
 import org.springframework.context.annotation.Bean;
@@ -19,4 +21,5 @@ public class SparkConfig {
         JavaSparkContext javaSparkContext = new JavaSparkContext("local", "basicmap", System.getenv("SPARK_HOME"), System.getenv("JARS"));
         return new SQLContext(javaSparkContext);
     }
+
 }
