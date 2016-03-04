@@ -33,7 +33,7 @@ public class MlRessource {
     public ResponseEntity<Map<String, Object>> get() {
         MLConfiguration conf = new MLConfiguration();
         conf.setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
-        ml.loadFile("libsvm", "src/main/resources/data/mllib/sample_linear_regression_data.txt").configure(conf).train();
+        ml.loadFile("libsvm", "data/mllib/sample_linear_regression_data.txt").configure(conf).train();
         Map<String, Object> responses = ml.getResults();
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
