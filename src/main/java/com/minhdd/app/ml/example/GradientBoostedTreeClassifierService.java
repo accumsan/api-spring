@@ -1,15 +1,14 @@
 package com.minhdd.app.ml.example;
 
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.service.MLAlgorithm;
-import com.minhdd.app.ml.service.MLService;
-import com.minhdd.app.ml.service.MlServiceAbstract;
+import com.minhdd.app.ml.domain.MLAlgorithm;
+import com.minhdd.app.ml.domain.MLService;
+import com.minhdd.app.ml.domain.MlServiceAbstract;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
 import org.apache.spark.ml.classification.GBTClassificationModel;
 import org.apache.spark.ml.classification.GBTClassifier;
-import org.apache.spark.ml.classification.RandomForestClassificationModel;
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.DataFrame;

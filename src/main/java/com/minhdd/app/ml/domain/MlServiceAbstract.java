@@ -1,4 +1,4 @@
-package com.minhdd.app.ml.service;
+package com.minhdd.app.ml.domain;
 
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;

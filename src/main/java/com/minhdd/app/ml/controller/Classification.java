@@ -2,11 +2,8 @@ package com.minhdd.app.ml.controller;
 
 
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.example.DecisionTreeClassifierService;
-import com.minhdd.app.ml.example.GradientBoostedTreeClassifierService;
-import com.minhdd.app.ml.example.LogisticRegressionService;
-import com.minhdd.app.ml.example.RandomForestClassifierService;
-import com.minhdd.app.ml.service.MLConfiguration;
+import com.minhdd.app.ml.example.*;
+import com.minhdd.app.ml.domain.MLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -41,6 +38,9 @@ public class Classification {
     @Inject
     GradientBoostedTreeClassifierService gradientBoostedTreeClassifierService;
 
+    @Inject
+    MultilayerPerceptronClassifierService multilayerPerceptronClassifierService;
+
     //Logistic regression
     @RequestMapping(value = "/lor", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> lor() {
@@ -70,5 +70,11 @@ public class Classification {
         return new ResponseEntity<>(gradientBoostedTreeClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
 
+    //Multilayer perceptron classifier
+    @RequestMapping(value = "/mpc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> mpc() {
+        multilayerPerceptronClassifierService.loadFile("libsvm", "data/mllib/sample_multiclass_classification_data.txt");
+        return new ResponseEntity<>(multilayerPerceptronClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
+    }
 
 }

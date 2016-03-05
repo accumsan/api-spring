@@ -1,4 +1,4 @@
-package com.minhdd.app.ml.service;
+package com.minhdd.app.ml.domain;
 
 /**
  * Created by minhdao on 05/03/16.
@@ -30,6 +30,16 @@ public class MLConfiguration {
         this.regParam = regParam;
         return this;
     }
+
+    public NeuralNetworkConfiguration getNeuralNetworkConfiguration() {
+        return neuralNetworkConfiguration;
+    }
+
+    public void setNeuralNetworkConfiguration(NeuralNetworkConfiguration neuralNetworkConfiguration) {
+        this.neuralNetworkConfiguration = neuralNetworkConfiguration;
+    }
+
+    private NeuralNetworkConfiguration neuralNetworkConfiguration;
     private int maxIteration;
     private double regParam;
     private double elasticNetParam;

@@ -1,9 +1,9 @@
 package com.minhdd.app.ml.example;
 
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.service.MLAlgorithm;
-import com.minhdd.app.ml.service.MLService;
-import com.minhdd.app.ml.service.MlServiceAbstract;
+import com.minhdd.app.ml.domain.MLAlgorithm;
+import com.minhdd.app.ml.domain.MLService;
+import com.minhdd.app.ml.domain.MlServiceAbstract;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
