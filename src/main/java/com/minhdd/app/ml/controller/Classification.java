@@ -3,7 +3,9 @@ package com.minhdd.app.ml.controller;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.example.DecisionTreeClassifierService;
+import com.minhdd.app.ml.example.GradientBoostedTreeClassifierService;
 import com.minhdd.app.ml.example.LogisticRegressionService;
+import com.minhdd.app.ml.example.RandomForestClassifierService;
 import com.minhdd.app.ml.service.MLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,13 @@ public class Classification {
     @Inject
     DecisionTreeClassifierService decisionTreeClassifierService;
 
+    @Inject
+    RandomForestClassifierService randomForestClassifierService;
+
+    @Inject
+    GradientBoostedTreeClassifierService gradientBoostedTreeClassifierService;
+
+    //Logistic regression
     @RequestMapping(value = "/lor", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> lor() {
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
@@ -40,10 +49,25 @@ public class Classification {
         return new ResponseEntity<>(logisticRegressionService.loadData().configure(conf).train().getResults(), HttpStatus.OK);
     }
 
+    //Decision tree classifier
     @RequestMapping(value = "/dtc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> dtc() {
         decisionTreeClassifierService.loadFile("libsvm", "data/mllib/sample_libsvm_data.txt");
         return new ResponseEntity<>(decisionTreeClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
+    }
+
+    //Random forest classifier
+    @RequestMapping(value = "/rfc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> rfc() {
+        randomForestClassifierService.loadFile("libsvm", "data/mllib/sample_libsvm_data.txt");
+        return new ResponseEntity<>(randomForestClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
+    }
+
+    //Gradient-boosted tree classifier
+    @RequestMapping(value = "/gtc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> gtc() {
+        gradientBoostedTreeClassifierService.loadFile("libsvm", "data/mllib/sample_libsvm_data.txt");
+        return new ResponseEntity<>(gradientBoostedTreeClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
 
 
