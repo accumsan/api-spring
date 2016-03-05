@@ -31,16 +31,4 @@ public class WebsocketConfiguration implements WebSocketConfigurer {
         registry.addHandler(wsToPythonHandler, "/python").setAllowedOrigins("*");
     }
 
-    @Bean
-    public WebSocket outWsPython() {
-        WebSocket websocket = null;
-        try {
-            websocket = new WebSocketFactory().createSocket("ws://" + AppProperties.getInstance().getProperty("python.server") + "/java");
-        } catch (IOException e) {
-            logger.error("Error initializing websockets outbox for python server");
-        } finally {
-            return websocket;
-        }
-
-    }
 }

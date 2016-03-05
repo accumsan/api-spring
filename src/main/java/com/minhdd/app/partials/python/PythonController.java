@@ -23,7 +23,7 @@ import java.io.IOException;
 @RequestMapping("/api/python")
 public class PythonController {
     private final Logger logger = LoggerFactory.getLogger(PythonController.class);
-    @Inject
+
     private WebSocket outWsPython;
 
     @Inject
@@ -32,7 +32,9 @@ public class PythonController {
     @RequestMapping(value="/connect/out", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public void out() {
         try {
-            outWsPython.connect();
+            outWsPython = new WebSocketFactory().createSocket("ws://" + AppProperties.getInstance().getProperty("python.server") + "/java").connect();
+        } catch (IOException e) {
+            logger.error("Error creating outbox for python server with websockets");
         } catch (WebSocketException e) {
             logger.error("Error connecting outbox for python server with websockets");
         }
