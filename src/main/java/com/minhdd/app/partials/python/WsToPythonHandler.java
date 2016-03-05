@@ -27,12 +27,6 @@ public class WsToPythonHandler extends TextWebSocketHandler {
 
     final Logger logger = LoggerFactory.getLogger(WsToPythonHandler.class);
     private List<WebSocketSession> sessions = newArrayList();
-    private WebSocket websocket;
-
-    @PostConstruct
-    public void init() {
-
-    }
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable throwable) throws Exception {

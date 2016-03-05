@@ -21,7 +21,6 @@ import java.io.IOException;
 @Configuration
 @EnableWebSocket
 public class WebsocketConfiguration implements WebSocketConfigurer {
-    final Logger logger = LoggerFactory.getLogger(WebsocketConfiguration.class);
 
     @Inject
     protected WsToPythonHandler wsToPythonHandler;
