@@ -31,21 +31,7 @@ public class WsToPythonHandler extends TextWebSocketHandler {
 
     @PostConstruct
     public void init() {
-        try {
-            websocket = new WebSocketFactory()
-                    .createSocket("ws://" + AppProperties.getInstance().getProperty("python.server") + "/tojava")
-                    .addListener(new WebSocketAdapter() {
-                        @Override
-                        public void onTextMessage(WebSocket ws, String message) {
-                            System.out.println("Received msg from python: " + message);
-                            sendMessage(message);
-                        }
-                    }).connect();
-        } catch (IOException e) {
-            logger.error("Error initializing websockets inbox for python server");
-        } catch (WebSocketException e) {
-            logger.error("Error connecting websockets inbox for python server");
-        }
+
     }
 
     @Override
@@ -71,7 +57,7 @@ public class WsToPythonHandler extends TextWebSocketHandler {
         logger.info(String.format("Message received from session %s : %s", session.getId(), message.getPayload()));
     }
 
-    private void sendMessage(String message) {
+    public void sendMessage(String message) {
         for (WebSocketSession session : sessions) {
             try {
                 logger.info(String.format("Send message {%s}", message));
