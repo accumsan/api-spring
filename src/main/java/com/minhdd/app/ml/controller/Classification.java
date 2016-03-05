@@ -2,7 +2,7 @@ package com.minhdd.app.ml.controller;
 
 
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.example.*;
+import com.minhdd.app.ml.service.*;
 import com.minhdd.app.ml.domain.MLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

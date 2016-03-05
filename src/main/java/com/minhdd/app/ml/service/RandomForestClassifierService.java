@@ -1,4 +1,4 @@
-package com.minhdd.app.ml.example;
+package com.minhdd.app.ml.service;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
@@ -7,8 +7,8 @@ import com.minhdd.app.ml.domain.MlServiceAbstract;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
-import org.apache.spark.ml.classification.GBTClassificationModel;
-import org.apache.spark.ml.classification.GBTClassifier;
+import org.apache.spark.ml.classification.RandomForestClassificationModel;
+import org.apache.spark.ml.classification.RandomForestClassifier;
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.DataFrame;
@@ -28,8 +28,8 @@ import java.util.Map;
  */
 @Component
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
-public class GradientBoostedTreeClassifierService extends MlServiceAbstract implements MLService {
-    private final Logger logger = LoggerFactory.getLogger(GradientBoostedTreeClassifierService.class);
+public class RandomForestClassifierService extends MlServiceAbstract implements MLService {
+    private final Logger logger = LoggerFactory.getLogger(RandomForestClassifierService.class);
 
     @Inject
     private SQLContext sqlContext;
@@ -56,11 +56,9 @@ public class GradientBoostedTreeClassifierService extends MlServiceAbstract impl
                 .setMaxCategories(4) // features with > 4 distinct values are treated as continuous
                 .fit(dataSet.getData());
 
-        // Train a GBT model.
-        GBTClassifier gbt = new GBTClassifier()
+        RandomForestClassifier rf = new RandomForestClassifier()
                 .setLabelCol("indexedLabel")
-                .setFeaturesCol("indexedFeatures")
-                .setMaxIter(10);
+                .setFeaturesCol("indexedFeatures");
 
         IndexToString labelConverter = new IndexToString()
                 .setInputCol("prediction")
@@ -68,7 +66,7 @@ public class GradientBoostedTreeClassifierService extends MlServiceAbstract impl
                 .setLabels(labelIndexer.labels());
 
         Pipeline pipeline = new Pipeline()
-                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, gbt, labelConverter});
+                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, rf, labelConverter});
 
         return (DataFrame training) -> pipeline.fit(training);
     }
@@ -88,8 +86,8 @@ public class GradientBoostedTreeClassifierService extends MlServiceAbstract impl
         double accuracy = evaluator.evaluate(predictions);
         logger.info("Test Error = " + (1.0 - accuracy));
 
-        GBTClassificationModel gbtModel = (GBTClassificationModel)(((PipelineModel) model).stages()[2]);
-        logger.info("Learned classification forest model:\n" + gbtModel.toDebugString());
+        RandomForestClassificationModel rfModel = (RandomForestClassificationModel)(((PipelineModel) model).stages()[2]);
+        logger.info("Learned classification forest model:\n" + rfModel.toDebugString());
 
         Map<String, Object> responses = new HashMap<>();
         responses.put("error", 1.0 - accuracy);

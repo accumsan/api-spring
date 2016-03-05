@@ -1,4 +1,4 @@
-package com.minhdd.app.ml.example;
+package com.minhdd.app.ml.service;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
@@ -7,8 +7,8 @@ import com.minhdd.app.ml.domain.MlServiceAbstract;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
-import org.apache.spark.ml.classification.DecisionTreeClassificationModel;
-import org.apache.spark.ml.classification.DecisionTreeClassifier;
+import org.apache.spark.ml.classification.GBTClassificationModel;
+import org.apache.spark.ml.classification.GBTClassifier;
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.DataFrame;
@@ -24,12 +24,12 @@ import java.util.Map;
 
 /**
  * Created by mdao on 04/03/2016.
- * http://spark.apache.org/docs/latest/ml-classification-regression.html#linear-regression
+ * http://spark.apache.org/docs/latest/ml-classification-regression.html#random-forest-classifier
  */
 @Component
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
-public class DecisionTreeClassifierService extends MlServiceAbstract implements MLService {
-    private final Logger logger = LoggerFactory.getLogger(DecisionTreeClassifierService.class);
+public class GradientBoostedTreeClassifierService extends MlServiceAbstract implements MLService {
+    private final Logger logger = LoggerFactory.getLogger(GradientBoostedTreeClassifierService.class);
 
     @Inject
     private SQLContext sqlContext;
@@ -56,9 +56,11 @@ public class DecisionTreeClassifierService extends MlServiceAbstract implements 
                 .setMaxCategories(4) // features with > 4 distinct values are treated as continuous
                 .fit(dataSet.getData());
 
-        DecisionTreeClassifier dt = new DecisionTreeClassifier()
+        // Train a GBT model.
+        GBTClassifier gbt = new GBTClassifier()
                 .setLabelCol("indexedLabel")
-                .setFeaturesCol("indexedFeatures");
+                .setFeaturesCol("indexedFeatures")
+                .setMaxIter(10);
 
         IndexToString labelConverter = new IndexToString()
                 .setInputCol("prediction")
@@ -66,7 +68,7 @@ public class DecisionTreeClassifierService extends MlServiceAbstract implements 
                 .setLabels(labelIndexer.labels());
 
         Pipeline pipeline = new Pipeline()
-                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, dt, labelConverter});
+                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, gbt, labelConverter});
 
         return (DataFrame training) -> pipeline.fit(training);
     }
@@ -78,6 +80,7 @@ public class DecisionTreeClassifierService extends MlServiceAbstract implements 
 
     @Override
     public Map<String, Object> getResults() {
+        predictions.select("predictedLabel", "label", "features").show(5);
         MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator()
                 .setLabelCol("indexedLabel")
                 .setPredictionCol("prediction")
@@ -85,9 +88,8 @@ public class DecisionTreeClassifierService extends MlServiceAbstract implements 
         double accuracy = evaluator.evaluate(predictions);
         logger.info("Test Error = " + (1.0 - accuracy));
 
-        DecisionTreeClassificationModel treeModel =
-                (DecisionTreeClassificationModel) (((PipelineModel) model).stages()[2]);
-        logger.info("Learned classification tree model:\n" + treeModel.toDebugString());
+        GBTClassificationModel gbtModel = (GBTClassificationModel)(((PipelineModel) model).stages()[2]);
+        logger.info("Learned classification forest model:\n" + gbtModel.toDebugString());
 
         Map<String, Object> responses = new HashMap<>();
         responses.put("error", 1.0 - accuracy);
