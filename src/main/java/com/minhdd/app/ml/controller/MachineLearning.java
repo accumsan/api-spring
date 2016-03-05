@@ -3,7 +3,7 @@ package com.minhdd.app.ml.controller;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.example.EstimatorTransformerParam;
-import com.minhdd.app.ml.example.LinearResgresion;
+import com.minhdd.app.ml.example.LinearRegressionService;
 import com.minhdd.app.ml.service.MLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class MachineLearning {
     private final Logger logger = LoggerFactory.getLogger(MachineLearning.class);
 
     @Inject
-    LinearResgresion linearResgresion;
+    LinearRegressionService linearRegressionService;
 
     @Inject
     EstimatorTransformerParam estimatorTransformerParam;
@@ -36,8 +36,8 @@ public class MachineLearning {
     @RequestMapping(value = "/lr", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> lr() {
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
-        linearResgresion.loadFile("libsvm", "data/mllib/sample_linear_regression_data.txt");
-        return new ResponseEntity<>(linearResgresion.loadData().configure(conf).train().getResults(), HttpStatus.OK);
+        linearRegressionService.loadFile("libsvm", "data/mllib/sample_linear_regression_data.txt");
+        return new ResponseEntity<>(linearRegressionService.loadData().configure(conf).train().getResults(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/etp", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

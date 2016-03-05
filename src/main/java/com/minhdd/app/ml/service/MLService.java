@@ -11,5 +11,6 @@ public interface MLService {
     MLService loadData();
     MLService configure(MLConfiguration configuration);
     MLService train();
+    MLService test();
     Map<String, Object> getResults();
 }

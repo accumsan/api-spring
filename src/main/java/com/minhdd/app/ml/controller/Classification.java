@@ -2,8 +2,8 @@ package com.minhdd.app.ml.controller;
 
 
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.example.DecisionTreeClassifier;
-import com.minhdd.app.ml.example.LogisticResgresion;
+import com.minhdd.app.ml.example.DecisionTreeClassifierService;
+import com.minhdd.app.ml.example.LogisticRegressionService;
 import com.minhdd.app.ml.service.MLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,22 +28,22 @@ public class Classification {
     private final Logger logger = LoggerFactory.getLogger(Classification.class);
 
     @Inject
-    LogisticResgresion logisticResgresion;
+    LogisticRegressionService logisticRegressionService;
 
     @Inject
-    DecisionTreeClassifier decisionTreeClassifier;
+    DecisionTreeClassifierService decisionTreeClassifierService;
 
     @RequestMapping(value = "/lor", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> lor() {
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
-        logisticResgresion.loadFile("libsvm", "data/mllib/sample_libsvm_data.txt");
-        return new ResponseEntity<>(logisticResgresion.loadData().configure(conf).train().getResults(), HttpStatus.OK);
+        logisticRegressionService.loadFile("libsvm", "data/mllib/sample_libsvm_data.txt");
+        return new ResponseEntity<>(logisticRegressionService.loadData().configure(conf).train().getResults(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/dtc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> dtc() {
-        decisionTreeClassifier.loadFile("libsvm", "data/mllib/sample_libsvm_data.txt");
-        return new ResponseEntity<>(decisionTreeClassifier.loadData().train().getResults(), HttpStatus.OK);
+        decisionTreeClassifierService.loadFile("libsvm", "data/mllib/sample_libsvm_data.txt");
+        return new ResponseEntity<>(decisionTreeClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
 
 

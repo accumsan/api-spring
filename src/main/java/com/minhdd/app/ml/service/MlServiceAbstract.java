@@ -12,6 +12,7 @@ public abstract class MlServiceAbstract implements MLService {
     private MLConfiguration configuration;
     protected DataSet dataSet;
     protected Object model;
+    protected DataFrame predictions;
 
     protected String getFilePath() {
         return filePath;
@@ -36,13 +37,21 @@ public abstract class MlServiceAbstract implements MLService {
         return sqlContext.read().format(getFileType()).load(getFilePath());
     }
 
+    protected MLService loadData(DataFrame data, DataFrame training, DataFrame cross, DataFrame test) {
+        this.dataSet = new DataSet(data, training, cross, test);
+        return this;
+    }
+
+    protected MLService loadData(DataFrame data) {
+        this.dataSet = new DataSet(data, data, null, null);
+        return this;
+    }
+
     @Override
     public MLService configure(MLConfiguration configuration) {
         this.configuration = configuration;
         return this;
     }
-
-    protected abstract MLAlgorithm algorithm();
 
     @Override
     public MLService train() {
@@ -50,9 +59,17 @@ public abstract class MlServiceAbstract implements MLService {
         return this;
     }
 
-    protected MLService loadData(DataFrame training, DataFrame cross, DataFrame test) {
-        this.dataSet = new DataSet(training, cross, test);
+    protected abstract MLAlgorithm algorithm();
+
+    protected DataFrame transform(DataFrame test) {
+        return null;
+    }
+
+    @Override
+    public MLService test() {
+        predictions = transform(dataSet.getTest());
         return this;
     }
+
 
 }
