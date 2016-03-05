@@ -31,12 +31,13 @@ public class MLConfiguration {
         return this;
     }
 
-    public NeuralNetworkConfiguration getNeuralNetworkConfiguration() {
+    public NeuralNetworkConfiguration getNn() {
         return neuralNetworkConfiguration;
     }
 
-    public void setNeuralNetworkConfiguration(NeuralNetworkConfiguration neuralNetworkConfiguration) {
+    public MLConfiguration setNeuralNetworkConfiguration(NeuralNetworkConfiguration neuralNetworkConfiguration) {
         this.neuralNetworkConfiguration = neuralNetworkConfiguration;
+        return this;
     }
 
     private NeuralNetworkConfiguration neuralNetworkConfiguration;

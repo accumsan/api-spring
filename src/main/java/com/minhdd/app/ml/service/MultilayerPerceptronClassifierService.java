@@ -44,10 +44,10 @@ public class MultilayerPerceptronClassifierService extends MlServiceAbstract imp
     protected MLAlgorithm<MultilayerPerceptronClassificationModel> algorithm() {
         int[] layers = new int[] {4, 5, 4, 3};
         MultilayerPerceptronClassifier trainer = new MultilayerPerceptronClassifier()
-                .setLayers(layers)
-                .setBlockSize(128)
-                .setSeed(1234L)
-                .setMaxIter(100);
+                .setLayers(conf().getNn().getLayers())
+                .setBlockSize(conf().getNn().getBlockSize())
+                .setSeed(conf().getNn().getSeed())
+                .setMaxIter(conf().getMaxIteration());
 
         return (DataFrame training) -> trainer.fit(training);
     }

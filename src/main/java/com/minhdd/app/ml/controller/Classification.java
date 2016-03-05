@@ -2,6 +2,7 @@ package com.minhdd.app.ml.controller;
 
 
 import com.minhdd.app.config.Constants;
+import com.minhdd.app.ml.domain.NeuralNetworkConfiguration;
 import com.minhdd.app.ml.service.*;
 import com.minhdd.app.ml.domain.MLConfiguration;
 import org.slf4j.Logger;
@@ -73,8 +74,10 @@ public class Classification {
     //Multilayer perceptron classifier
     @RequestMapping(value = "/mpc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> mpc() {
+        NeuralNetworkConfiguration nnConf = new NeuralNetworkConfiguration().setLayers(new int[]{4, 5, 4, 3}).setBlockSize(128).setSeed(1234L);
+        MLConfiguration conf = new MLConfiguration().setMaxIteration(100).setNeuralNetworkConfiguration(nnConf);
         multilayerPerceptronClassifierService.loadFile("libsvm", "data/mllib/sample_multiclass_classification_data.txt");
-        return new ResponseEntity<>(multilayerPerceptronClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
+        return new ResponseEntity<>(multilayerPerceptronClassifierService.loadData().configure(conf).train().test().getResults(), HttpStatus.OK);
     }
 
 }
