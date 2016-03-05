@@ -22,7 +22,7 @@ public abstract class MlServiceAbstract implements MLService {
         return fileType;
     }
 
-    public MLConfiguration getConfiguration() {
+    public MLConfiguration conf() {
         return configuration;
     }
 
