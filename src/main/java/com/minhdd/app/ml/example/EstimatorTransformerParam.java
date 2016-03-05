@@ -1,9 +1,11 @@
-package com.minhdd.app.ml.service;
+package com.minhdd.app.ml.example;
 
 import com.minhdd.app.config.Constants;
+import com.minhdd.app.ml.service.MLAlgorithm;
+import com.minhdd.app.ml.service.MLService;
+import com.minhdd.app.ml.service.MlServiceAbstract;
 import org.apache.spark.ml.classification.LogisticRegression;
 import org.apache.spark.ml.classification.LogisticRegressionModel;
-import org.apache.spark.ml.param.ParamMap;
 import org.apache.spark.mllib.linalg.Vectors;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
@@ -19,6 +21,7 @@ import java.util.*;
 
 /**
  * Created by mdao on 04/03/2016.
+ * http://spark.apache.org/docs/latest/ml-guide.html#example-estimator-transformer-and-param
  */
 @Component
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
@@ -29,21 +32,21 @@ public class EstimatorTransformerParam extends MlServiceAbstract implements MLSe
     SQLContext sqlContext;
 
     @Override
-    protected Object loadDataSet() {
-        DataFrame training = sqlContext.createDataFrame(Arrays.asList(
+    public MLService loadData() {
+        DataFrame trainingData = sqlContext.createDataFrame(Arrays.asList(
                 new LabeledPoint(1.0, Vectors.dense(0.0, 1.1, 0.1)),
                 new LabeledPoint(0.0, Vectors.dense(2.0, 1.0, -1.0)),
                 new LabeledPoint(0.0, Vectors.dense(2.0, 1.3, 1.0)),
                 new LabeledPoint(1.0, Vectors.dense(0.0, 1.2, -0.5))
         ), LabeledPoint.class);
-        return training;
+        return super.loadData(trainingData, null, null);
     }
 
     @Override
-    protected MLAlgorithm<DataFrame, LogisticRegressionModel> algorithm() {
+    protected MLAlgorithm<LogisticRegressionModel> algorithm() {
         LogisticRegression lr = new LogisticRegression();
         lr.setMaxIter(getConfiguration().getMaxIteration()).setRegParam(getConfiguration().getRegParam());
-        return (DataFrame o) -> lr.fit(o);
+        return (DataFrame training) -> lr.fit(training);
     }
 
     @Override

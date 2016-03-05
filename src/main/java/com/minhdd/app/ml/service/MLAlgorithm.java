@@ -1,8 +1,10 @@
 package com.minhdd.app.ml.service;
 
+import org.apache.spark.sql.DataFrame;
+
 /**
  * Created by mdao on 04/03/2016.
  */
-interface MLAlgorithm<T, R> {
-    R fit(T o);
+public interface MLAlgorithm<R> {
+    R fit(DataFrame o);
 }

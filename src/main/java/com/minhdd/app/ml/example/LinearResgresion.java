@@ -1,6 +1,9 @@
-package com.minhdd.app.ml.service;
+package com.minhdd.app.ml.example;
 
 import com.minhdd.app.config.Constants;
+import com.minhdd.app.ml.service.MLAlgorithm;
+import com.minhdd.app.ml.service.MLService;
+import com.minhdd.app.ml.service.MlServiceAbstract;
 import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.ml.regression.LinearRegressionModel;
 import org.apache.spark.ml.regression.LinearRegressionTrainingSummary;
@@ -17,28 +20,29 @@ import java.util.Map;
 
 /**
  * Created by mdao on 04/03/2016.
+ * http://spark.apache.org/docs/latest/ml-classification-regression.html#linear-regression
  */
 @Component
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
-public class LinearResgresionService extends MlServiceAbstract implements MLService {
-    private final Logger logger = LoggerFactory.getLogger(LinearResgresionService.class);
+public class LinearResgresion extends MlServiceAbstract implements MLService {
+    private final Logger logger = LoggerFactory.getLogger(LinearResgresion.class);
 
     @Inject
     private SQLContext sqlContext;
 
     @Override
-    protected Object loadDataSet() {
-        DataFrame training = sqlContext.read().format(getFileType()).load(getFilePath());
-        return training;
+    public MLService loadData() {
+        DataFrame data = loadFile(sqlContext);
+        return super.loadData(data, null, null);
     }
 
     @Override
-    protected MLAlgorithm<DataFrame, LinearRegressionModel> algorithm() {
+    protected MLAlgorithm<LinearRegressionModel> algorithm() {
         LinearRegression lr = new LinearRegression()
                 .setMaxIter(getConfiguration().getMaxIteration())
                 .setRegParam(getConfiguration().getRegParam())
                 .setElasticNetParam(getConfiguration().getElasticNetParam());
-        return (DataFrame o) -> lr.fit(o);
+        return (DataFrame training) -> lr.fit(training);
     }
 
     @Override
@@ -54,6 +58,7 @@ public class LinearResgresionService extends MlServiceAbstract implements MLServ
         logger.info("r2: " + trainingSummary.r2());
 
         Map<String, Object> responses = new HashMap<>();
+        responses.put("coefficients", lrModel.coefficients().toString());
         responses.put("intercept", lrModel.intercept());
         responses.put("numIterations", trainingSummary.totalIterations());
         responses.put("RMSE", trainingSummary.rootMeanSquaredError());

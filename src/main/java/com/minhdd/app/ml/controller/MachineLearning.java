@@ -1,9 +1,9 @@
-package com.minhdd.app.ml;
+package com.minhdd.app.ml.controller;
 
 
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.service.EstimatorTransformerParam;
-import com.minhdd.app.ml.service.LinearResgresionService;
+import com.minhdd.app.ml.example.EstimatorTransformerParam;
+import com.minhdd.app.ml.example.LinearResgresion;
 import com.minhdd.app.ml.service.MLConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,30 +24,25 @@ import java.util.Map;
 @RestController
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 @RequestMapping("/spark/ml")
-public class MlRessource {
-    private final Logger logger = LoggerFactory.getLogger(MlRessource.class);
+public class MachineLearning {
+    private final Logger logger = LoggerFactory.getLogger(MachineLearning.class);
 
     @Inject
-    LinearResgresionService linearResgresionService;
+    LinearResgresion linearResgresion;
 
     @Inject
     EstimatorTransformerParam estimatorTransformerParam;
 
     @RequestMapping(value = "/lr", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> lr() {
-        MLConfiguration conf = new MLConfiguration();
-        conf.setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
-        linearResgresionService.loadFile("libsvm", "data/mllib/sample_linear_regression_data.txt").configure(conf).train();
-        Map<String, Object> responses = linearResgresionService.getResults();
-        return new ResponseEntity<>(responses, HttpStatus.OK);
+        MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
+        linearResgresion.loadFile("libsvm", "data/mllib/sample_linear_regression_data.txt");
+        return new ResponseEntity<>(linearResgresion.loadData().configure(conf).train().getResults(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/etp", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> etp() {
-        MLConfiguration conf = new MLConfiguration();
-        conf.setMaxIteration(10).setRegParam(0.01);
-        estimatorTransformerParam.configure(conf).train();
-        Map<String, Object> responses = estimatorTransformerParam.getResults();
-        return new ResponseEntity<>(responses, HttpStatus.OK);
+        MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setRegParam(0.01);
+        return new ResponseEntity<>(estimatorTransformerParam.loadData().configure(conf).train().getResults(), HttpStatus.OK);
     }
 }

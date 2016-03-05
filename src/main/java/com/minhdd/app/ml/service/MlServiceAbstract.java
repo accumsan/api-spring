@@ -1,5 +1,8 @@
 package com.minhdd.app.ml.service;
 
+import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.SQLContext;
+
 /**
  * Created by mdao on 04/03/2016.
  */
@@ -7,6 +10,7 @@ public abstract class MlServiceAbstract implements MLService {
     private String filePath;
     private String fileType;
     private MLConfiguration configuration;
+    protected DataSet dataSet;
     protected Object model;
 
     protected String getFilePath() {
@@ -21,14 +25,15 @@ public abstract class MlServiceAbstract implements MLService {
         return configuration;
     }
 
-    protected abstract Object loadDataSet();
-    protected abstract MLAlgorithm algorithm();
-
     @Override
     public MLService loadFile(String fileType, String filePath) {
         this.filePath = filePath;
         this.fileType = fileType;
         return this;
+    }
+
+    protected DataFrame loadFile(SQLContext sqlContext) {
+        return sqlContext.read().format(getFileType()).load(getFilePath());
     }
 
     @Override
@@ -37,9 +42,17 @@ public abstract class MlServiceAbstract implements MLService {
         return this;
     }
 
+    protected abstract MLAlgorithm algorithm();
+
     @Override
     public MLService train() {
-        model = algorithm().fit(loadDataSet());
+        model = algorithm().fit(dataSet.getTraining());
         return this;
     }
+
+    protected MLService loadData(DataFrame training, DataFrame cross, DataFrame test) {
+        this.dataSet = new DataSet(training, cross, test);
+        return this;
+    }
+
 }
