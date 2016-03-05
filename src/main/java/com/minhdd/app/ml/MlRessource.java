@@ -2,6 +2,7 @@ package com.minhdd.app.ml;
 
 
 import com.minhdd.app.config.Constants;
+import com.minhdd.app.ml.service.EstimatorTransformerParam;
 import com.minhdd.app.ml.service.LinearResgresionService;
 import com.minhdd.app.ml.service.MLConfiguration;
 import org.slf4j.Logger;
@@ -27,14 +28,26 @@ public class MlRessource {
     private final Logger logger = LoggerFactory.getLogger(MlRessource.class);
 
     @Inject
-    LinearResgresionService ml;
+    LinearResgresionService linearResgresionService;
+
+    @Inject
+    EstimatorTransformerParam estimatorTransformerParam;
 
     @RequestMapping(value = "/lr", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Object>> get() {
+    public ResponseEntity<Map<String, Object>> lr() {
         MLConfiguration conf = new MLConfiguration();
         conf.setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
-        ml.loadFile("libsvm", "data/mllib/sample_linear_regression_data.txt").configure(conf).train();
-        Map<String, Object> responses = ml.getResults();
+        linearResgresionService.loadFile("libsvm", "data/mllib/sample_linear_regression_data.txt").configure(conf).train();
+        Map<String, Object> responses = linearResgresionService.getResults();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/etp", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> etp() {
+        MLConfiguration conf = new MLConfiguration();
+        conf.setMaxIteration(10).setRegParam(0.01);
+        estimatorTransformerParam.configure(conf).train();
+        Map<String, Object> responses = estimatorTransformerParam.getResults();
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 }
