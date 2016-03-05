@@ -31,6 +31,24 @@ public class MLConfiguration {
         return this;
     }
 
+    public double getFractionTest() {
+        return fractionTest;
+    }
+
+    public MLConfiguration setFractionTest(double fracTest) {
+        this.fractionTest = fracTest;
+        return this;
+    }
+
+    public MLConfiguration setTol(double tol) {
+        this.tol = tol;
+        return this;
+    }
+
+    public double getTol() {
+        return tol;
+    }
+
     public NeuralNetworkConfiguration getNn() {
         return neuralNetworkConfiguration;
     }
@@ -44,4 +62,7 @@ public class MLConfiguration {
     private int maxIteration;
     private double regParam;
     private double elasticNetParam;
+    private double fractionTest;
+    private double tol;
+
 }

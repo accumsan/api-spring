@@ -3,8 +3,8 @@ package com.minhdd.app.ml.controller;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.NeuralNetworkConfiguration;
-import com.minhdd.app.ml.service.*;
 import com.minhdd.app.ml.domain.MLConfiguration;
+import com.minhdd.app.ml.service.classifier.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -42,6 +42,9 @@ public class Classification {
     @Inject
     MultilayerPerceptronClassifierService multilayerPerceptronClassifierService;
 
+    @Inject
+    OneVsRestClassifierService oneVsRestClassifierService;
+
     //Logistic regression
     @RequestMapping(value = "/lor", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> lor() {
@@ -78,6 +81,14 @@ public class Classification {
         MLConfiguration conf = new MLConfiguration().setMaxIteration(100).setNeuralNetworkConfiguration(nnConf);
         multilayerPerceptronClassifierService.loadFile("libsvm", "data/mllib/sample_multiclass_classification_data.txt");
         return new ResponseEntity<>(multilayerPerceptronClassifierService.loadData().configure(conf).train().test().getResults(), HttpStatus.OK);
+    }
+
+    //One-vs-Rest classifier (a.k.a. One-vs-All)
+    @RequestMapping(value = "/ovr", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, Object>> ovr() {
+        MLConfiguration conf = new MLConfiguration().setFractionTest(0.2).setTol(1E-6);
+        oneVsRestClassifierService.loadFile("libsvm", "data/mllib/sample_multiclass_classification_data.txt");
+        return new ResponseEntity<>(oneVsRestClassifierService.configure(conf).loadData().train().test().getResults(), HttpStatus.OK);
     }
 
 }

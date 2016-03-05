@@ -1,4 +1,4 @@
-package com.minhdd.app.ml.service;
+package com.minhdd.app.ml.service.classifier;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
