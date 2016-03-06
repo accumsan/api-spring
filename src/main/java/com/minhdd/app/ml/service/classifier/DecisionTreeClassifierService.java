@@ -31,12 +31,9 @@ import java.util.Map;
 public class DecisionTreeClassifierService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(DecisionTreeClassifierService.class);
 
-    @Inject
-    private SQLContext sqlContext;
-
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile(sqlContext);
+        DataFrame data = loadFile();
         DataFrame[] splits = data.randomSplit(new double[]{0.7, 0.3});
         DataFrame trainingData = splits[0];
         DataFrame testData = splits[1];
@@ -72,8 +69,9 @@ public class DecisionTreeClassifierService extends MlServiceAbstract implements 
     }
 
     @Override
-    protected DataFrame transform(DataFrame test) {
-        return ((PipelineModel) model).transform(test);
+    public MLService test() {
+        predictions = ((PipelineModel) model).transform(dataSet.getTest());
+        return super.test();
     }
 
     @Override

@@ -22,6 +22,10 @@ public class DataSet {
         return test;
     }
 
+    public void setTest(DataFrame test) {
+        this.test = test;
+    }
+
     public DataSet(DataFrame data, DataFrame training, DataFrame crossValidation, DataFrame test) {
         this.data = data;
         this.training = training;

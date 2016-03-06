@@ -40,7 +40,7 @@
     <logger name="org.spark-project.jetty" level="INFO"/>
     <logger name="io.netty" level="INFO"/>
     <logger name="org.jboss.netty.channel.socket.nio" level="INFO"/>
-
+    <logger name="org.spark-project.jetty.server.handler" level="WARN"/>
     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
         <resetJUL>true</resetJUL>
     </contextListener>

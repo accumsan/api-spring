@@ -13,11 +13,9 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class SparkConfig {
-
     @Bean
     public SQLContext sqlContext() {
         JavaSparkContext javaSparkContext = new JavaSparkContext("local", "basicmap", System.getenv("SPARK_HOME"), System.getenv("JARS"));
         return new SQLContext(javaSparkContext);
     }
-
 }

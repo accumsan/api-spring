@@ -34,13 +34,10 @@ import java.util.Map;
 public class OneVsRestClassifierService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(OneVsRestClassifierService.class);
 
-    @Inject
-    private SQLContext sqlContext;
-
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile(sqlContext);
-        double f = conf().getFractionTest();
+        DataFrame data = loadFile();
+        double f = conf.getFractionTest();
         DataFrame[] splits = data.randomSplit(new double[]{1 - f, f}, 12345);
         DataFrame trainingData = splits[0];
         DataFrame testData = splits[1];
@@ -50,19 +47,20 @@ public class OneVsRestClassifierService extends MlServiceAbstract implements MLS
     @Override
     protected MLAlgorithm<OneVsRestModel> algorithm() {
         LogisticRegression classifier = new LogisticRegression()
-                .setMaxIter(conf().getMaxIteration())
-                .setTol(conf().getTol())
+                .setMaxIter(conf.getMaxIteration())
+                .setTol(conf.getTol())
                 .setFitIntercept(true)
-                .setRegParam(conf().getRegParam())
-                .setElasticNetParam(conf().getElasticNetParam());
+                .setRegParam(conf.getRegParam())
+                .setElasticNetParam(conf.getElasticNetParam());
         OneVsRest ovr = new OneVsRest().setClassifier(classifier);
 
         return (DataFrame training) -> ovr.fit(training);
     }
 
     @Override
-    protected DataFrame transform(DataFrame test) {
-        return ((OneVsRestModel) model).transform(test);
+    public MLService test() {
+        predictions = ((OneVsRestModel) model).transform(dataSet.getTest());
+        return super.test();
     }
 
     @Override

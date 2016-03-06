@@ -7,51 +7,65 @@ import org.apache.spark.sql.SQLContext;
  * Created by mdao on 04/03/2016.
  */
 public abstract class MlServiceAbstract implements MLService {
-    private String filePath;
-    private String fileType;
-    private MLConfiguration configuration;
+    protected SQLContext sqlContext;
+    protected String fileType;
+    protected String filePath;
+    protected MLConfiguration conf;
     protected DataSet dataSet;
     protected Object model;
     protected DataFrame predictions;
 
-    protected String getFilePath() {
-        return filePath;
-    }
-
-    public String getFileType() {
-        return fileType;
-    }
-
-    public MLConfiguration conf() {
-        return configuration;
+    @Override
+    public MLService configure(MLConfiguration configuration) {
+        this.conf = configuration;
+        return this;
     }
 
     @Override
-    public MLService loadFile(String fileType, String filePath) {
+    public MLService sqlContext(SQLContext sqlContext) {
+        this.sqlContext = sqlContext;
+        return this;
+    }
+
+    @Override
+    public MLService setFile(String fileType, String filePath) {
         this.filePath = filePath;
         this.fileType = fileType;
         return this;
     }
 
-    protected DataFrame loadFile(SQLContext sqlContext) {
-        return sqlContext.read().format(getFileType()).load(getFilePath());
+    /** load data **/
+
+    protected DataFrame loadFile() {
+        return sqlContext.read().format(fileType).load(filePath);
+    }
+
+    @Override
+    public MLService loadTest() {
+        DataFrame data = sqlContext.read().format(fileType).load(filePath);
+        return setTest(data);
+    }
+
+    protected MLService setTest(DataFrame data) {
+        if (dataSet == null) {
+            dataSet = new DataSet(data, null, null, data);
+        } else {
+            dataSet.setTest(data);
+        }
+        return this;
     }
 
     protected MLService loadData(DataFrame data, DataFrame training, DataFrame cross, DataFrame test) {
-        this.dataSet = new DataSet(data, training, cross, test);
+        dataSet = new DataSet(data, training, cross, test);
         return this;
     }
 
     protected MLService loadData(DataFrame data) {
-        this.dataSet = new DataSet(data, data, null, null);
+        dataSet = new DataSet(data, data, null, null);
         return this;
     }
 
-    @Override
-    public MLService configure(MLConfiguration configuration) {
-        this.configuration = configuration;
-        return this;
-    }
+    /** train and test **/
 
     @Override
     public MLService train() {
@@ -61,15 +75,22 @@ public abstract class MlServiceAbstract implements MLService {
 
     protected abstract MLAlgorithm algorithm();
 
-    protected DataFrame transform(DataFrame test) {
+    protected DataFrame transform() {
         return null;
     }
 
     @Override
     public MLService test() {
-        predictions = transform(dataSet.getTest());
         return this;
     }
 
+    @Override
+    public void produce() {}
+
+    @Override
+    public void save() {}
+
+    @Override
+    public void restore() {}
 
 }

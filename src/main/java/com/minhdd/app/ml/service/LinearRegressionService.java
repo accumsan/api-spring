@@ -33,16 +33,16 @@ public class LinearRegressionService extends MlServiceAbstract implements MLServ
 
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile(sqlContext);
+        DataFrame data = loadFile();
         return super.loadData(data);
     }
 
     @Override
     protected MLAlgorithm<LinearRegressionModel> algorithm() {
         LinearRegression lr = new LinearRegression()
-                .setMaxIter(conf().getMaxIteration())
-                .setRegParam(conf().getRegParam())
-                .setElasticNetParam(conf().getElasticNetParam());
+                .setMaxIter(conf.getMaxIteration())
+                .setRegParam(conf.getRegParam())
+                .setElasticNetParam(conf.getElasticNetParam());
         return (DataFrame training) -> lr.fit(training);
     }
 

@@ -28,9 +28,6 @@ import java.util.*;
 public class EstimatorTransformerParam extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(EstimatorTransformerParam.class);
 
-    @Inject
-    SQLContext sqlContext;
-
     @Override
     public MLService loadData() {
         DataFrame data = sqlContext.createDataFrame(Arrays.asList(
@@ -45,7 +42,7 @@ public class EstimatorTransformerParam extends MlServiceAbstract implements MLSe
     @Override
     protected MLAlgorithm<LogisticRegressionModel> algorithm() {
         LogisticRegression lr = new LogisticRegression();
-        lr.setMaxIter(conf().getMaxIteration()).setRegParam(conf().getRegParam());
+        lr.setMaxIter(conf.getMaxIteration()).setRegParam(conf.getRegParam());
         return (DataFrame training) -> lr.fit(training);
     }
 

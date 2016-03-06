@@ -28,12 +28,9 @@ import java.util.Map;
 public class MultilayerPerceptronClassifierService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(MultilayerPerceptronClassifierService.class);
 
-    @Inject
-    private SQLContext sqlContext;
-
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile(sqlContext);
+        DataFrame data = loadFile();
         DataFrame[] splits = data.randomSplit(new double[]{0.6, 0.4}, 1234L);
         DataFrame trainingData = splits[0];
         DataFrame testData = splits[1];
@@ -44,17 +41,18 @@ public class MultilayerPerceptronClassifierService extends MlServiceAbstract imp
     protected MLAlgorithm<MultilayerPerceptronClassificationModel> algorithm() {
         int[] layers = new int[] {4, 5, 4, 3};
         MultilayerPerceptronClassifier trainer = new MultilayerPerceptronClassifier()
-                .setLayers(conf().getNn().getLayers())
-                .setBlockSize(conf().getNn().getBlockSize())
-                .setSeed(conf().getNn().getSeed())
-                .setMaxIter(conf().getMaxIteration());
+                .setLayers(conf.getNn().getLayers())
+                .setBlockSize(conf.getNn().getBlockSize())
+                .setSeed(conf.getNn().getSeed())
+                .setMaxIter(conf.getMaxIteration());
 
         return (DataFrame training) -> trainer.fit(training);
     }
 
     @Override
-    protected DataFrame transform(DataFrame test) {
-        return ((MultilayerPerceptronClassificationModel) model).transform(test);
+    public MLService test() {
+        predictions = ((MultilayerPerceptronClassificationModel) model).transform(dataSet.getTest());
+        return super.test();
     }
 
     @Override

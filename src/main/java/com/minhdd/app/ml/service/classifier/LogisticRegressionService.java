@@ -26,23 +26,18 @@ import java.util.Map;
 public class LogisticRegressionService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(LogisticRegressionService.class);
 
-    @Inject
-    private SQLContext sqlContext;
-
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile(sqlContext);
+        DataFrame data = loadFile();
         return super.loadData(data);
     }
-
-
 
     @Override
     protected MLAlgorithm<LinearRegressionModel> algorithm() {
         LinearRegression lr = new LinearRegression()
-                .setMaxIter(conf().getMaxIteration())
-                .setRegParam(conf().getRegParam())
-                .setElasticNetParam(conf().getElasticNetParam());
+                .setMaxIter(conf.getMaxIteration())
+                .setRegParam(conf.getRegParam())
+                .setElasticNetParam(conf.getElasticNetParam());
         return (DataFrame training) -> lr.fit(training);
     }
 
