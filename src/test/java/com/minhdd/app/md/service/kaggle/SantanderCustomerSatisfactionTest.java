@@ -6,7 +6,6 @@ import com.minhdd.app.ml.domain.MLConfiguration;
 import com.minhdd.app.ml.service.kaggle.SantanderCustomerSatisfaction;
 import org.apache.spark.sql.SQLContext;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -23,6 +22,15 @@ import javax.inject.Inject;
 @ActiveProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class SantanderCustomerSatisfactionTest {
 
+    private final String TRAIN_SAMPLE = "data/kaggle/santander-customer-satisfaction/train-1.csv";
+    private final String TRAIN_KAGGLE = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/train.csv";
+    private final String TEST_SAMPLE = "data/kaggle/santander-customer-satisfaction/test-1.csv";
+    private final String TEST_KAGGLE = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/test.csv";
+    private final String OUTPUT_DIR = "data/kaggle/santander-customer-satisfaction/save/";
+    private final String RFP_MODEL = OUTPUT_DIR + "random-forest-pipeline.model";
+    private final String TEST_OUTPUT = OUTPUT_DIR + "predictions.csv";
+
+
     @Inject
     SantanderCustomerSatisfaction santanderCustomerSatisfaction;
 
@@ -36,32 +44,33 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void trainAndTest() {
-        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/original/train.csv");
+        santanderCustomerSatisfaction.setFile(null, TRAIN_KAGGLE);
         MLConfiguration conf = new MLConfiguration().setFractionTest(0.5);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
 
     @Test
     public void trainAndProduce() {
-        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/original/train.csv");
+        santanderCustomerSatisfaction.setFile(null, TRAIN_KAGGLE);
         santanderCustomerSatisfaction.configure(null).loadData().train();
-        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/test-1.csv");
-        santanderCustomerSatisfaction.loadTest().test().getResults();
+        santanderCustomerSatisfaction.setFile(null, TEST_SAMPLE);
+        santanderCustomerSatisfaction.loadTest().test().produce(TEST_OUTPUT);
+    }
+
+
+    @Test
+    public void trainAndSave() {
+        santanderCustomerSatisfaction.setFile(null, TRAIN_SAMPLE);
+        santanderCustomerSatisfaction.configure(null).loadData().train().save(RFP_MODEL);
     }
 
     //TODO
-//    @Test
-//    public void trainAndSave() {
-//        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/train-1.csv");
-//        santanderCustomerSatisfaction.configure(null).loadData().train().save();
-//    }
-//
-//    @Test
-//    public void getSaveAndTest() {
-//        santanderCustomerSatisfaction.restore();
-//        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/test-1.csv");
-//        santanderCustomerSatisfaction.loadTest().test().produce();
-//    }
+    @Test
+    public void getSaveAndTest() {
+        santanderCustomerSatisfaction.restore(RFP_MODEL);
+        santanderCustomerSatisfaction.setFile(null, TEST_SAMPLE);
+        santanderCustomerSatisfaction.loadTest().test().getResults();
+    }
 
 
 }

@@ -17,8 +17,8 @@ public interface MLService {
     MLService train();
     MLService test();
     Map<String, Object> getResults();
-    void save();
-    void restore();
-    void produce();
+    void save(String modelFilePath);
+    void restore(String modelFilePath);
+    void produce(String output);
 
 }

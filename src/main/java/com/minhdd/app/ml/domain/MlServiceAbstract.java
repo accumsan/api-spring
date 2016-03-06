@@ -15,20 +15,17 @@ public abstract class MlServiceAbstract implements MLService {
     protected Object model;
     protected DataFrame predictions;
 
-    @Override
-    public MLService configure(MLConfiguration configuration) {
+    @Override public MLService configure(MLConfiguration configuration) {
         this.conf = configuration;
         return this;
     }
 
-    @Override
-    public MLService sqlContext(SQLContext sqlContext) {
+    @Override public MLService sqlContext(SQLContext sqlContext) {
         this.sqlContext = sqlContext;
         return this;
     }
 
-    @Override
-    public MLService setFile(String fileType, String filePath) {
+    @Override public MLService setFile(String fileType, String filePath) {
         this.filePath = filePath;
         this.fileType = fileType;
         return this;
@@ -40,8 +37,7 @@ public abstract class MlServiceAbstract implements MLService {
         return sqlContext.read().format(fileType).load(filePath);
     }
 
-    @Override
-    public MLService loadTest() {
+    @Override public MLService loadTest() {
         DataFrame data = sqlContext.read().format(fileType).load(filePath);
         return setTest(data);
     }
@@ -66,31 +62,19 @@ public abstract class MlServiceAbstract implements MLService {
     }
 
     /** train and test **/
-
-    @Override
-    public MLService train() {
+    @Override public MLService train() {
         model = algorithm().fit(dataSet.getTraining());
         return this;
     }
-
     protected abstract MLAlgorithm algorithm();
-
     protected DataFrame transform() {
         return null;
     }
-
-    @Override
-    public MLService test() {
+    @Override public MLService test() {
         return this;
     }
-
-    @Override
-    public void produce() {}
-
-    @Override
-    public void save() {}
-
-    @Override
-    public void restore() {}
+    @Override public void save(String filePath) {}
+    @Override public void restore(String filePath) {}
+    @Override public void produce(String output) {}
 
 }

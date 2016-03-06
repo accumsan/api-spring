@@ -11,11 +11,15 @@ import org.apache.spark.ml.classification.RandomForestClassifier;
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +53,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public MLService loadTest() {
-        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(filePath, sqlContext, 1).select("ID", "features").withColumn("label", lit(0.0));
+        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(filePath, sqlContext, 1).select("ID", "features").withColumn("label", lit(0.0).cast(DataTypes.DoubleType));
         return super.setTest(data);
     }
 
@@ -83,8 +87,6 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public MLService test() {
-        System.out.println("\nprint data test");
-        dataSet.getTest().printSchema();
         predictions = ((PipelineModel) model).transform(dataSet.getTest());
         return super.test();
     }
@@ -104,7 +106,26 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     }
 
     @Override
-    public void produce() {
-        //predictions.select("ID", "predictedLabel").show();
+    public void save(String modelFilePath) {
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(modelFilePath));
+            oos.writeObject(model);
+            oos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void restore(String modelFilePath) {
+
+    }
+
+    @Override
+    public void produce(String output) {
+        DataFrame results = predictions
+                .withColumn("TARGET", predictions.col("predictedLabel").cast(DataTypes.IntegerType).as("TARGET"))
+                .select("ID", "TARGET");
+        CsvUtil.save(results, output, true);
     }
 }
