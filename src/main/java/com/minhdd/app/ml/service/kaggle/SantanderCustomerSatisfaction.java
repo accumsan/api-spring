@@ -17,9 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -113,13 +111,21 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
             oos.writeObject(model);
             oos.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error : Maybe file do not exist :" + modelFilePath);
         }
     }
 
     @Override
     public void restore(String modelFilePath) {
-        //TODO import
+        try {
+            FileInputStream fin = new FileInputStream(modelFilePath);
+            ObjectInputStream ois = new ObjectInputStream(fin);
+            model = (PipelineModel) ois.readObject();
+        } catch (ClassNotFoundException e) {
+            System.out.println("Error ClassNotFoundException : PipelineModel");
+        } catch (IOException e) {
+            System.out.println("Error : Maybe file do not exist :" + modelFilePath);
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-import spark ml model
+try another algorithm
 get run test on test.csv
 find another metric for exploit result because there is too much 0
 --------------------------------------------------

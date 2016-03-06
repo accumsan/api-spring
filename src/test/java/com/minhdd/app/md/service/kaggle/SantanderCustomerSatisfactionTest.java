@@ -60,16 +60,15 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void trainAndSave() {
-        santanderCustomerSatisfaction.setFile(null, TRAIN_SAMPLE);
+        santanderCustomerSatisfaction.setFile(null, TRAIN_KAGGLE);
         santanderCustomerSatisfaction.configure(null).loadData().train().save(RFP_MODEL);
     }
 
-    //TODO import
     @Test
-    public void getSaveAndTest() {
+    public void getSaveAndProduce() {
         santanderCustomerSatisfaction.restore(RFP_MODEL);
         santanderCustomerSatisfaction.setFile(null, TEST_SAMPLE);
-        santanderCustomerSatisfaction.loadTest().test().getResults();
+        santanderCustomerSatisfaction.loadTest().test().produce(TEST_OUTPUT);
     }
 
 
