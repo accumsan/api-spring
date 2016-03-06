@@ -64,7 +64,7 @@ public class SantanderCustomerSatisfactionTest {
         santanderCustomerSatisfaction.configure(null).loadData().train().save(RFP_MODEL);
     }
 
-    //TODO
+    //TODO import
     @Test
     public void getSaveAndTest() {
         santanderCustomerSatisfaction.restore(RFP_MODEL);

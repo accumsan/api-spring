@@ -99,6 +99,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
                 .setPredictionCol("prediction")
                 .setMetricName("precision");
         double accuracy = evaluator.evaluate(predictions);
+        //TODO another metric to exploit results other than accuracy
         System.out.println("Accuracy = " + (accuracy * 100));
         Map<String, Object> responses = new HashMap<>();
         responses.put("accuracy", accuracy);
@@ -118,7 +119,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public void restore(String modelFilePath) {
-
+        //TODO import
     }
 
     @Override
