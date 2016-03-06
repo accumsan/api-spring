@@ -36,16 +36,16 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void trainAndTest() {
-        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/train.csv");
+        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/original/train.csv");
         MLConfiguration conf = new MLConfiguration().setFractionTest(0.5);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
 
     @Test
     public void trainAndProduce() {
-        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/train.csv");
+        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/original/train.csv");
         santanderCustomerSatisfaction.configure(null).loadData().train();
-        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/test.csv");
+        santanderCustomerSatisfaction.setFile(null, "data/kaggle/santander-customer-satisfaction/test-1.csv");
         santanderCustomerSatisfaction.loadTest().test().getResults();
     }
 
