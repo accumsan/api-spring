@@ -1,12 +1,12 @@
 package com.minhdd.app.ml.service.kaggle;
 
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.ml.feature.RFormula;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.io.IOException;
 
 /**
  * Created by minhdao on 06/03/16.
@@ -53,8 +53,12 @@ public class CsvUtil {
     }
 
     public static void save(DataFrame predictions, String output, boolean header) {
-        new File("temp").delete();
-        new File(output).delete();
+        try {
+            FileDeleteStrategy.FORCE.delete(new File("temp"));
+            FileDeleteStrategy.FORCE.delete(new File(output));
+        } catch (IOException e) {
+            System.out.println("File not deleted : temp");
+        }
         predictions.repartition(1).write().format(CSV_FORMAT)
                 .option("header", header ? "true" : "false")
                 .option("delimiter", ",")
@@ -62,8 +66,16 @@ public class CsvUtil {
         File dir = new File("temp");
         (new File("temp/part-00000")).renameTo(new File(output));
         for (File file : dir.listFiles()) {
-            file.delete();
+            try {
+                FileDeleteStrategy.FORCE.delete(file);
+            } catch (IOException e) {
+                System.out.println("File not deleted : " + file);
+            }
         }
-        dir.delete();
+        try {
+            FileDeleteStrategy.FORCE.delete(dir);
+        } catch (IOException e) {
+            System.out.println("File not deleted : temp");
+        }
     }
 }
