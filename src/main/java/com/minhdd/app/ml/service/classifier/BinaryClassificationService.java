@@ -7,10 +7,12 @@ import com.minhdd.app.ml.domain.MlServiceAbstract;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.Function;
 import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.ml.regression.LinearRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS;
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
 import org.apache.spark.sql.DataFrame;
@@ -60,13 +62,71 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
     }
 
     @Override
+    public MLService test() {
+        LogisticRegressionModel lrm = (LogisticRegressionModel) model;
+        lrm.clearThreshold();
+
+        // Compute raw scores on the test set.
+        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = ((JavaRDD<LabeledPoint>)dataSet.getTest()).map(
+                (Function<LabeledPoint, Tuple2<Object, Object>>) p -> {
+                    Double prediction = lrm.predict(p.features());
+                    return new Tuple2<Object, Object>(prediction, p.label());
+                }
+        );
+        predictions = predictionAndLabels;
+        return super.test();
+    }
+
+    @Override
     public Map<String, Object> getResults() {
-        LinearRegressionModel lrModel = (LinearRegressionModel) model;
-        logger.info("Coefficients: " + lrModel.coefficients());
-        logger.info("Intercept: " + lrModel.intercept());
+        // Get evaluation metrics.
+        BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(((JavaRDD<Tuple2<Object, Object>>)predictions).rdd());
+
+        // Precision by threshold
+        JavaRDD<Tuple2<Object, Object>> precision = metrics.precisionByThreshold().toJavaRDD();
+        System.out.println("Precision by threshold: " + precision.collect());
+
+        // Recall by threshold
+        JavaRDD<Tuple2<Object, Object>> recall = metrics.recallByThreshold().toJavaRDD();
+        System.out.println("Recall by threshold: " + recall.collect());
+
+        // F Score by threshold
+        JavaRDD<Tuple2<Object, Object>> f1Score = metrics.fMeasureByThreshold().toJavaRDD();
+        System.out.println("F1 Score by threshold: " + f1Score.collect());
+
+        JavaRDD<Tuple2<Object, Object>> f2Score = metrics.fMeasureByThreshold(2.0).toJavaRDD();
+        System.out.println("F2 Score by threshold: " + f2Score.collect());
+
+        // Precision-recall curve
+        JavaRDD<Tuple2<Object, Object>> prc = metrics.pr().toJavaRDD();
+        System.out.println("Precision-recall curve: " + prc.collect());
+
+        // Thresholds
+        JavaRDD<Double> thresholds = precision.map(
+                (Function<Tuple2<Object, Object>, Double>) t -> new Double(t._1().toString())
+        );
+
+        // ROC Curve
+        JavaRDD<Tuple2<Object, Object>> roc = metrics.roc().toJavaRDD();
+        System.out.println("ROC curve: " + roc.collect());
+
+        // AUPRC
+        System.out.println("Area under precision-recall curve = " + metrics.areaUnderPR());
+
+        // AUROC
+        System.out.println("Area under ROC = " + metrics.areaUnderROC());
+
         Map<String, Object> responses = new HashMap<>();
-        responses.put("coefficients", lrModel.coefficients().toString());
-        responses.put("intercept", lrModel.intercept());
         return responses;
     }
+
+    @Override
+    public void save(String modelFilePath) {
+        ((LogisticRegressionModel)model).save(sparkContext, modelFilePath);
+    };
+    @Override
+    public void restore(String modelFilePath){
+        LogisticRegressionModel.load(sparkContext, modelFilePath);
+    };
+
 }

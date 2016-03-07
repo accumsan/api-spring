@@ -78,6 +78,7 @@ public class GradientBoostedTreeClassifierService extends MlServiceAbstract impl
 
     @Override
     public Map<String, Object> getResults() {
+        DataFrame predictions = (DataFrame) this.predictions;
         predictions.select("predictedLabel", "label", "features").show(5);
         MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator()
                 .setLabelCol("indexedLabel")

@@ -65,6 +65,7 @@ public class OneVsRestClassifierService extends MlServiceAbstract implements MLS
 
     @Override
     public Map<String, Object> getResults() {
+        DataFrame predictions = (DataFrame) this.predictions;
         DataFrame predictionAndLabels = predictions.select("prediction", "label");
         MulticlassMetrics metrics = new MulticlassMetrics(predictionAndLabels);
         StructField predictionColSchema = predictionAndLabels.schema().apply("prediction");

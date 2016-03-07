@@ -57,6 +57,7 @@ public class MultilayerPerceptronClassifierService extends MlServiceAbstract imp
 
     @Override
     public Map<String, Object> getResults() {
+        DataFrame predictions = (DataFrame) this.predictions;
         DataFrame predictionAndLabels = predictions.select("prediction", "label");
         MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator()
                 .setMetricName("precision");

@@ -25,7 +25,7 @@ public class BinaryClassificationTest {
 
     @Test
     public void trainAndTest() {
-        binaryClassificationService.setFile("libsvm", TEST_FILE);
+        binaryClassificationService.setFile(null, TEST_FILE);
         MLConfiguration conf = new MLConfiguration().setFractionTest(0.4);
         binaryClassificationService.configure(conf).loadData().train().test().getResults();
     }

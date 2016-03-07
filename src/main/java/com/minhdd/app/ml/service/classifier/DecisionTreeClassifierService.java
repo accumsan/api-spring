@@ -76,6 +76,7 @@ public class DecisionTreeClassifierService extends MlServiceAbstract implements 
 
     @Override
     public Map<String, Object> getResults() {
+        DataFrame predictions = (DataFrame) this.predictions;
         MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator()
                 .setLabelCol("indexedLabel")
                 .setPredictionCol("prediction")

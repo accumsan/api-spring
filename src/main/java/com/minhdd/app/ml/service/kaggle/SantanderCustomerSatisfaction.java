@@ -100,6 +100,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public Map<String, Object> getResults() {
+        DataFrame predictions = (DataFrame) this.predictions;
         predictions.show();
         predictions.printSchema();
         //BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(predictions);
@@ -142,6 +143,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public void produce(String output) {
+        DataFrame predictions = (DataFrame) this.predictions;
         DataFrame results = predictions
                 .withColumn("TARGET", predictions.col("predictedLabel").cast(DataTypes.IntegerType).as("TARGET"))
                 .select("ID", "TARGET");

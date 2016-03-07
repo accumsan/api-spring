@@ -1,7 +1,5 @@
 package com.minhdd.app.ml.domain;
 
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
@@ -15,7 +13,7 @@ public abstract class MlServiceAbstract implements MLService {
     protected MLConfiguration conf;
     protected DataSet dataSet;
     protected Object model;
-    protected DataFrame predictions;
+    protected Object predictions;
 
     @Override public MLService configure(MLConfiguration configuration) {
         this.conf = configuration;
