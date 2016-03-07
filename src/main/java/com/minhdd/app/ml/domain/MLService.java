@@ -1,5 +1,6 @@
 package com.minhdd.app.ml.domain;
 
+import org.apache.spark.SparkContext;
 import org.apache.spark.sql.SQLContext;
 
 import java.util.Map;
@@ -9,7 +10,7 @@ import java.util.Map;
  */
 
 public interface MLService {
-    MLService sqlContext(SQLContext sqlContext);
+    MLService context(SQLContext sqlContext, SparkContext sc);
     MLService setFile(String fileType, String filePath);
     MLService loadData();
     MLService loadTest();

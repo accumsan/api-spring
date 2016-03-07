@@ -52,12 +52,12 @@ public class Classification {
 
     @PostConstruct
     void init() {
-        logisticRegressionService.sqlContext(sqlContext);
-        decisionTreeClassifierService.sqlContext(sqlContext);
-        randomForestClassifierService.sqlContext(sqlContext);
-        gradientBoostedTreeClassifierService.sqlContext(sqlContext);
-        multilayerPerceptronClassifierService.sqlContext(sqlContext);
-        oneVsRestClassifierService.sqlContext(sqlContext);
+        logisticRegressionService.context(sqlContext, null);
+        decisionTreeClassifierService.context(sqlContext, null);
+        randomForestClassifierService.context(sqlContext, null);
+        gradientBoostedTreeClassifierService.context(sqlContext, null);
+        multilayerPerceptronClassifierService.context(sqlContext, null);
+        oneVsRestClassifierService.context(sqlContext, null);
     }
 
     //Logistic regression

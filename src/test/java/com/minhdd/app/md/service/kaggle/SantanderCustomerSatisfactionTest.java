@@ -42,7 +42,7 @@ public class SantanderCustomerSatisfactionTest {
 
     @Before
     public void init() {
-        santanderCustomerSatisfaction.sqlContext(sqlContext);
+        santanderCustomerSatisfaction.context(sqlContext, null);
     }
 
 

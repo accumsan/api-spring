@@ -39,8 +39,8 @@ public class MachineLearning {
 
     @PostConstruct
     void init() {
-        linearRegressionService.sqlContext(sqlContext);
-        estimatorTransformerParam.sqlContext(sqlContext);
+        linearRegressionService.context(sqlContext, null);
+        estimatorTransformerParam.context(sqlContext, null);
     }
 
     @RequestMapping(value = "/lr", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

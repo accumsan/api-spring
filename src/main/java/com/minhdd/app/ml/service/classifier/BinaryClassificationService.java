@@ -35,9 +35,6 @@ import java.util.Map;
 public class BinaryClassificationService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(BinaryClassificationService.class);
 
-    @Inject
-    SparkContext sparkContext;
-
     @Override
     public MLService loadData() {
         JavaRDD<LabeledPoint> data = MLUtils.loadLibSVMFile(sparkContext, filePath).toJavaRDD();

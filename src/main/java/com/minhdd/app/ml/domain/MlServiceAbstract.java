@@ -1,5 +1,6 @@
 package com.minhdd.app.ml.domain;
 
+import org.apache.spark.SparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
@@ -8,6 +9,7 @@ import org.apache.spark.sql.SQLContext;
  */
 public abstract class MlServiceAbstract implements MLService {
     protected SQLContext sqlContext;
+    protected SparkContext sparkContext;
     protected String fileType;
     protected String filePath;
     protected MLConfiguration conf;
@@ -20,8 +22,9 @@ public abstract class MlServiceAbstract implements MLService {
         return this;
     }
 
-    @Override public MLService sqlContext(SQLContext sqlContext) {
+    @Override public MLService context(SQLContext sqlContext, SparkContext sc) {
         this.sqlContext = sqlContext;
+        this.sparkContext = sc;
         return this;
     }
 
