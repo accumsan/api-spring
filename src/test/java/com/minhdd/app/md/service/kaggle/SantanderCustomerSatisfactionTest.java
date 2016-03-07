@@ -28,6 +28,7 @@ public class SantanderCustomerSatisfactionTest {
     private final String TEST_KAGGLE = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/test.csv";
     private final String OUTPUT_DIR = "data/kaggle/santander-customer-satisfaction/save/";
     private final String RFP_MODEL = OUTPUT_DIR + "random-forest-pipeline.model";
+    private final String GBT_MODEL = OUTPUT_DIR + "random-forest-pipeline.model";
     private final String TEST_OUTPUT = OUTPUT_DIR + "predictions.csv";
 
 
@@ -50,9 +51,17 @@ public class SantanderCustomerSatisfactionTest {
     }
 
     @Test
+    public void trainWithGradientBoostedAndTest() {
+        santanderCustomerSatisfaction.setFile(null, TRAIN_SAMPLE);
+        MLConfiguration conf = new MLConfiguration().setFractionTest(0.5).setMaxIteration(10).setAlgorithm(MLConfiguration.GradientBoostedTree);
+        santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
+    }
+
+    @Test
     public void trainAndProduce() {
         santanderCustomerSatisfaction.setFile(null, TRAIN_KAGGLE);
-        santanderCustomerSatisfaction.configure(null).loadData().train();
+        MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setAlgorithm(MLConfiguration.GradientBoostedTree);
+        santanderCustomerSatisfaction.configure(conf).loadData().train();
         santanderCustomerSatisfaction.setFile(null, TEST_SAMPLE);
         santanderCustomerSatisfaction.loadTest().test().produce(TEST_OUTPUT);
     }
@@ -61,13 +70,14 @@ public class SantanderCustomerSatisfactionTest {
     @Test
     public void trainAndSave() {
         santanderCustomerSatisfaction.setFile(null, TRAIN_KAGGLE);
-        santanderCustomerSatisfaction.configure(null).loadData().train().save(RFP_MODEL);
+        MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setAlgorithm(MLConfiguration.GradientBoostedTree);
+        santanderCustomerSatisfaction.configure(conf).loadData().train().save(GBT_MODEL);
     }
 
     @Test
-    public void getSaveAndProduce() {
-        santanderCustomerSatisfaction.restore(RFP_MODEL);
-        santanderCustomerSatisfaction.setFile(null, TEST_SAMPLE);
+    public void getSavedAndProduce() {
+        santanderCustomerSatisfaction.restore(GBT_MODEL);
+        santanderCustomerSatisfaction.setFile(null, TEST_KAGGLE);
         santanderCustomerSatisfaction.loadTest().test().produce(TEST_OUTPUT);
     }
 

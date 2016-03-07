@@ -2,14 +2,17 @@ package com.minhdd.app.ml.service.kaggle;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
+import com.minhdd.app.ml.domain.MLConfiguration;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
+import org.apache.spark.ml.classification.GBTClassifier;
 import org.apache.spark.ml.classification.RandomForestClassifier;
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.ml.feature.*;
+import org.apache.spark.ml.tree.TreeClassifierParams;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
@@ -65,12 +68,19 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
         VectorIndexerModel featureIndexer = new VectorIndexer()
                 .setInputCol("features")
                 .setOutputCol("indexedFeatures")
-                .setMaxCategories(4) // features with > 4 distinct values are treated as continuous
+                .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
                 .fit(dataSet.getData());
 
-        RandomForestClassifier rf = new RandomForestClassifier()
+        String algorithm = conf.getAlgorithm();
+        Object classifier = new RandomForestClassifier()
                 .setLabelCol("indexedLabel")
                 .setFeaturesCol("indexedFeatures");
+        if (algorithm.equals(MLConfiguration.GradientBoostedTree)) {
+            classifier = new GBTClassifier()
+                    .setLabelCol("indexedLabel")
+                    .setFeaturesCol("indexedFeatures")
+                    .setMaxIter(conf.getMaxIteration());
+        }
 
         IndexToString labelConverter = new IndexToString()
                 .setInputCol("prediction")
@@ -78,7 +88,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
                 .setLabels(labelIndexer.labels());
 
         Pipeline pipeline = new Pipeline()
-                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, rf, labelConverter});
+                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, (PipelineStage) classifier, labelConverter});
 
         return (DataFrame training) -> pipeline.fit(training);
     }

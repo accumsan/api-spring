@@ -4,6 +4,9 @@ package com.minhdd.app.ml.domain;
  * Created by minhdao on 05/03/16.
  */
 public class MLConfiguration {
+    public static final String GradientBoostedTree = "Gradient-boosted tree classifier";
+    public static final String RandomForest = "Random forest classifier";
+
     public int getMaxIteration() {
         return maxIteration;
     }
@@ -59,10 +62,21 @@ public class MLConfiguration {
     }
 
     private NeuralNetworkConfiguration neuralNetworkConfiguration;
+
+    public MLConfiguration setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+        return this;
+    }
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    private String algorithm;
     private int maxIteration;
     private double regParam;
     private double elasticNetParam;
     private double fractionTest;
     private double tol;
+
 
 }
