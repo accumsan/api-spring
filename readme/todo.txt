@@ -1,4 +1,6 @@
-find another metric for exploit https://spark.apache.org/docs/latest/mllib-evaluation-metrics.html
+find another metric for exploit 
+	https://spark.apache.org/docs/latest/mllib-evaluation-metrics.html
+	https://www.coursera.org/learn/machine-learning/lecture/tKMWX/error-metrics-for-skewed-classes
 get run test on test.csv
 try another algorithm : logistic regression, neural network, deep learning
 --------------------------------------------------

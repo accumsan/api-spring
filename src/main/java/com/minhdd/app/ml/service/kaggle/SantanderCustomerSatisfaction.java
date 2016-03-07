@@ -70,11 +70,10 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
                 .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
                 .fit(dataSet.getData());
 
-        String algorithm = conf.getAlgorithm();
         Object classifier = new RandomForestClassifier()
                 .setLabelCol("indexedLabel")
                 .setFeaturesCol("indexedFeatures");
-        if (algorithm.equals(MLConfiguration.GradientBoostedTree)) {
+        if ((conf != null) && conf.getAlgorithm().equals(MLConfiguration.GradientBoostedTree)) {
             classifier = new GBTClassifier()
                     .setLabelCol("indexedLabel")
                     .setFeaturesCol("indexedFeatures")
