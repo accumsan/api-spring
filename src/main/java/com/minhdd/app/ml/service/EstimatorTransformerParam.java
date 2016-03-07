@@ -40,7 +40,7 @@ public class EstimatorTransformerParam extends MlServiceAbstract implements MLSe
     }
 
     @Override
-    protected MLAlgorithm<LogisticRegressionModel> algorithm() {
+    protected MLAlgorithm<LogisticRegressionModel, DataFrame> algorithm() {
         LogisticRegression lr = new LogisticRegression();
         lr.setMaxIter(conf.getMaxIteration()).setRegParam(conf.getRegParam());
         return (DataFrame training) -> lr.fit(training);

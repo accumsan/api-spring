@@ -42,17 +42,17 @@ public class RandomForestClassifierService extends MlServiceAbstract implements 
     }
 
     @Override
-    protected MLAlgorithm<PipelineModel> algorithm() {
+    protected MLAlgorithm<PipelineModel, DataFrame> algorithm() {
         StringIndexerModel labelIndexer = new StringIndexer()
                 .setInputCol("label")
                 .setOutputCol("indexedLabel")
-                .fit(dataSet.getData());
+                .fit((DataFrame)dataSet.getData());
 
         VectorIndexerModel featureIndexer = new VectorIndexer()
                 .setInputCol("features")
                 .setOutputCol("indexedFeatures")
                 .setMaxCategories(4) // features with > 4 distinct values are treated as continuous
-                .fit(dataSet.getData());
+                .fit((DataFrame)dataSet.getData());
 
         RandomForestClassifier rf = new RandomForestClassifier()
                 .setLabelCol("indexedLabel")
@@ -71,7 +71,7 @@ public class RandomForestClassifierService extends MlServiceAbstract implements 
 
     @Override
     public MLService test() {
-        predictions = ((PipelineModel) model).transform(dataSet.getTest());
+        predictions = ((PipelineModel) model).transform((DataFrame)dataSet.getTest());
         return super.test();
     }
 

@@ -1,5 +1,7 @@
 package com.minhdd.app.ml.domain;
 
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
@@ -42,7 +44,7 @@ public abstract class MlServiceAbstract implements MLService {
         return setTest(data);
     }
 
-    protected MLService setTest(DataFrame data) {
+    protected MLService setTest(Object data) {
         if (dataSet == null) {
             dataSet = new DataSet(data, null, null, data);
         } else {
@@ -51,12 +53,12 @@ public abstract class MlServiceAbstract implements MLService {
         return this;
     }
 
-    protected MLService loadData(DataFrame data, DataFrame training, DataFrame cross, DataFrame test) {
+    protected MLService loadData(Object data, Object training, Object cross, Object test) {
         dataSet = new DataSet(data, training, cross, test);
         return this;
     }
 
-    protected MLService loadData(DataFrame data) {
+    protected MLService loadData(Object data) {
         dataSet = new DataSet(data, data, null, null);
         return this;
     }
@@ -66,6 +68,7 @@ public abstract class MlServiceAbstract implements MLService {
         model = algorithm().fit(dataSet.getTraining());
         return this;
     }
+
     protected abstract MLAlgorithm algorithm();
     protected DataFrame transform() {
         return null;
@@ -76,5 +79,7 @@ public abstract class MlServiceAbstract implements MLService {
     @Override public void save(String filePath) {}
     @Override public void restore(String filePath) {}
     @Override public void produce(String output) {}
+
+
 
 }

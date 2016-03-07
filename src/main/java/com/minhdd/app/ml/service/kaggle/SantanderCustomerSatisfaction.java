@@ -12,6 +12,7 @@ import org.apache.spark.ml.classification.GBTClassifier;
 import org.apache.spark.ml.classification.RandomForestClassifier;
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.ml.feature.*;
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
@@ -58,22 +59,22 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     }
 
     @Override
-    protected MLAlgorithm<PipelineModel> algorithm() {
+    protected MLAlgorithm<PipelineModel, DataFrame> algorithm() {
         StringIndexerModel labelIndexer = new StringIndexer()
                 .setInputCol("label")
                 .setOutputCol("indexedLabel")
-                .fit(dataSet.getData());
+                .fit((DataFrame)dataSet.getData());
 
         VectorIndexerModel featureIndexer = new VectorIndexer()
                 .setInputCol("features")
                 .setOutputCol("indexedFeatures")
                 .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
-                .fit(dataSet.getData());
+                .fit((DataFrame)dataSet.getData());
 
         Object classifier = new RandomForestClassifier()
                 .setLabelCol("indexedLabel")
                 .setFeaturesCol("indexedFeatures");
-        if ((conf != null) && conf.getAlgorithm().equals(MLConfiguration.GradientBoostedTree)) {
+        if ((conf != null) && (MLConfiguration.GradientBoostedTree.equals(conf.getAlgorithm()))) {
             classifier = new GBTClassifier()
                     .setLabelCol("indexedLabel")
                     .setFeaturesCol("indexedFeatures")
@@ -93,22 +94,25 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public MLService test() {
-        predictions = ((PipelineModel) model).transform(dataSet.getTest());
+        predictions = ((PipelineModel) model).transform((DataFrame)dataSet.getTest());
         return super.test();
     }
 
     @Override
     public Map<String, Object> getResults() {
-        predictions.select("ID", "predictedLabel").show();
-        MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator()
-                .setLabelCol("indexedLabel")
-                .setPredictionCol("prediction")
-                .setMetricName("precision");
-        double accuracy = evaluator.evaluate(predictions);
-        //TODO another metric to exploit results other than accuracy
-        System.out.println("Accuracy = " + (accuracy * 100));
+        predictions.show();
+        predictions.printSchema();
+        //BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(predictions);
+        //System.out.println(metrics.precisionByThreshold().toJavaRDD().toArray());
+//        MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator()
+//                .setLabelCol("indexedLabel")
+//                .setPredictionCol("prediction")
+//                .setMetricName("precision");
+//        double accuracy = evaluator.evaluate(predictions);
+//        //TODO another metric to exploit results other than accuracy
+//        System.out.println("Accuracy = " + (accuracy * 100));
         Map<String, Object> responses = new HashMap<>();
-        responses.put("accuracy", accuracy);
+//        responses.put("accuracy", accuracy);
         return responses;
     }
 

@@ -33,7 +33,7 @@ public class LogisticRegressionService extends MlServiceAbstract implements MLSe
     }
 
     @Override
-    protected MLAlgorithm<LinearRegressionModel> algorithm() {
+    protected MLAlgorithm<LinearRegressionModel, DataFrame> algorithm() {
         LinearRegression lr = new LinearRegression()
                 .setMaxIter(conf.getMaxIteration())
                 .setRegParam(conf.getRegParam())

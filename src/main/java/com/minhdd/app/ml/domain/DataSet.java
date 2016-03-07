@@ -1,40 +1,38 @@
 package com.minhdd.app.ml.domain;
 
-import org.apache.spark.sql.DataFrame;
-
 /**
  * Created by minhdao on 05/03/16.
  */
-public class DataSet {
-    public DataFrame getData() {
+public class DataSet<R> {
+    public R getData() {
         return data;
     }
 
-    public DataFrame getTraining() {
+    public R getTraining() {
         return training;
     }
 
-    public DataFrame getCrossValidation() {
+    public R getCrossValidation() {
         return crossValidation;
     }
 
-    public DataFrame getTest() {
+    public R getTest() {
         return test;
     }
 
-    public void setTest(DataFrame test) {
+    public void setTest(R test) {
         this.test = test;
     }
 
-    public DataSet(DataFrame data, DataFrame training, DataFrame crossValidation, DataFrame test) {
+    public DataSet(R data, R training, R cross, R test) {
         this.data = data;
         this.training = training;
-        this.crossValidation = crossValidation;
+        this.crossValidation = cross;
         this.test = test;
     }
 
-    private DataFrame data;
-    private DataFrame training;
-    private DataFrame crossValidation;
-    private DataFrame test;
+    private R data;
+    private R training;
+    private R crossValidation;
+    private R test;
 }

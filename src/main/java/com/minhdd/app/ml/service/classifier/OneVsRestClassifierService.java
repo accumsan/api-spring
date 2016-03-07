@@ -45,7 +45,7 @@ public class OneVsRestClassifierService extends MlServiceAbstract implements MLS
     }
 
     @Override
-    protected MLAlgorithm<OneVsRestModel> algorithm() {
+    protected MLAlgorithm<OneVsRestModel, DataFrame> algorithm() {
         LogisticRegression classifier = new LogisticRegression()
                 .setMaxIter(conf.getMaxIteration())
                 .setTol(conf.getTol())
@@ -59,7 +59,7 @@ public class OneVsRestClassifierService extends MlServiceAbstract implements MLS
 
     @Override
     public MLService test() {
-        predictions = ((OneVsRestModel) model).transform(dataSet.getTest());
+        predictions = ((OneVsRestModel)model).transform((DataFrame)dataSet.getTest());
         return super.test();
     }
 
