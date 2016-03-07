@@ -28,7 +28,7 @@ public class SantanderCustomerSatisfactionTest {
     private final String TEST_KAGGLE = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/test.csv";
     private final String OUTPUT_DIR = "data/kaggle/santander-customer-satisfaction/save/";
     private final String RFP_MODEL = OUTPUT_DIR + "random-forest-pipeline.model";
-    private final String GBT_MODEL = OUTPUT_DIR + "random-forest-pipeline.model";
+    private final String GBT_MODEL = OUTPUT_DIR + "gradient-boosted-pipeline.model";
     private final String TEST_OUTPUT = OUTPUT_DIR + "predictions.csv";
 
 
