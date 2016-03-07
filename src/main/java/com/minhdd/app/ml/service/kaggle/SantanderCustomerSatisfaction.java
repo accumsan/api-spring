@@ -12,7 +12,6 @@ import org.apache.spark.ml.classification.GBTClassifier;
 import org.apache.spark.ml.classification.RandomForestClassifier;
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.ml.feature.*;
-import org.apache.spark.ml.tree.TreeClassifierParams;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
