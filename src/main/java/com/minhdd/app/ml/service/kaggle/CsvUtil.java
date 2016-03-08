@@ -2,6 +2,7 @@ package com.minhdd.app.ml.service.kaggle;
 
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.ml.feature.RFormula;
+import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
@@ -24,7 +25,6 @@ public class CsvUtil {
 
     public static DataFrame getDataFrameFromKaggleCsv(String filePath, SQLContext sqlContext, int offset) {
         DataFrame data = loadCsvFile(sqlContext, filePath, true, true);
-
         //features columns
         String[] columns = new String[data.columns().length - offset];
         int i = 0;
@@ -33,23 +33,11 @@ public class CsvUtil {
                 columns[i++] = column;
             }
         }
+        VectorAssembler assembler = new VectorAssembler()
+                .setInputCols(columns)
+                .setOutputCol("features");
 
-        //prepare Formula for RFormula
-        StringBuilder featuresFormula = new StringBuilder();
-        for (String column : columns) {
-            featuresFormula.append(" + ");
-            featuresFormula.append(column);
-        }
-        featuresFormula.setCharAt(1, '~');
-        //System.out.println("TARGET" + featuresFormula.toString());
-
-        //http://spark.apache.org/docs/latest/ml-features.html#rformula
-        RFormula rFormula = new RFormula()
-                .setFormula("TARGET" + featuresFormula.toString())
-                .setFeaturesCol("features")
-                .setLabelCol("label");
-
-        return rFormula.fit(data).transform(data);
+        return assembler.transform(data);
     }
 
     public static void save(DataFrame predictions, String output, boolean header) {

@@ -26,8 +26,8 @@ public class SantanderCustomerSatisfactionTest {
 
     private final String TRAIN_SAMPLE = "data/kaggle/santander-customer-satisfaction/train-1.csv";
     private final String TEST_SAMPLE = "data/kaggle/santander-customer-satisfaction/test-1.csv";
-    private final String TRAIN_KAGGLE = LOCAL_DIR_QS + "train.csv";
-    private final String TEST_KAGGLE = LOCAL_DIR_QS +"test.csv";
+    private final String TRAIN_KAGGLE = LOCAL_DIR_MAC86 + "train.csv";
+    private final String TEST_KAGGLE = LOCAL_DIR_MAC86 +"test.csv";
     private final String OUTPUT_DIR = "data/kaggle/santander-customer-satisfaction/save/";
     private final String RFP_MODEL = OUTPUT_DIR + "random-forest-pipeline.model";
     private final String GBT_MODEL = OUTPUT_DIR + "gradient-boosted-pipeline.model";
@@ -52,7 +52,7 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void getSavedAndProduce() {
-        santanderCustomerSatisfaction.restore(GBT_MODEL);
+        santanderCustomerSatisfaction.restore(RFP_MODEL);
         santanderCustomerSatisfaction.setFile(null, TEST_SAMPLE);
         santanderCustomerSatisfaction.loadTest().test().produce(TEST_OUTPUT);
     }

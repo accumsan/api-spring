@@ -4,25 +4,19 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
-import org.apache.spark.ml.regression.LinearRegression;
-import org.apache.spark.ml.regression.LinearRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.mllib.util.MLUtils;
-import org.apache.spark.sql.DataFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import scala.Tuple2;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,9 +36,9 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
         if (conf != null) {
             f = conf.getFractionTest();
         }
-        if (f>0) {
+        if (f > 0) {
             JavaRDD<LabeledPoint>[] splits =
-                    data.randomSplit(new double[]{1-f, f}, 11L);
+                    data.randomSplit(new double[]{1 - f, f}, 11L);
             JavaRDD<LabeledPoint> training = splits[0].cache();
             JavaRDD<LabeledPoint> test = splits[1];
             return super.loadData(data, training, null, test);
@@ -64,7 +58,7 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
         lrm.clearThreshold();
 
         // Compute raw scores on the test set.
-        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = ((JavaRDD<LabeledPoint>)dataSet.getTest()).map(
+        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = ((JavaRDD<LabeledPoint>) dataSet.getTest()).map(
                 (Function<LabeledPoint, Tuple2<Object, Object>>) p -> {
                     Double prediction = lrm.predict(p.features());
                     return new Tuple2<Object, Object>(prediction, p.label());
@@ -76,8 +70,10 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
 
     @Override
     public Map<String, Object> getResults() {
+        JavaRDD<Tuple2<Object, Object>> predictions = (JavaRDD<Tuple2<Object, Object>>) this.predictions;
+
         // Get evaluation metrics.
-        BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(((JavaRDD<Tuple2<Object, Object>>)predictions).rdd());
+        BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(predictions.rdd());
 
         // Precision by threshold
         JavaRDD<Tuple2<Object, Object>> precision = metrics.precisionByThreshold().toJavaRDD();
@@ -119,11 +115,12 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
 
     @Override
     public void save(String modelFilePath) {
-        ((LogisticRegressionModel)model).save(sparkContext, modelFilePath);
-    };
+        ((LogisticRegressionModel) model).save(sparkContext, modelFilePath);
+    }
+
     @Override
-    public void restore(String modelFilePath){
+    public void restore(String modelFilePath) {
         LogisticRegressionModel.load(sparkContext, modelFilePath);
-    };
+    }
 
 }
