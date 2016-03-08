@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 import scala.Tuple2;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -101,30 +100,63 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     @Override
     public Map<String, Object> getResults() {
         DataFrame predictions = (DataFrame) this.predictions;
+        DataFrame predictionsToShow = predictions.select("ID","TARGET", "probability", "predictedLabel");
+        System.out.println("================================================");
+        System.out.println("Number of predictions : " +predictionsToShow.count());
+        System.out.println("Number of target 1 : " +predictionsToShow.filter("TARGET = 1").count());
+        System.out.println("Number of predicted 1 : " +predictionsToShow.filter("predictedLabel = 1").count());
+        System.out.println("Good predictions for target 1");
+        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 1").show();
+        System.out.println("Bad predictions (to 1) of target 0");
+        predictionsToShow.filter("TARGET = 0").filter("predictedLabel = 1").show();
+
+        if ((conf != null) && (MLConfiguration.GradientBoostedTree.equals(conf.getAlgorithm()))) {
+            printGBTresults(predictions);
+        } else {
+            printRFCresults(predictions);
+        }
+        return null;
+    }
+
+    public void printGBTresults(DataFrame predictions) {
+        JavaRDD<Tuple2<Object, Object>> predictionAndLabels =
+                predictions.select("prediction", "indexedLabel").toJavaRDD()
+                        .map(a -> new Tuple2<>(a.get(0), a.get(1)));
+        printMetrics(predictionAndLabels);
+    }
+
+    public void printRFCresults(DataFrame predictions) {
         JavaRDD<Tuple2<Object, Object>> predictionAndLabels =
                 predictions.select("probability", "indexedLabel").toJavaRDD().map(a -> {
-                    double score = ((DenseVector) a.get(0)).apply(0);
+                    double score = ((DenseVector) a.get(0)).apply(1);
                     return new Tuple2<>(score, a.get(1));
                 });
+        printMetrics(predictionAndLabels);
+    }
+
+    private void printMetrics(JavaRDD<Tuple2<Object, Object>> predictionAndLabels) {
         BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(predictionAndLabels.rdd());
         // Precision by threshold
         JavaRDD<Tuple2<Object, Object>> precision = metrics.precisionByThreshold().toJavaRDD();
-        System.out.println("Precision by threshold: " + precision.collect());
+        System.out.println();
+        //System.out.println("Precision by threshold: \t" + precision.collect());
 
         // Recall by threshold
         JavaRDD<Tuple2<Object, Object>> recall = metrics.recallByThreshold().toJavaRDD();
-        System.out.println("Recall by threshold: " + recall.collect());
+        //System.out.println("Recall by threshold: \t\t" + recall.collect());
 
         // F Score by threshold
-        JavaRDD<Tuple2<Object, Object>> f1Score = metrics.fMeasureByThreshold().toJavaRDD();
-        System.out.println("F1 Score by threshold: " + f1Score.collect());
+        JavaRDD<Tuple2<Object, Object>> f1Score = metrics.fMeasureByThreshold().toJavaRDD()
+                .filter((Tuple2<Object, Object> a) -> (double) a._2() > 0.09);
+        System.out.println("F1 Score by threshold: \t\t" + f1Score.collect());
 
-        JavaRDD<Tuple2<Object, Object>> f2Score = metrics.fMeasureByThreshold(2.0).toJavaRDD();
-        System.out.println("F2 Score by threshold: " + f2Score.collect());
+        JavaRDD<Tuple2<Object, Object>> f2Score = metrics.fMeasureByThreshold(2.0).toJavaRDD()
+                .filter((Tuple2<Object, Object> a) -> (double) a._2() > 0.2);
+        System.out.println("F2 Score by threshold: \t\t" + f2Score.collect());
 
         // Precision-recall curve
         JavaRDD<Tuple2<Object, Object>> prc = metrics.pr().toJavaRDD();
-        System.out.println("Precision-recall curve: " + prc.collect());
+        //System.out.println("Precision-recall curve: \t" + prc.collect());
 
         // Thresholds
         JavaRDD<Double> thresholds = precision.map(
@@ -132,23 +164,13 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
         );
         // ROC Curve
         JavaRDD<Tuple2<Object, Object>> roc = metrics.roc().toJavaRDD();
-        System.out.println("ROC curve: " + roc.collect());
+        //System.out.println("ROC curve: " + roc.collect());
 
         // AUPRC
-        System.out.println("Area under precision-recall curve = " + metrics.areaUnderPR());
+        //System.out.println("Area under precision-recall curve = " + metrics.areaUnderPR());
 
         // AUROC
-        System.out.println("Area under ROC = " + metrics.areaUnderROC());
-//        MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator()
-//                .setLabelCol("indexedLabel")
-//                .setPredictionCol("prediction")
-//                .setMetricName("precision");
-//        double accuracy = evaluator.evaluate(predictions);
-//        //TODO another metric to exploit results other than accuracy
-//        System.out.println("Accuracy = " + (accuracy * 100));
-        Map<String, Object> responses = new HashMap<>();
-//        responses.put("accuracy", accuracy);
-        return responses;
+        //System.out.println("Area under ROC = " + metrics.areaUnderROC());
     }
 
     @Override

@@ -1,17 +1,16 @@
-exoloit metrics for binary classification
-	https://spark.apache.org/docs/latest/mllib-evaluation-metrics.html
-	https://www.coursera.org/learn/machine-learning/lecture/tKMWX/error-metrics-for-skewed-classes
 try another algorithm : logistic regression, neural network, deep learning
 get run test on test.csv
+improuvements: feature adding
+               classifier composition
 --------------------------------------------------
 spark mllib
+java 8 fp, guava, java performance
+Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 spring security
 redis
     http://redis.io/topics/data-types
     Spring Data Redis
-Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 Logback
-java 8 fp, guava, java performance
 --------------------------------------------------
 jbehave
 js : angularjs 1.5 component, requirejs ...

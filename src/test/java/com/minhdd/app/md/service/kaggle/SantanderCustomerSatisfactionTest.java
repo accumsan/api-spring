@@ -63,7 +63,7 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void trainAndTest() {
-        santanderCustomerSatisfaction.setFile(null, TRAIN_SAMPLE);
+        santanderCustomerSatisfaction.setFile(null, TRAIN_KAGGLE);
         MLConfiguration conf = new MLConfiguration().setFractionTest(0.5);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
