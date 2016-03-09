@@ -4,16 +4,15 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
-import org.apache.spark.ml.regression.LinearRegression;
+import org.apache.spark.ml.classification.LogisticRegression;
+import org.apache.spark.ml.classification.LogisticRegressionModel;
 import org.apache.spark.ml.regression.LinearRegressionModel;
 import org.apache.spark.sql.DataFrame;
-import org.apache.spark.sql.SQLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,8 +32,8 @@ public class LogisticRegressionService extends MlServiceAbstract implements MLSe
     }
 
     @Override
-    protected MLAlgorithm<LinearRegressionModel, DataFrame> algorithm() {
-        LinearRegression lr = new LinearRegression()
+    protected MLAlgorithm<LogisticRegressionModel, DataFrame> algorithm() {
+        LogisticRegression lr = new LogisticRegression()
                 .setMaxIter(conf.getMaxIteration())
                 .setRegParam(conf.getRegParam())
                 .setElasticNetParam(conf.getElasticNetParam());

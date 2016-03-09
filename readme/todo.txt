@@ -1,8 +1,3 @@
-try another algorithm : logistic regression, neural network, deep learning
-get run test on test.csv
-improuvements: feature adding
-               classifier composition
---------------------------------------------------
 spark mllib
 java 8 fp, guava, java performance
 Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)

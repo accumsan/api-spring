@@ -78,17 +78,29 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
         // Precision by threshold
         JavaRDD<Tuple2<Object, Object>> precision = metrics.precisionByThreshold().toJavaRDD();
         System.out.println("Precision by threshold: " + precision.collect());
+        System.out.println("Precision max: " + precision.reduce((a, b) ->
+                ((Double) a._2() - (Double) b._2() > 0) ? a : b
+        ));
 
         // Recall by threshold
         JavaRDD<Tuple2<Object, Object>> recall = metrics.recallByThreshold().toJavaRDD();
         System.out.println("Recall by threshold: " + recall.collect());
+        System.out.println("Recall max: " + recall.reduce((a, b) ->
+                ((Double) a._2() - (Double) b._2() > 0) ? a : b
+        ));
 
         // F Score by threshold
         JavaRDD<Tuple2<Object, Object>> f1Score = metrics.fMeasureByThreshold().toJavaRDD();
         System.out.println("F1 Score by threshold: " + f1Score.collect());
+        System.out.println("F1 Score max: " + f1Score.reduce((a, b) ->
+                ((Double) a._2() - (Double) b._2() > 0) ? a : b
+        ));
 
         JavaRDD<Tuple2<Object, Object>> f2Score = metrics.fMeasureByThreshold(2.0).toJavaRDD();
         System.out.println("F2 Score by threshold: " + f2Score.collect());
+        System.out.println("F2 Score max: " + precision.reduce((a, b) ->
+                ((Double) a._2() - (Double) b._2() > 0) ? a : b
+        ));
 
         // Precision-recall curve
         JavaRDD<Tuple2<Object, Object>> prc = metrics.pr().toJavaRDD();

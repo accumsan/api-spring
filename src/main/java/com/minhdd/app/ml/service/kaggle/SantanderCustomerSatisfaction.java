@@ -1,17 +1,13 @@
 package com.minhdd.app.ml.service.kaggle;
 
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.domain.MLAlgorithm;
-import com.minhdd.app.ml.domain.MLConfiguration;
-import com.minhdd.app.ml.domain.MLService;
-import com.minhdd.app.ml.domain.MlServiceAbstract;
+import com.minhdd.app.ml.domain.*;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.PipelineStage;
-import org.apache.spark.ml.classification.GBTClassifier;
-import org.apache.spark.ml.classification.RandomForestClassifier;
+import org.apache.spark.ml.classification.*;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.linalg.DenseVector;
@@ -24,6 +20,8 @@ import scala.Tuple2;
 
 import java.io.*;
 import java.util.Map;
+
+import static org.apache.spark.sql.functions.max;
 
 /**
  * Created by mdao on 04/03/2016.
@@ -59,6 +57,20 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     protected MLAlgorithm<PipelineModel, DataFrame> algorithm() {
+        Object classifier = null;
+        if (conf != null) {
+            if (MLConstants.GradientBoostedTree.equals(conf.getAlgorithm())) {
+                classifier = new GBTClassifier()
+                        .setLabelCol("indexedLabel")
+                        .setFeaturesCol("indexedFeatures")
+                        .setMaxIter(conf.getMaxIteration());
+            } else if (MLConstants.RandomForest.equals(conf.getAlgorithm())) {
+                classifier = new RandomForestClassifier()
+                        .setLabelCol("indexedLabel")
+                        .setFeaturesCol("indexedFeatures");
+            }
+        }
+
         StringIndexerModel labelIndexer = new StringIndexer()
                 .setInputCol("TARGET")
                 .setOutputCol("indexedLabel")
@@ -69,16 +81,6 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
                 .setOutputCol("indexedFeatures")
                 .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
                 .fit((DataFrame) dataSet.getData());
-
-        Object classifier = new RandomForestClassifier()
-                .setLabelCol("indexedLabel")
-                .setFeaturesCol("indexedFeatures");
-        if ((conf != null) && (MLConfiguration.GradientBoostedTree.equals(conf.getAlgorithm()))) {
-            classifier = new GBTClassifier()
-                    .setLabelCol("indexedLabel")
-                    .setFeaturesCol("indexedFeatures")
-                    .setMaxIter(conf.getMaxIteration());
-        }
 
         IndexToString labelConverter = new IndexToString()
                 .setInputCol("prediction")
@@ -100,35 +102,36 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     @Override
     public Map<String, Object> getResults() {
         DataFrame predictions = (DataFrame) this.predictions;
-        DataFrame predictionsToShow = predictions.select("ID","TARGET", "probability", "predictedLabel");
+        DataFrame predictionsToShow = predictions.select("ID", "TARGET", "predictedLabel");
         System.out.println("================================================");
-        System.out.println("Number of predictions : " +predictionsToShow.count());
-        System.out.println("Number of target 1 : " +predictionsToShow.filter("TARGET = 1").count());
-        System.out.println("Number of predicted 1 : " +predictionsToShow.filter("predictedLabel = 1").count());
-        System.out.println("Good predictions for target 1");
-        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 1").show();
-        System.out.println("Bad predictions (to 1) of target 0");
-        predictionsToShow.filter("TARGET = 0").filter("predictedLabel = 1").show();
-
-        if ((conf != null) && (MLConfiguration.GradientBoostedTree.equals(conf.getAlgorithm()))) {
-            printGBTresults(predictions);
-        } else {
-            printRFCresults(predictions);
+        System.out.println("Number of predictions : " + predictionsToShow.count());
+        System.out.println("Number of target 1 : " + predictionsToShow.filter("TARGET = 1").count());
+        System.out.println("Number of predicted 1 : " + predictionsToShow.filter("predictedLabel = 1").count());
+        System.out.println("Good predictions for target 1 : " +
+        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 1").count());
+        System.out.println("Bad predictions (to 1) of target 0 : " +
+        predictionsToShow.filter("TARGET = 0").filter("predictedLabel = 1").count());
+        System.out.println("Bad predictions (to 0) of target 1 : " +
+        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 0").count());
+        if (MLConstants.GradientBoostedTree.equals(conf.getAlgorithm())) {
+            printGBTResults(predictions);
+        } else if (MLConstants.RandomForest.equals(conf.getAlgorithm())) {
+            printRFCResults(predictions);
         }
         return null;
     }
 
-    public void printGBTresults(DataFrame predictions) {
+    public void printGBTResults(DataFrame predictions) {
         JavaRDD<Tuple2<Object, Object>> predictionAndLabels =
                 predictions.select("prediction", "indexedLabel").toJavaRDD()
                         .map(a -> new Tuple2<>(a.get(0), a.get(1)));
         printMetrics(predictionAndLabels);
     }
 
-    public void printRFCresults(DataFrame predictions) {
+    public void printRFCResults(DataFrame predictions) {
         JavaRDD<Tuple2<Object, Object>> predictionAndLabels =
                 predictions.select("probability", "indexedLabel").toJavaRDD().map(a -> {
-                    double score = ((DenseVector) a.get(0)).apply(1);
+                    double score = ((DenseVector) a.get(0)).apply(0);
                     return new Tuple2<>(score, a.get(1));
                 });
         printMetrics(predictionAndLabels);
@@ -146,10 +149,12 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
         //System.out.println("Recall by threshold: \t\t" + recall.collect());
 
         // F Score by threshold
-        JavaRDD<Tuple2<Object, Object>> f1Score = metrics.fMeasureByThreshold().toJavaRDD()
-                .filter((Tuple2<Object, Object> a) -> (double) a._2() > 0.09);
+        JavaRDD<Tuple2<Object, Object>> f1Score = metrics.fMeasureByThreshold().toJavaRDD();
+               // .filter((Tuple2<Object, Object> a) -> (double) a._2() > 0.09);
         System.out.println("F1 Score by threshold: \t\t" + f1Score.collect());
-
+        System.out.println("F1 Score max: " + f1Score.reduce((a, b) ->
+                ((Double) a._2() - (Double) b._2() > 0) ? a : b
+        ));
         JavaRDD<Tuple2<Object, Object>> f2Score = metrics.fMeasureByThreshold(2.0).toJavaRDD()
                 .filter((Tuple2<Object, Object> a) -> (double) a._2() > 0.2);
         System.out.println("F2 Score by threshold: \t\t" + f2Score.collect());
