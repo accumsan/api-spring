@@ -3,11 +3,15 @@ package com.minhdd.app.ml.service.kaggle;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.ml.feature.RFormula;
 import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.sql.Column;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.types.DataTypes;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by minhdao on 06/03/16.
@@ -16,7 +20,7 @@ public class CsvUtil {
 
     public static final String CSV_FORMAT = "com.databricks.spark.csv";
 
-    private static DataFrame loadCsvFile(SQLContext sqlContext, String filePath, boolean header, boolean inferSchema) {
+    public static DataFrame loadCsvFile(SQLContext sqlContext, String filePath, boolean header, boolean inferSchema) {
         return sqlContext.read().format(CSV_FORMAT)
                 .option("inferSchema", inferSchema ? "true" : "false")
                 .option("header", header ? "true" : "false")
@@ -65,5 +69,24 @@ public class CsvUtil {
         } catch (IOException e) {
             System.out.println("File not deleted : temp");
         }
+    }
+
+    public static List<String> getColumnsFromValue(DataFrame data, double value) {
+        List<String> columns = new ArrayList();
+        List<Integer> indexes = new ArrayList();
+        for (int i = 1; i < data.columns().length; i++) {
+            if (data.schema().apply(i).dataType().equals(DataTypes.DoubleType)) {
+                indexes.add(i);
+            }
+        }
+        data.collectAsList().forEach(row -> {
+            for (int index : indexes) {
+                if (row.getDouble(index) == value) {
+                    System.out.println(index);
+                    columns.add(data.columns()[index]);
+                }
+            }
+        });
+        return columns;
     }
 }
