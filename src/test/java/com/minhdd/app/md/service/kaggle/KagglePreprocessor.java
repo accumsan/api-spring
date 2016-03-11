@@ -8,6 +8,7 @@ import org.apache.spark.SparkContext;
 import org.apache.spark.ml.feature.Normalizer;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+import org.h2.tools.Csv;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -26,22 +27,18 @@ public class KagglePreprocessor {
     @Inject SQLContext sqlContext;
 
     @Test
-    public void normalized() {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_SAMPLE, true, true);
-        data.show();
-        String[] columns = data.columns();
-        for (String column : columns) {
-            if (!column.equals("TARGET") && !column.equals("ID")) {
-                //System.out.println()
-            }
-        }
-        data.show();
+    public void split() {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, null, true, true);
+        DataFrameUtil.splitToTwoDataSet(df, 0.25, null, null);
     }
 
+
     @Test
-    public void split() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_SAMPLE, true, true);
-        DataFrameUtil.splitToTrainAndCrossValidation(df, 0.2, FilesConstants.TRAIN_SPLIT, FilesConstants.TEST_SPLIT);
+    public void normalize() {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_MIN, true, true);
+        String[] columns = CsvUtil.getFeatureColumns(2, data);
+        //TODO
     }
+
 
 }
