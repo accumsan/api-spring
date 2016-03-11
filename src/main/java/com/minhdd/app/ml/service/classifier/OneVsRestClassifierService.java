@@ -29,8 +29,6 @@ import java.util.Map;
  * http://spark.apache.org/docs/latest/ml-classification-regression.html#one-vs-rest-classifier-aka-one-vs-all
  * Feedforward neural network
  */
-@Component
-@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class OneVsRestClassifierService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(OneVsRestClassifierService.class);
 

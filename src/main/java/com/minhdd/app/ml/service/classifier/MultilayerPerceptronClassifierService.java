@@ -23,8 +23,6 @@ import java.util.Map;
  * http://spark.apache.org/docs/latest/ml-classification-regression.html#multilayer-perceptron-classifier
  * Feedforward neural network
  */
-@Component
-@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class MultilayerPerceptronClassifierService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(MultilayerPerceptronClassifierService.class);
 

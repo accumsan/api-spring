@@ -23,8 +23,6 @@ import java.util.*;
  * Created by mdao on 04/03/2016.
  * http://spark.apache.org/docs/latest/ml-guide.html#example-estimator-transformer-and-param
  */
-@Component
-@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class EstimatorTransformerParam extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(EstimatorTransformerParam.class);
 

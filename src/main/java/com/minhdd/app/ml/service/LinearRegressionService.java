@@ -23,8 +23,6 @@ import java.util.Map;
  * Created by mdao on 04/03/2016.
  * http://spark.apache.org/docs/latest/ml-classification-regression.html#linear-regression
  */
-@Component
-@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class LinearRegressionService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(LinearRegressionService.class);
 

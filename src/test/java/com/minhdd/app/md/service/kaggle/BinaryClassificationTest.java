@@ -3,6 +3,7 @@ package com.minhdd.app.md.service.kaggle;
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLConfiguration;
+import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.service.classifier.BinaryClassificationService;
 import org.apache.spark.SparkContext;
 import org.junit.Before;
@@ -22,16 +23,12 @@ import javax.inject.Inject;
 @ActiveProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class BinaryClassificationTest {
     private final String TEST_FILE = "data/mllib/sample_binary_classification_data.txt";
-
-    @Inject
-    SparkContext sparkContext;
-
-    @Inject
-    BinaryClassificationService binaryClassificationService;
+    @Inject SparkContext sparkContext;
+    MLService binaryClassificationService;
 
     @Before
     public void init() {
-        binaryClassificationService.context(null, sparkContext);
+        binaryClassificationService = new BinaryClassificationService().context(null, sparkContext);
     }
 
     @Test

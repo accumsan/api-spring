@@ -28,11 +28,9 @@ public class FeaturesTransformationTest {
     private final String TRAIN_KAGGLE = LOCAL_DIR_MAC86 + "train.csv";
     private final String TEST_KAGGLE = LOCAL_DIR_MAC86 + "test.csv";
 
-    @Inject
-    SQLContext sqlContext;
+    @Inject SQLContext sqlContext;
 
-    @Inject
-    SparkContext sparkContext;
+    @Inject SparkContext sparkContext;
 
     @Test
     public void test1() {

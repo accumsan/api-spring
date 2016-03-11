@@ -47,7 +47,7 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
                     data.randomSplit(new double[]{1 - f, f}, 11L);
             JavaRDD<LabeledPoint> training = splits[0].cache();
             JavaRDD<LabeledPoint> cross = splits[1];
-            return super.loadData(data, training, cross, null);
+            return super.loadData(data, training, cross, cross);
         }
         return super.loadData(data);
     }

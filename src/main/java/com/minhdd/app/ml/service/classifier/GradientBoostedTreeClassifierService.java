@@ -26,8 +26,6 @@ import java.util.Map;
  * Created by mdao on 04/03/2016.
  * http://spark.apache.org/docs/latest/ml-classification-regression.html#random-forest-classifier
  */
-@Component
-@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class GradientBoostedTreeClassifierService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(GradientBoostedTreeClassifierService.class);
 

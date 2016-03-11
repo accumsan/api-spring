@@ -1,10 +1,16 @@
 package com.minhdd.app.ml.controller;
 
-
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.domain.NeuralNetworkConfiguration;
 import com.minhdd.app.ml.domain.MLConfiguration;
-import com.minhdd.app.ml.service.classifier.*;
+import com.minhdd.app.ml.domain.MLService;
+import com.minhdd.app.ml.domain.NeuralNetworkConfiguration;
+import com.minhdd.app.ml.service.classifier.DecisionTreeClassifierService;
+import com.minhdd.app.ml.service.classifier.GradientBoostedTreeClassifierService;
+import com.minhdd.app.ml.service.classifier.LogisticRegressionService;
+import com.minhdd.app.ml.service.classifier.MultilayerPerceptronClassifierService;
+import com.minhdd.app.ml.service.classifier.OneVsRestClassifierService;
+import com.minhdd.app.ml.service.classifier.RandomForestClassifierService;
+import org.apache.spark.SparkContext;
 import org.apache.spark.sql.SQLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Map;
 
@@ -28,41 +33,14 @@ import java.util.Map;
 @RequestMapping("/spark/class")
 public class Classification {
     private final Logger logger = LoggerFactory.getLogger(Classification.class);
-
     @Inject
-    LogisticRegressionService logisticRegressionService;
-
-    @Inject
-    DecisionTreeClassifierService decisionTreeClassifierService;
-
-    @Inject
-    RandomForestClassifierService randomForestClassifierService;
-
-    @Inject
-    GradientBoostedTreeClassifierService gradientBoostedTreeClassifierService;
-
-    @Inject
-    MultilayerPerceptronClassifierService multilayerPerceptronClassifierService;
-
-    @Inject
-    OneVsRestClassifierService oneVsRestClassifierService;
-
-    @Inject
-    SQLContext sqlContext;
-
-    @PostConstruct
-    void init() {
-        logisticRegressionService.context(sqlContext, null);
-        decisionTreeClassifierService.context(sqlContext, null);
-        randomForestClassifierService.context(sqlContext, null);
-        gradientBoostedTreeClassifierService.context(sqlContext, null);
-        multilayerPerceptronClassifierService.context(sqlContext, null);
-        oneVsRestClassifierService.context(sqlContext, null);
-    }
+    SparkContext sparkContext;
+    @Inject SQLContext sqlContext;
 
     //Logistic regression
     @RequestMapping(value = "/lor", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> lor() {
+        MLService logisticRegressionService = new LogisticRegressionService().context(sqlContext, sparkContext);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
         logisticRegressionService.setFile("libsvm", "data/mllib/sample_libsvm_data.txt");
         return new ResponseEntity<>(logisticRegressionService.loadData().configure(conf).train().getResults(), HttpStatus.OK);
@@ -71,6 +49,7 @@ public class Classification {
     //Decision tree classifier
     @RequestMapping(value = "/dtc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> dtc() {
+        MLService decisionTreeClassifierService = new DecisionTreeClassifierService().context(sqlContext, sparkContext);
         decisionTreeClassifierService.setFile("libsvm", "data/mllib/sample_libsvm_data.txt");
         return new ResponseEntity<>(decisionTreeClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
@@ -78,6 +57,7 @@ public class Classification {
     //Random forest classifier
     @RequestMapping(value = "/rfc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> rfc() {
+        MLService randomForestClassifierService = new RandomForestClassifierService().context(sqlContext, sparkContext);
         randomForestClassifierService.setFile("libsvm", "data/mllib/sample_libsvm_data.txt");
         return new ResponseEntity<>(randomForestClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
@@ -85,6 +65,7 @@ public class Classification {
     //Gradient-boosted tree classifier
     @RequestMapping(value = "/gtc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> gtc() {
+        MLService gradientBoostedTreeClassifierService = new GradientBoostedTreeClassifierService().context(sqlContext, sparkContext);
         gradientBoostedTreeClassifierService.setFile("libsvm", "data/mllib/sample_libsvm_data.txt");
         return new ResponseEntity<>(gradientBoostedTreeClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
@@ -92,6 +73,7 @@ public class Classification {
     //Multilayer perceptron classifier
     @RequestMapping(value = "/mpc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> mpc() {
+        MLService multilayerPerceptronClassifierService = new MultilayerPerceptronClassifierService().context(sqlContext, sparkContext);
         NeuralNetworkConfiguration nnConf = new NeuralNetworkConfiguration().setLayers(new int[]{4, 5, 4, 3}).setBlockSize(128).setSeed(1234L);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(100).setNeuralNetworkConfiguration(nnConf);
         multilayerPerceptronClassifierService.setFile("libsvm", "data/mllib/sample_multiclass_classification_data.txt");
@@ -101,9 +83,11 @@ public class Classification {
     //One-vs-Rest classifier (a.k.a. One-vs-All)
     @RequestMapping(value = "/ovr", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> ovr() {
+        MLService oneVsRestClassifierService = new OneVsRestClassifierService().context(sqlContext, sparkContext);
         MLConfiguration conf = new MLConfiguration().setFractionTest(0.2).setTol(1E-6);
         oneVsRestClassifierService.setFile("libsvm", "data/mllib/sample_multiclass_classification_data.txt");
         return new ResponseEntity<>(oneVsRestClassifierService.configure(conf).loadData().train().test().getResults(), HttpStatus.OK);
     }
+
 
 }

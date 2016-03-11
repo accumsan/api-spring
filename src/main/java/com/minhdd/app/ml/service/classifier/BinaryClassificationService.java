@@ -24,8 +24,6 @@ import java.util.Map;
  * Created by mdao on 04/03/2016.
  * http://spark.apache.org/docs/latest/ml-classification-regression.html#logistic-regression
  */
-@Component
-@Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class BinaryClassificationService extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(BinaryClassificationService.class);
 
@@ -40,8 +38,8 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
             JavaRDD<LabeledPoint>[] splits =
                     data.randomSplit(new double[]{1 - f, f}, 11L);
             JavaRDD<LabeledPoint> training = splits[0].cache();
-            JavaRDD<LabeledPoint> test = splits[1];
-            return super.loadData(data, training, null, test);
+            JavaRDD<LabeledPoint> cross = splits[1];
+            return super.loadData(data, training, cross, null);
         }
         return super.loadData(data);
     }
@@ -58,7 +56,7 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
         lrm.clearThreshold();
 
         // Compute raw scores on the test set.
-        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = ((JavaRDD<LabeledPoint>) dataSet.getTest()).map(
+        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = ((JavaRDD<LabeledPoint>) dataSet.getCrossValidation()).map(
                 (Function<LabeledPoint, Tuple2<Object, Object>>) p -> {
                     Double prediction = lrm.predict(p.features());
                     return new Tuple2<Object, Object>(prediction, p.label());
