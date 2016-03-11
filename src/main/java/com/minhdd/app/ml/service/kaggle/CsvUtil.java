@@ -29,7 +29,15 @@ public class CsvUtil {
 
     public static DataFrame getDataFrameFromKaggleCsv(String filePath, SQLContext sqlContext, int offset) {
         DataFrame data = loadCsvFile(sqlContext, filePath, true, true);
-        //features columns
+        String[] columns = getFeatureColumns(offset, data);
+        VectorAssembler assembler = new VectorAssembler()
+                .setInputCols(columns)
+                .setOutputCol("features");
+
+        return assembler.transform(data);
+    }
+
+    public static String[] getFeatureColumns(int offset, DataFrame data) {
         String[] columns = new String[data.columns().length - offset];
         int i = 0;
         for (String column : data.columns()) {
@@ -37,11 +45,7 @@ public class CsvUtil {
                 columns[i++] = column;
             }
         }
-        VectorAssembler assembler = new VectorAssembler()
-                .setInputCols(columns)
-                .setOutputCol("features");
-
-        return assembler.transform(data);
+        return columns;
     }
 
     public static void save(DataFrame predictions, String output, boolean header) {
