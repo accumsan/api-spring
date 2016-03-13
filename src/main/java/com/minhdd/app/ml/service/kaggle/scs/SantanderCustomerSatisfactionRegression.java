@@ -1,17 +1,13 @@
-package com.minhdd.app.ml.service.kaggle;
+package com.minhdd.app.ml.service.kaggle.scs;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
-import com.minhdd.app.ml.domain.MLConfiguration;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
+import com.minhdd.app.ml.service.kaggle.CsvUtil;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.Function;
-import org.apache.spark.ml.Pipeline;
 import org.apache.spark.ml.PipelineModel;
-import org.apache.spark.ml.PipelineStage;
 import org.apache.spark.ml.classification.*;
-import org.apache.spark.ml.feature.*;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
 import org.apache.spark.mllib.linalg.DenseVector;
 import org.apache.spark.sql.DataFrame;
@@ -40,9 +36,9 @@ public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract i
     public MLService loadData() {
         DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(trainPath, sqlContext, 2).select("ID", "features", "TARGET");
         DataFrame train = data.withColumn("label", data.col("TARGET").cast(DataTypes.DoubleType));
-        DataFrame validation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2).select("ID", "features", "TARGET");
-        validation = validation.withColumn("label", data.col("TARGET").cast(DataTypes.DoubleType));
-        return super.loadData(train, train, validation, null);
+        DataFrame cValidation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame crossValidation = cValidation.withColumn("label", cValidation.col("TARGET").cast(DataTypes.DoubleType));
+        return super.loadData(train, train, crossValidation, null);
     }
 
     @Override

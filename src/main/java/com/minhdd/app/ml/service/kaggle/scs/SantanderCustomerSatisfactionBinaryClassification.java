@@ -1,11 +1,11 @@
-package com.minhdd.app.ml.service.kaggle;
+package com.minhdd.app.ml.service.kaggle.scs;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
+import com.minhdd.app.ml.service.kaggle.CsvUtil;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.ml.feature.Normalizer;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
@@ -15,7 +15,6 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
-import org.h2.tools.Csv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;

@@ -1,7 +1,8 @@
-package com.minhdd.app.ml.service.kaggle;
+package com.minhdd.app.ml.service.kaggle.scs;
 
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.*;
+import com.minhdd.app.ml.service.kaggle.CsvUtil;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.ml.Pipeline;
@@ -86,7 +87,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public MLService test() {
-        predictions = ((PipelineModel) model).transform((DataFrame) dataSet.getTest());
+        predictions = ((PipelineModel) model).transform((DataFrame) dataSet.getTraining());
         return super.test();
     }
 
@@ -94,16 +95,17 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     public Map<String, Object> getResults() {
         DataFrame predictions = (DataFrame) this.predictions;
         DataFrame predictionsToShow = predictions.select("ID", "TARGET", "predictedLabel");
+        predictionsToShow.show();
         System.out.println("================================================");
         System.out.println("Number of predictions : " + predictionsToShow.count());
         System.out.println("Number of target 1 : " + predictionsToShow.filter("TARGET = 1").count());
-        System.out.println("Number of predicted 1 : " + predictionsToShow.filter("predictedLabel = 1").count());
-        System.out.println("Good predictions for target 1 : " +
-        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 1").count());
-        System.out.println("Bad predictions (to 1) of target 0 : " +
-        predictionsToShow.filter("TARGET = 0").filter("predictedLabel = 1").count());
-        System.out.println("Bad predictions (to 0) of target 1 : " +
-        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 0").count());
+//        System.out.println("Number of predicted 1 : " + predictionsToShow.filter("predictedLabel = 1").count());
+//        System.out.println("Good predictions for target 1 : " +
+//        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 1").count());
+//        System.out.println("Bad predictions (to 1) of target 0 : " +
+//        predictionsToShow.filter("TARGET = 0").filter("predictedLabel = 1").count());
+//        System.out.println("Bad predictions (to 0) of target 1 : " +
+//        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 0").count());
         if (MLConstants.GradientBoostedTree.equals(conf.getAlgorithm())) {
             printGBTResults(predictions);
         } else if (MLConstants.RandomForest.equals(conf.getAlgorithm())) {
