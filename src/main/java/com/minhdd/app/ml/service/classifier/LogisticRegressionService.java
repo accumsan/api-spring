@@ -27,8 +27,7 @@ public class LogisticRegressionService extends MlServiceAbstract implements MLSe
 
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile();
-        return super.loadData(data);
+        return loadFile(0, 0);
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.minhdd.app.ml.service.kaggle;
 
 import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.ml.feature.RFormula;
 import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.Column;
 import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
 
@@ -30,10 +33,15 @@ public class CsvUtil {
     public static DataFrame getDataFrameFromKaggleCsv(String filePath, SQLContext sqlContext, int offset) {
         DataFrame data = loadCsvFile(sqlContext, filePath, true, true);
         String[] columns = getFeatureColumns(offset, data);
+        //TODO normalisation
+        //        Normalizer normalizer = new Normalizer()
+//                .setInputCol("features")
+//                .setOutputCol("normFeatures")
+//                .setP(.0);
+//        DataFrame df = normalizer.transform(dataFrame);
         VectorAssembler assembler = new VectorAssembler()
                 .setInputCols(columns)
                 .setOutputCol("features");
-
         return assembler.transform(data);
     }
 
@@ -46,6 +54,14 @@ public class CsvUtil {
             }
         }
         return columns;
+    }
+
+    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDD(DataFrame df) {
+        return df.toJavaRDD().map(row -> new LabeledPoint(row.getInt(0), row.getAs(1)));
+    }
+
+    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, String labelColName) {
+        return getLabeledPointJavaRDD(getDataFrameFromKaggleCsv(filePath, sqlContext, offset).select(labelColName, "features"));
     }
 
     public static void save(DataFrame predictions, String output, boolean header) {

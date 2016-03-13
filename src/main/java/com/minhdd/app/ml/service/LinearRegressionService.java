@@ -31,8 +31,7 @@ public class LinearRegressionService extends MlServiceAbstract implements MLServ
 
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile();
-        return super.loadData(data);
+        return loadFile(0, 0);
     }
 
     @Override

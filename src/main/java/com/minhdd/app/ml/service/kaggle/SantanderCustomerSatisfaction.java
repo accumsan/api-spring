@@ -34,25 +34,16 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public MLService loadData() {
-        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(filePath, sqlContext, 2).select("ID", "features", "TARGET");
-        double f = 0;
-        if (conf != null) {
-            f = conf.getFractionTest();
-        }
-        if (f > 0) {
-            DataFrame[] splits = data.randomSplit(new double[]{1 - f, f});
-            DataFrame trainingData = splits[0];
-            DataFrame testData = splits[1];
-            return super.loadData(data, trainingData, null, testData);
-        } else {
-            return super.loadData(data);
-        }
+        DataFrame train = CsvUtil.getDataFrameFromKaggleCsv(trainPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame validation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame test = CsvUtil.getDataFrameFromKaggleCsv(testPath, sqlContext, 2).select("ID", "features", "TARGET");
+        return super.loadData(train, train, validation, test);
     }
 
     @Override
-    public MLService loadTest() {
-        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(filePath, sqlContext, 1).select("ID", "features");
-        return super.setTest(data);
+    public MLService loadInput(String inputPath) {
+        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(inputPath, sqlContext, 1).select("ID", "features");
+        return super.setInput(data);
     }
 
     @Override

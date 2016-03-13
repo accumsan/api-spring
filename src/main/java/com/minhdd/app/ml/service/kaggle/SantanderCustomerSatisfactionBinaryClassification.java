@@ -5,6 +5,7 @@ import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.ml.feature.Normalizer;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS;
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics;
@@ -14,6 +15,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
+import org.h2.tools.Csv;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -35,29 +37,16 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
 
     @Override
     public MLService loadData() {
-        DataFrame df = CsvUtil.getDataFrameFromKaggleCsv(filePath, sqlContext, 2).select("TARGET", "features");
-        JavaRDD<Row> javaRDD = df.withColumn("label", df.col("TARGET").cast(DataTypes.DoubleType)).toJavaRDD();
-        JavaRDD<LabeledPoint> data = javaRDD.map(row -> new LabeledPoint(row.getInt(0), row.getAs(1)));
-        double f = 0;
-        if (conf != null) {
-            f = conf.getFractionTest();
-        }
-        if (f > 0) {
-            JavaRDD<LabeledPoint>[] splits =
-                    data.randomSplit(new double[]{1 - f, f}, 11L);
-            JavaRDD<LabeledPoint> training = splits[0].cache();
-            JavaRDD<LabeledPoint> cross = splits[1];
-            return super.loadData(data, training, cross, cross);
-        }
-        return super.loadData(data);
+        JavaRDD<LabeledPoint> train = CsvUtil.getLabeledPointJavaRDDFromKaggleCsv(trainPath, sqlContext, 2, "TARGET");
+        JavaRDD<LabeledPoint> validation = CsvUtil.getLabeledPointJavaRDDFromKaggleCsv(validationPath, sqlContext, 2, "TARGET");
+        JavaRDD<LabeledPoint> test = CsvUtil.getLabeledPointJavaRDDFromKaggleCsv(testPath, sqlContext, 2, "TARGET");
+        return super.loadData(null, train, validation, test);
     }
 
     @Override
-    public MLService loadTest() {
-        DataFrame df = CsvUtil.getDataFrameFromKaggleCsv(filePath, sqlContext, 1).select("ID", "features");
-        JavaRDD<Row> javaRDD = df.toJavaRDD();
-        JavaRDD<LabeledPoint> data = javaRDD.map(row -> new LabeledPoint(row.getInt(0), row.getAs(1)));
-        return super.setTest(data);
+    public MLService loadInput(String inputPath) {
+        JavaRDD<LabeledPoint> input = CsvUtil.getLabeledPointJavaRDDFromKaggleCsv(inputPath, sqlContext, 1, "ID");
+        return super.setInput(input);
     }
 
     @Override
@@ -83,14 +72,19 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
 
     @Override
     public MLService test() {
-        LogisticRegressionModel lrm = (LogisticRegressionModel) model;
-        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = ((JavaRDD<LabeledPoint>) dataSet.getTest()).map(p -> {
-            Double prediction = lrm.predict(p.features());
-            return new Tuple2<>(prediction, p.label());
-        });
+        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = getTuple2PredictionAndLabels((JavaRDD<LabeledPoint>) dataSet.getCrossValidation());
         predictions = predictionAndLabels;
         return super.test();
     }
+
+    private JavaRDD<Tuple2<Object, Object>> getTuple2PredictionAndLabels(JavaRDD<LabeledPoint> data) {
+        LogisticRegressionModel lrm = (LogisticRegressionModel) model;
+        return data.map(p -> {
+            Double prediction = lrm.predict(p.features());
+            return new Tuple2<>(prediction, p.label());
+        });
+    }
+
 
     @Override
     public Map<String, Object> getResults() {
@@ -125,7 +119,7 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
 
     @Override
     public void produce(String output) {
-        JavaRDD<Tuple2<Object, Object>> predictions = (JavaRDD<Tuple2<Object, Object>>) this.predictions;
+        JavaRDD<Tuple2<Object, Object>> predictions = getTuple2PredictionAndLabels((JavaRDD<LabeledPoint>) dataSet.getInput());
         JavaRDD<Row> modifiedRDD = predictions.map(t -> {
             double target = ((Double) t._1()).doubleValue() ;
             double id = ((Double) t._2()).doubleValue();

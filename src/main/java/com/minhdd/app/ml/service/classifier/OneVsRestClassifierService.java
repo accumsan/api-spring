@@ -34,12 +34,7 @@ public class OneVsRestClassifierService extends MlServiceAbstract implements MLS
 
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile();
-        double f = conf.getFractionTest();
-        DataFrame[] splits = data.randomSplit(new double[]{1 - f, f}, 12345);
-        DataFrame trainingData = splits[0];
-        DataFrame testData = splits[1];
-        return super.loadData(data, trainingData, null, testData);
+        return loadFile(0, 12345);
     }
 
     @Override

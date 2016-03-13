@@ -38,14 +38,17 @@ public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract i
 
     @Override
     public MLService loadData() {
-        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(filePath, sqlContext, 2).select("ID", "features", "TARGET");
-        return super.loadData(data.withColumn("label", data.col("TARGET").cast(DataTypes.DoubleType)));
+        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(trainPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame train = data.withColumn("label", data.col("TARGET").cast(DataTypes.DoubleType));
+        DataFrame validation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2).select("ID", "features", "TARGET");
+        validation = validation.withColumn("label", data.col("TARGET").cast(DataTypes.DoubleType));
+        return super.loadData(train, train, validation, null);
     }
 
     @Override
-    public MLService loadTest() {
-        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(filePath, sqlContext, 1).select("ID", "features");
-        return super.setTest(data);
+    public MLService loadInput(String inputPath) {
+        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(inputPath, sqlContext, 1).select("ID", "features");
+        return super.setInput(data);
     }
 
     @Override
@@ -59,7 +62,7 @@ public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract i
 
     @Override
     public MLService test() {
-        //predictions = ((PipelineModel) model).transform((DataFrame) dataSet.getTest());
+        //predictions = ((PipelineModel) model).transform((DataFrame) dataSet.getCrossValidation());
         return super.test();
     }
 

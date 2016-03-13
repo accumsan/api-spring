@@ -36,7 +36,7 @@ public class MachineLearning {
     public ResponseEntity<Map<String, Object>> lr() {
         MLService linearRegressionService = new LinearRegressionService().context(sqlContext,sparkContext);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
-        linearRegressionService.setFile("libsvm", "data/mllib/sample_linear_regression_data.txt");
+        linearRegressionService.setFile("libsvm", "data/mllib/sample_linear_regression_data.txt", null, null);
         return new ResponseEntity<>(linearRegressionService.loadData().configure(conf).train().getResults(), HttpStatus.OK);
     }
 

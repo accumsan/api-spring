@@ -31,11 +31,7 @@ public class GradientBoostedTreeClassifierService extends MlServiceAbstract impl
 
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile();
-        DataFrame[] splits = data.randomSplit(new double[]{0.7, 0.3});
-        DataFrame trainingData = splits[0];
-        DataFrame testData = splits[1];
-        return super.loadData(data, trainingData, null, testData);
+        return loadFile(0.3, 0);
     }
 
     @Override
@@ -70,7 +66,7 @@ public class GradientBoostedTreeClassifierService extends MlServiceAbstract impl
 
     @Override
     public MLService test() {
-        predictions = ((PipelineModel) model).transform((DataFrame)dataSet.getTest());
+        predictions = ((PipelineModel) model).transform((DataFrame)dataSet.getCrossValidation());
         return super.test();
     }
 

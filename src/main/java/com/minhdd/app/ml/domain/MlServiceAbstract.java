@@ -11,7 +11,9 @@ public abstract class MlServiceAbstract implements MLService {
     protected SQLContext sqlContext;
     protected SparkContext sparkContext;
     protected String fileType;
-    protected String filePath;
+    protected String trainPath;
+    protected String validationPath;
+    protected String testPath;
     protected MLConfiguration conf;
     protected DataSet dataSet;
     protected Object model;
@@ -28,29 +30,43 @@ public abstract class MlServiceAbstract implements MLService {
         return this;
     }
 
-    @Override public MLService setFile(String fileType, String filePath) {
-        this.filePath = filePath;
+    @Override public MLService setFile(String fileType, String trainPath, String validationPath, String testPath) {
         this.fileType = fileType;
+        this.trainPath = trainPath;
+        this.validationPath = validationPath;
+        this.testPath = testPath;
         return this;
     }
 
     /** load data **/
 
-    protected DataFrame loadFile() {
-        return sqlContext.read().format(fileType).load(filePath);
-    }
-
-    @Override public MLService loadTest() {
-        DataFrame data = sqlContext.read().format(fileType).load(filePath);
-        return setTest(data);
-    }
-
-    protected MLService setTest(Object data) {
-        if (dataSet == null) {
-            dataSet = new DataSet(data, null, null, data);
-        } else {
-            dataSet.setTest(data);
+    protected MLService loadFile(double fraction, long l) {
+        DataFrame data = sqlContext.read().format(fileType).load(trainPath);
+        double f = fraction;
+        if ((conf != null) && (conf.getFractionTest() > 0)) {
+            f = conf.getFractionTest();
         }
+        if (f > 0) {
+            DataFrame[] splits = data.randomSplit(new double[]{1-f, f}, l);
+            DataFrame trainingData = splits[0];
+            DataFrame testData = splits[1];
+            return loadData(data, trainingData, testData, testData);
+        } else {
+            return loadData(data);
+        }
+
+    }
+
+    @Override public MLService loadInput(String inputPath) {
+        DataFrame data = sqlContext.read().format(fileType).load(inputPath);
+        return setInput(data);
+    }
+
+    protected MLService setInput(Object data) {
+        if (dataSet == null) {
+            dataSet = new DataSet(data, null, null, null);
+        }
+        dataSet.setInput(data);
         return this;
     }
 

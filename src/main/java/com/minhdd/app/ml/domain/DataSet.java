@@ -20,8 +20,12 @@ public class DataSet<R> {
         return test;
     }
 
-    public void setTest(R test) {
-        this.test = test;
+    public R getInput() {
+        return input;
+    }
+
+    public void setInput(R input) {
+        this.input = input;
     }
 
     public DataSet(R data, R training, R cross, R test) {
@@ -29,10 +33,12 @@ public class DataSet<R> {
         this.training = training;
         this.crossValidation = cross;
         this.test = test;
+        this.input = null;
     }
 
     private R data;
     private R training;
     private R crossValidation;
     private R test;
+    private R input;
 }

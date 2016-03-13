@@ -27,7 +27,7 @@ public class SparkConfig {
         Seq<String> jars = JavaConversions.asScalaBuffer(
                 Arrays.asList(System.getenv("JARS"))
         ).seq();
-        SparkContext sc = new SparkContext("local", "app", System.getenv("SPARK_HOME"), jars);
+        SparkContext sc = new SparkContext("local", "app");
 //        JavaSparkContext jsc = new JavaSparkContext("local", "app", System.getenv("SPARK_HOME"), System.getenv("JARS"));
         sparkContext = sc;
     }

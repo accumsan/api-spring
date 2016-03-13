@@ -11,9 +11,9 @@ import java.util.Map;
 
 public interface MLService {
     MLService context(SQLContext sqlContext, SparkContext sc);
-    MLService setFile(String fileType, String filePath);
+    MLService setFile(String fileType, String trainPath, String validationPath, String testPath);
     MLService loadData();
-    MLService loadTest();
+    MLService loadInput(String inputPath);
     MLService configure(MLConfiguration configuration);
     MLService train();
     MLService test();

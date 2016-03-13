@@ -29,7 +29,7 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
 
     @Override
     public MLService loadData() {
-        JavaRDD<LabeledPoint> data = MLUtils.loadLibSVMFile(sparkContext, filePath).toJavaRDD();
+        JavaRDD<LabeledPoint> data = MLUtils.loadLibSVMFile(sparkContext, trainPath).toJavaRDD();
         double f = 0;
         if (conf != null) {
             f = conf.getFractionTest();
@@ -57,10 +57,10 @@ public class BinaryClassificationService extends MlServiceAbstract implements ML
 
         // Compute raw scores on the test set.
         JavaRDD<Tuple2<Object, Object>> predictionAndLabels = ((JavaRDD<LabeledPoint>) dataSet.getCrossValidation()).map(
-                (Function<LabeledPoint, Tuple2<Object, Object>>) p -> {
-                    Double prediction = lrm.predict(p.features());
-                    return new Tuple2<Object, Object>(prediction, p.label());
-                }
+            p -> {
+                Double prediction = lrm.predict(p.features());
+                return new Tuple2<>(prediction, p.label());
+            }
         );
         predictions = predictionAndLabels;
         return super.test();

@@ -28,11 +28,7 @@ public class MultilayerPerceptronClassifierService extends MlServiceAbstract imp
 
     @Override
     public MLService loadData() {
-        DataFrame data = loadFile();
-        DataFrame[] splits = data.randomSplit(new double[]{0.6, 0.4}, 1234L);
-        DataFrame trainingData = splits[0];
-        DataFrame testData = splits[1];
-        return super.loadData(data, trainingData, null, testData);
+        return loadFile(0.4, 1234L);
     }
 
     @Override
