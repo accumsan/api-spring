@@ -3,9 +3,7 @@ package com.minhdd.app.ml.service.kaggle;
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
-import org.apache.spark.ml.feature.MinMaxScaler;
-import org.apache.spark.ml.feature.MinMaxScalerModel;
-import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 import org.junit.Test;
@@ -31,24 +29,32 @@ public class FeaturesTransformationTest {
     @Inject
     SQLContext sqlContext;
 
+    //you have to remove first folder FilesConstants.SCALER
     @Test
     public void scaler() throws IOException {
-        DataFrame train = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
-        DataFrame test = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TEST_KAGGLE, true, true).withColumn("TARGET", lit(0.0));
+        DataFrame train = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true).drop("TARGET").drop("ID");
+        DataFrame test = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TEST_KAGGLE, true, true).drop("ID");
         DataFrame data = train.unionAll(test);
-        String[] columns = CsvUtil.getFeatureColumns(2, data);
+        String[] columns = CsvUtil.getFeatureColumns(0, data);
         VectorAssembler assembler = new VectorAssembler()
                 .setInputCols(columns)
                 .setOutputCol("assembledFeatures");
 
         DataFrame df = assembler.transform(data);
 
-        MinMaxScaler scaler = new MinMaxScaler().setMin(-0.5).setMax(0.5)
+//        MinMaxScaler scaler = new MinMaxScaler().setMin(0).setMax(1)
+//                .setInputCol("assembledFeatures")
+//                .setOutputCol("features");
+//
+//        MinMaxScalerModel scalerModel = scaler.fit(df);
+        StandardScaler scaler = new StandardScaler()
                 .setInputCol("assembledFeatures")
-                .setOutputCol("features");
+                .setOutputCol("features")
+                .setWithStd(true)
+                .setWithMean(false);
 
-        MinMaxScalerModel scalerModel = scaler.fit(df);
-        scalerModel.save(FilesConstants.OUTPUT_DIR + "scaler.all.model");
+        StandardScalerModel scalerModel = scaler.fit(df);
+        scalerModel.save(FilesConstants.SCALER);
     }
 
     @Test

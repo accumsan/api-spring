@@ -4,6 +4,8 @@ import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.ml.feature.MinMaxScalerModel;
+import org.apache.spark.ml.feature.StandardScaler;
+import org.apache.spark.ml.feature.StandardScalerModel;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
@@ -34,7 +36,7 @@ public class CsvUtil {
         String[] columns = getFeatureColumns(offset, data);
         if (scale) {
             VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("assembledFeatures");
-            MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
+            StandardScalerModel scalerModel = StandardScalerModel.load(FilesConstants.SCALER);
             return scalerModel.transform(assembler.transform(data));
         } else {
             VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("features");
