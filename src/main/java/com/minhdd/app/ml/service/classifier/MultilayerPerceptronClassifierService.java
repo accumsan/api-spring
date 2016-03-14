@@ -33,7 +33,6 @@ public class MultilayerPerceptronClassifierService extends MlServiceAbstract imp
 
     @Override
     protected MLAlgorithm<MultilayerPerceptronClassificationModel, DataFrame> algorithm() {
-        int[] layers = new int[] {4, 5, 4, 3};
         MultilayerPerceptronClassifier trainer = new MultilayerPerceptronClassifier()
                 .setLayers(conf.getNn().getLayers())
                 .setBlockSize(conf.getNn().getBlockSize())
