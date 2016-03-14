@@ -74,38 +74,33 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
                 .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
                 .fit((DataFrame) dataSet.getData());
 
-        IndexToString labelConverter = new IndexToString()
-                .setInputCol("prediction")
-                .setOutputCol("predictedLabel")
-                .setLabels(labelIndexer.labels());
-
         Pipeline pipeline = new Pipeline()
-                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, (PipelineStage) classifier, labelConverter});
+                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, (PipelineStage) classifier});
 
         return (DataFrame training) -> pipeline.fit(training);
     }
 
     @Override
     public MLService test() {
-        predictions = ((PipelineModel) model).transform((DataFrame) dataSet.getTraining());
+        predictions = ((PipelineModel) model).transform((DataFrame) dataSet.getCrossValidation());
         return super.test();
     }
 
     @Override
     public Map<String, Object> getResults() {
         DataFrame predictions = (DataFrame) this.predictions;
-        DataFrame predictionsToShow = predictions.select("ID", "TARGET", "predictedLabel");
-        predictionsToShow.show();
+        DataFrame predictionsToShow = predictions.select("ID", "TARGET", "prediction");
+        predictionsToShow.show(1000000000, false);
         System.out.println("================================================");
         System.out.println("Number of predictions : " + predictionsToShow.count());
         System.out.println("Number of target 1 : " + predictionsToShow.filter("TARGET = 1").count());
-//        System.out.println("Number of predicted 1 : " + predictionsToShow.filter("predictedLabel = 1").count());
-//        System.out.println("Good predictions for target 1 : " +
-//        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 1").count());
-//        System.out.println("Bad predictions (to 1) of target 0 : " +
-//        predictionsToShow.filter("TARGET = 0").filter("predictedLabel = 1").count());
-//        System.out.println("Bad predictions (to 0) of target 1 : " +
-//        predictionsToShow.filter("TARGET = 1").filter("predictedLabel = 0").count());
+        System.out.println("Number of predicted 1 : " + predictionsToShow.filter("prediction = 1.0").count());
+        System.out.println("Good predictions for target 1 : " +
+        predictionsToShow.filter("TARGET = 1").filter("prediction = 1.0").count());
+        System.out.println("Bad predictions (to 1) of target 0 : " +
+        predictionsToShow.filter("TARGET = 0").filter("prediction = 1.0").count());
+        System.out.println("Bad predictions (to 0) of target 1 : " +
+        predictionsToShow.filter("TARGET = 1").filter("prediction = 0.0").count());
         if (MLConstants.GradientBoostedTree.equals(conf.getAlgorithm())) {
             printGBTResults(predictions);
         } else if (MLConstants.RandomForest.equals(conf.getAlgorithm())) {
@@ -199,7 +194,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     public void produce(String output) {
         DataFrame predictions = (DataFrame) this.predictions;
         DataFrame results = predictions
-                .withColumn("TARGET", predictions.col("predictedLabel"))
+                .withColumn("TARGET", predictions.col("label"))
                 .select("ID", "TARGET");
         CsvUtil.save(results, output, true);
     }
