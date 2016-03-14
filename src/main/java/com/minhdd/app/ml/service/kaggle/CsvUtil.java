@@ -2,12 +2,9 @@ package com.minhdd.app.ml.service.kaggle;
 
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.ml.feature.RFormula;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.regression.LabeledPoint;
-import org.apache.spark.sql.Column;
 import org.apache.spark.sql.DataFrame;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
 
@@ -33,16 +30,10 @@ public class CsvUtil {
     public static DataFrame getDataFrameFromKaggleCsv(String filePath, SQLContext sqlContext, int offset) {
         DataFrame data = loadCsvFile(sqlContext, filePath, true, true);
         String[] columns = getFeatureColumns(offset, data);
-        //TODO normalisation
-        //        Normalizer normalizer = new Normalizer()
-//                .setInputCol("features")
-//                .setOutputCol("normFeatures")
-//                .setP(.0);
-//        DataFrame df = normalizer.transform(dataFrame);
-        VectorAssembler assembler = new VectorAssembler()
-                .setInputCols(columns)
-                .setOutputCol("features");
-        return assembler.transform(data);
+//        MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
+        VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("features");
+        DataFrame df = assembler.transform(data);
+        return df;
     }
 
     public static String[] getFeatureColumns(int offset, DataFrame data) {

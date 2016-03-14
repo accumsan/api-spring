@@ -1,14 +1,10 @@
-package com.minhdd.app.md.service.kaggle;
+package com.minhdd.app.ml.service.kaggle;
 
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.ml.service.kaggle.CsvUtil;
-import com.minhdd.app.ml.service.kaggle.DataFrameUtil;
-import org.apache.spark.SparkContext;
-import org.apache.spark.ml.feature.Normalizer;
+import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
-import org.h2.tools.Csv;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;

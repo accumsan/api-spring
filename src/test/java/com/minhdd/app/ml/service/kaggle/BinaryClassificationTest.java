@@ -1,4 +1,4 @@
-package com.minhdd.app.md.service.kaggle;
+package com.minhdd.app.ml.service.kaggle;
 
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;

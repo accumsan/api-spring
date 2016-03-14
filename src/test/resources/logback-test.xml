@@ -16,6 +16,7 @@
     <logger name="org.apache.hadoop" level="ERROR"/>
     <logger name="org.spark-project.jetty" level="ERROR"/>
     <logger name="com.github.fommil.netlib" level="ERROR"/>
+    <logger name="org.apache.parquet.hadoop" level="ERROR"/>
     <root level="WARN">
         <appender-ref ref="CONSOLE"/>
     </root>

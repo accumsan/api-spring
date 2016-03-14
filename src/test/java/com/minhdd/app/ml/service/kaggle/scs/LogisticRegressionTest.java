@@ -1,14 +1,10 @@
-package com.minhdd.app.md.service.kaggle.scs;
+package com.minhdd.app.ml.service.kaggle.scs;
 
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
-import com.minhdd.app.md.service.kaggle.FilesConstants;
 import com.minhdd.app.ml.domain.MLConfiguration;
 import com.minhdd.app.ml.domain.MLConstants;
 import com.minhdd.app.ml.domain.MLService;
-import com.minhdd.app.ml.service.kaggle.scs.SantanderCustomerSatisfaction;
-import com.minhdd.app.ml.service.kaggle.scs.SantanderCustomerSatisfactionBinaryClassification;
-import com.minhdd.app.ml.service.kaggle.scs.SantanderCustomerSatisfactionRegression;
 import org.apache.spark.SparkContext;
 import org.apache.spark.sql.SQLContext;
 import org.junit.Before;
@@ -44,7 +40,7 @@ public class LogisticRegressionTest {
     public void trainWithLogisticRegressionAndTest() {
         scfRegression.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
         MLConfiguration conf = new MLConfiguration()
-                .setMaxIteration(10).setRegParam(0.5).setElasticNetParam(0.8)
+                .setMaxIteration(10000).setRegParam(0.0001).setElasticNetParam(0.0001)
                 .setAlgorithm(MLConstants.LogisticRegression);
         scfRegression.configure(conf).loadData().train().getResults();
     }

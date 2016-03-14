@@ -1,4 +1,4 @@
-package com.minhdd.app.md.service.kaggle;
+package com.minhdd.app.ml.service.kaggle.scs;
 
 /**
  * Created by minhdao on 10/03/16.
@@ -9,6 +9,7 @@ public class FilesConstants {
     public final static String TEST_MIN = "data/kaggle/santander-customer-satisfaction/test_min.csv";
 
     public final static String OUTPUT_DIR = "data/kaggle/santander-customer-satisfaction/save/";
+    public final static String SCALER = OUTPUT_DIR + "scaler.all.model";
     public final static String RFP_MODEL = OUTPUT_DIR + "random-forest-pipeline.model";
     public final static String GBT_MODEL = OUTPUT_DIR + "gradient-boosted-pipeline.model";
     public final static String LR_MODEL = OUTPUT_DIR + "logistic-regression.model";

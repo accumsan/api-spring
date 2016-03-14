@@ -42,8 +42,8 @@ public class LogisticRegressionService extends MlServiceAbstract implements MLSe
     @Override
     public Map<String, Object> getResults() {
         LogisticRegressionModel lrModel = (LogisticRegressionModel) model;
-        logger.info("Coefficients: " + lrModel.coefficients());
-        logger.info("Intercept: " + lrModel.intercept());
+        System.out.println("Coefficients: " + lrModel.coefficients());
+        System.out.println("Intercept: " + lrModel.intercept());
         Map<String, Object> responses = new HashMap<>();
         responses.put("coefficients", lrModel.coefficients().toString());
         responses.put("intercept", lrModel.intercept());
