@@ -1,7 +1,9 @@
 package com.minhdd.app.ml.service.kaggle;
 
+import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.ml.feature.MinMaxScalerModel;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
@@ -27,14 +29,19 @@ public class CsvUtil {
                 .load(filePath);
     }
 
-    public static DataFrame getDataFrameFromKaggleCsv(String filePath, SQLContext sqlContext, int offset) {
+    public static DataFrame getDataFrameFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, boolean scale) {
         DataFrame data = loadCsvFile(sqlContext, filePath, true, true);
         String[] columns = getFeatureColumns(offset, data);
-//        MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
-        VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("features");
-        DataFrame df = assembler.transform(data);
-        return df;
+        if (scale) {
+            VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("assembledFeatures");
+            MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
+            return scalerModel.transform(assembler.transform(data));
+        } else {
+            VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("features");
+            return assembler.transform(data);
+        }
     }
+
 
     public static String[] getFeatureColumns(int offset, DataFrame data) {
         String[] columns = new String[data.columns().length - offset];
@@ -52,7 +59,7 @@ public class CsvUtil {
     }
 
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, String labelColName) {
-        return getLabeledPointJavaRDD(getDataFrameFromKaggleCsv(filePath, sqlContext, offset).select(labelColName, "features"));
+        return getLabeledPointJavaRDD(getDataFrameFromKaggleCsv(filePath, sqlContext, offset, false).select(labelColName, "features"));
     }
 
     public static void save(DataFrame predictions, String output, boolean header) {

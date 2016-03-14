@@ -26,11 +26,11 @@ public class SCSPerceptronClassifier extends MlServiceAbstract implements MLServ
 
     @Override
     public MLService loadData() {
-        DataFrame train = CsvUtil.getDataFrameFromKaggleCsv(trainPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame train = CsvUtil.getDataFrameFromKaggleCsv(trainPath, sqlContext, 2, false).select("ID", "features", "TARGET");
         train = train.withColumn("label", train.col("TARGET").cast(DataTypes.DoubleType));
-        DataFrame validation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame validation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2, false).select("ID", "features", "TARGET");
         validation = validation.withColumn("label", validation.col("TARGET").cast(DataTypes.DoubleType));
-        DataFrame test = CsvUtil.getDataFrameFromKaggleCsv(testPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame test = CsvUtil.getDataFrameFromKaggleCsv(testPath, sqlContext, 2, false).select("ID", "features", "TARGET");
         test = test.withColumn("label", test.col("TARGET").cast(DataTypes.DoubleType));
         return super.loadData(train, train, validation, test);
     }

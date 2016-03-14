@@ -31,19 +31,20 @@ import static org.apache.spark.sql.functions.max;
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(SantanderCustomerSatisfactionRegression.class);
+    boolean scale = true;
 
     @Override
     public MLService loadData() {
-        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(trainPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(trainPath, sqlContext, 2, scale).select("ID", "features", "TARGET");
         DataFrame train = data.withColumn("label", data.col("TARGET").cast(DataTypes.DoubleType));
-        DataFrame cValidation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2).select("ID", "features", "TARGET");
+        DataFrame cValidation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2, scale).select("ID", "features", "TARGET");
         DataFrame crossValidation = cValidation.withColumn("label", cValidation.col("TARGET").cast(DataTypes.DoubleType));
         return super.loadData(train, train, crossValidation, null);
     }
 
     @Override
     public MLService loadInput(String inputPath) {
-        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(inputPath, sqlContext, 1).select("ID", "features");
+        DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(inputPath, sqlContext, 1, scale).select("ID", "features");
         return super.setInput(data);
     }
 
@@ -71,16 +72,16 @@ public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract i
     private void logisticRegressionResults(LogisticRegressionModel lrModel) {
         System.out.println("================================================");
         LogisticRegressionTrainingSummary trainingSummary = lrModel.summary();
-        double[] objectiveHistory = trainingSummary.objectiveHistory();
-        for (double lossPerIteration : objectiveHistory) {
-            System.out.println(lossPerIteration);
-        }
+//        double[] objectiveHistory = trainingSummary.objectiveHistory();
+//        for (double lossPerIteration : objectiveHistory) {
+//            System.out.println(lossPerIteration);
+//        }
         BinaryLogisticRegressionSummary binarySummary =
                 (BinaryLogisticRegressionSummary) trainingSummary;
         DataFrame roc = binarySummary.roc();
-        roc.show();
-        roc.select("FPR").show();
-        System.out.println(binarySummary.areaUnderROC());
+//        roc.show();
+//        roc.select("FPR").show();
+//        System.out.println(binarySummary.areaUnderROC());
 
         DataFrame fMeasure = binarySummary.fMeasureByThreshold();
         double maxFMeasure = fMeasure.select(max("F-Measure")).head().getDouble(0);
@@ -92,14 +93,20 @@ public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract i
         System.out.println("Number of predictions : " + predictions.count());
         System.out.println("Number of label 1 : " + predictions.filter("TARGET = 1").count());
         System.out.println("Number of predicted 1 : " + predictions.filter("prediction = 1.0").count());
-        System.out.println("Good predictions for label 1");
-        predictions.filter("label = 1").filter("prediction = 1.0").show();
-        System.out.println("Bad predictions (to 1) of target 0");
-        predictions.filter("label = 0").filter("prediction = 1.0").show();
-
+        long truePositive = predictions.filter("TARGET = 1").filter("prediction = 1.0").count();
+        System.out.println("Good predictions for label 1 : " + truePositive);
+        long falsePositive = predictions.filter("TARGET = 0").filter("prediction = 1.0").count();
+        long falseNegative = predictions.filter("TARGET = 1").filter("prediction = 0.0").count();
+        System.out.println("Bad predictions (to 1) of target 0 : " + falsePositive);
+        double precision = (double) truePositive / (truePositive + falsePositive);
+        double recall = (double) truePositive / (truePositive + falseNegative);
+        double fscore = 2 * precision * recall / (precision + recall);
+        System.out.println("precision :" + precision);
+        System.out.println("recall :" + recall);
+        System.out.println("fscore :" + fscore);
         JavaRDD<Tuple2<Object, Object>> predictionAndLabels =
                 predictions.select("probability", "TARGET").toJavaRDD().map(a -> {
-                    double score = ((DenseVector) a.get(0)).apply(0);
+                    double score = ((DenseVector) a.get(0)).apply(1);
                     return new Tuple2<>(score, ((Integer)a.get(1)).doubleValue());
                 });
         BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(predictionAndLabels.rdd());
