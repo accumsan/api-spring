@@ -31,15 +31,15 @@ import static org.apache.spark.sql.functions.max;
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract implements MLService {
     private final Logger logger = LoggerFactory.getLogger(SantanderCustomerSatisfactionRegression.class);
-    boolean scale = true;
+    boolean scale = false;
 
     @Override
     public MLService loadData() {
         DataFrame data = CsvUtil.getDataFrameFromKaggleCsv(trainPath, sqlContext, 2, scale).select("ID", "features", "TARGET");
         DataFrame train = data.withColumn("label", data.col("TARGET").cast(DataTypes.DoubleType));
-        DataFrame cValidation = CsvUtil.getDataFrameFromKaggleCsv(validationPath, sqlContext, 2, scale).select("ID", "features", "TARGET");
-        DataFrame crossValidation = cValidation.withColumn("label", cValidation.col("TARGET").cast(DataTypes.DoubleType));
-        return super.loadData(train, train, crossValidation, null);
+        DataFrame test = CsvUtil.getDataFrameFromKaggleCsv(testPath, sqlContext, 2, scale).select("ID", "features", "TARGET");
+        test = test.withColumn("label", test.col("TARGET").cast(DataTypes.DoubleType));
+        return super.loadData(train, train, null, test);
     }
 
     @Override
@@ -76,20 +76,18 @@ public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract i
 //        for (double lossPerIteration : objectiveHistory) {
 //            System.out.println(lossPerIteration);
 //        }
-        BinaryLogisticRegressionSummary binarySummary =
-                (BinaryLogisticRegressionSummary) trainingSummary;
-        DataFrame roc = binarySummary.roc();
+        BinaryLogisticRegressionSummary binarySummary = (BinaryLogisticRegressionSummary) trainingSummary;
+//        DataFrame roc = binarySummary.roc();
 //        roc.show();
 //        roc.select("FPR").show();
 //        System.out.println(binarySummary.areaUnderROC());
 
         DataFrame fMeasure = binarySummary.fMeasureByThreshold();
         double maxFMeasure = fMeasure.select(max("F-Measure")).head().getDouble(0);
-        double bestThreshold = fMeasure.where(fMeasure.col("F-Measure").equalTo(maxFMeasure))
-                .select("threshold").head().getDouble(0);
+        double bestThreshold = fMeasure.where(fMeasure.col("F-Measure").equalTo(maxFMeasure)).select("threshold").head().getDouble(0);
         lrModel.setThreshold(bestThreshold);
         System.out.println("================================================");
-        DataFrame predictions = lrModel.transform((DataFrame) dataSet.getTraining());
+        DataFrame predictions = lrModel.transform((DataFrame) dataSet.getTest());
         System.out.println("Number of predictions : " + predictions.count());
         System.out.println("Number of label 1 : " + predictions.filter("TARGET = 1").count());
         System.out.println("Number of predicted 1 : " + predictions.filter("prediction = 1.0").count());
