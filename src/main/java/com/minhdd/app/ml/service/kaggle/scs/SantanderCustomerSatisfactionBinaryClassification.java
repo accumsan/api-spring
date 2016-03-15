@@ -71,7 +71,7 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
 
     @Override
     public MLService test() {
-        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = getTuple2PredictionAndLabels((JavaRDD<LabeledPoint>) dataSet.getCrossValidation());
+        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = getTuple2PredictionAndLabels((JavaRDD<LabeledPoint>) dataSet.getTest());
         predictions = predictionAndLabels;
         return super.test();
     }
