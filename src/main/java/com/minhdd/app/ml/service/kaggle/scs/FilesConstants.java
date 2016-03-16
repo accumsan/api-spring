@@ -20,11 +20,15 @@ public class FilesConstants {
     public final static String LOCAL_DIR_MAC86 = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/";
     public final static String LOCAL_DIR = LOCAL_DIR_MAC86;
     public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR_MAC86 + "data-extract/";
+    public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR_MAC86 + "ano-detect/";
     public final static String TRAIN_KAGGLE = LOCAL_DIR + "train.csv";
     public final static String TEST_KAGGLE = LOCAL_DIR + "test.csv";
     public static final String TRAIN_80 = LOCAL_DIR_EXTRACT + "train_80.csv";
     public static final String TRAIN_60 = LOCAL_DIR_EXTRACT + "train_60.csv";
     public static final String VALIDATION_20 = LOCAL_DIR_EXTRACT + "validation_20.csv";
     public static final String TEST_20 = LOCAL_DIR_EXTRACT + "test_20.csv";
+    public static final String TRAIN_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_train.csv";
+    public static final String VALIDATION_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_validation.csv";
+    public static final String TEST_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_test.csv";
 
 }

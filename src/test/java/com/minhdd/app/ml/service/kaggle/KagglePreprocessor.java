@@ -23,17 +23,31 @@ public class KagglePreprocessor {
     @Inject SQLContext sqlContext;
 
     @Test
-    public void split() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, null, true, true);
-        DataFrameUtil.splitToTwoDataSet(df, 0.25, null, null);
+    public void split_anomaly_detection() {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrame positives = df.filter("TARGET = 1");
+        DataFrame[] positives_splits = positives.randomSplit(new double[]{0.5, 0.5});
+        DataFrame positives_validation = positives_splits[0];
+        DataFrame positives_test = positives_splits[1];
+        DataFrame normals = df.filter("TARGET = 0");
+        DataFrame[] splits = normals.randomSplit(new double[]{0.6, 0.4});
+        DataFrame train = splits[0];
+        DataFrame normals_40 = splits[1];
+        DataFrame[] normal_splits = normals_40.randomSplit(new double[]{0.5, 0.5});
+        DataFrame normals_20_validation = normal_splits[0];
+        DataFrame normals_20_test = normal_splits[1];
+        DataFrame validation = normals_20_validation.unionAll(positives_validation);
+        DataFrame test = normals_20_test.unionAll(positives_test);
+//        CsvUtil.save(train, FilesConstants.TRAIN_ANO, true);
+//        CsvUtil.save(validation, FilesConstants.VALIDATION_ANO, true);
+//        CsvUtil.save(test, FilesConstants.TEST_ANO, true);
     }
 
 
     @Test
-    public void normalize() {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_MIN, true, true);
-        String[] columns = CsvUtil.getFeatureColumns(2, data);
-        //TODO
+    public void test() {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.VALIDATION_ANO_DETECT, true, true);
+        System.out.println(data.count());
     }
 
 
