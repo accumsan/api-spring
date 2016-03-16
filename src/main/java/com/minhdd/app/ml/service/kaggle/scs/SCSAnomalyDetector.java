@@ -5,19 +5,15 @@ import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
 import com.minhdd.app.ml.service.kaggle.CsvUtil;
-import org.apache.spark.ml.classification.LogisticRegressionModel;
+import com.minhdd.app.ml.service.kaggle.DataFrameUtil;
 import org.apache.spark.mllib.stat.distribution.MultivariateGaussian;
-import org.apache.spark.sql.Column;
 import org.apache.spark.sql.DataFrame;
-import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-
-import static org.apache.spark.sql.functions.avg;
 
 /**
  * Created by minhdao on 16/03/16.
@@ -41,15 +37,10 @@ public class SCSAnomalyDetector extends MlServiceAbstract implements MLService {
     }
 
     @Override
-    protected MLAlgorithm algorithm() {
+    protected MLAlgorithm<MultivariateGaussian, DataFrame> algorithm() {
         DataFrame train = (DataFrame) dataSet.getTraining();
-        int m = train.columns().length;
-        String[] columns = CsvUtil.getFeatureColumns(0, train);
-        long n = train.count();
-
-
-//        MultivariateGaussian multivariateGaussian = new MultivariateGaussian(train.first(), );
-        return null;
+        MultivariateGaussian multivariateGaussian = new MultivariateGaussian(DataFrameUtil.mean(train), DataFrameUtil.sigma(train));
+        return (training -> multivariateGaussian);
     }
 
 

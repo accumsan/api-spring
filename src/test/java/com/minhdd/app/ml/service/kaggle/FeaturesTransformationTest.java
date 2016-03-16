@@ -35,7 +35,7 @@ public class FeaturesTransformationTest {
         DataFrame train = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true).drop("TARGET").drop("ID");
         DataFrame test = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TEST_KAGGLE, true, true).drop("ID");
         DataFrame data = train.unionAll(test);
-        String[] columns = CsvUtil.getFeatureColumns(0, data);
+        String[] columns = DataFrameUtil.getFeatureColumns(0, data);
         VectorAssembler assembler = new VectorAssembler()
                 .setInputCols(columns)
                 .setOutputCol("assembledFeatures");
@@ -61,7 +61,7 @@ public class FeaturesTransformationTest {
     public void applyScaler() {
         MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.OUTPUT_DIR + "scaler.all.model");
         DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_MIN, true, true);
-        String[] columns = CsvUtil.getFeatureColumns(2, data);
+        String[] columns = DataFrameUtil.getFeatureColumns(2, data);
         VectorAssembler assembler = new VectorAssembler()
                 .setInputCols(columns)
                 .setOutputCol("assembledFeatures");

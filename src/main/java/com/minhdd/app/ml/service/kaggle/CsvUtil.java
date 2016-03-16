@@ -33,7 +33,7 @@ public class CsvUtil {
 
     public static DataFrame getDataFrameFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, boolean scale) {
         DataFrame data = loadCsvFile(sqlContext, filePath, true, true);
-        String[] columns = getFeatureColumns(offset, data);
+        String[] columns = DataFrameUtil.getFeatureColumns(offset, data);
         if (scale) {
             VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("assembledFeatures");
             StandardScalerModel scalerModel = StandardScalerModel.load(FilesConstants.SCALER);
@@ -42,18 +42,6 @@ public class CsvUtil {
             VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("features");
             return assembler.transform(data);
         }
-    }
-
-
-    public static String[] getFeatureColumns(int offset, DataFrame data) {
-        String[] columns = new String[data.columns().length - offset];
-        int i = 0;
-        for (String column : data.columns()) {
-            if (!column.equals("TARGET") && !column.equals("ID")) {
-                columns[i++] = column;
-            }
-        }
-        return columns;
     }
 
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDD(DataFrame df) {
@@ -90,25 +78,5 @@ public class CsvUtil {
             System.out.println("File not deleted : temp");
         }
     }
-
-    public static List<String> getColumnsFromValue(DataFrame data, double value) {
-        List<String> columns = new ArrayList();
-        List<Integer> indexes = new ArrayList();
-        for (int i = 1; i < data.columns().length; i++) {
-            if (data.schema().apply(i).dataType().equals(DataTypes.DoubleType)) {
-                indexes.add(i);
-            }
-        }
-        data.collectAsList().forEach(row -> {
-            for (int index : indexes) {
-                if (row.getDouble(index) == value) {
-                    System.out.println(index);
-                    columns.add(data.columns()[index]);
-                }
-            }
-        });
-        return columns;
-    }
-
 
 }
