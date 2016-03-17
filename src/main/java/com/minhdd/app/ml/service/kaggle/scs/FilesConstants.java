@@ -7,6 +7,7 @@ public class FilesConstants {
     public final static String TRAIN_MIN = "data/kaggle/santander-customer-satisfaction/train_min.csv";
     public final static String VALIDATION_MIN = "data/kaggle/santander-customer-satisfaction/validation_min.csv";
     public final static String TEST_MIN = "data/kaggle/santander-customer-satisfaction/test_min.csv";
+    public final static String POSITIVES_MIN = "data/kaggle/santander-customer-satisfaction/positives_min.csv";
 
     public final static String OUTPUT_DIR = "data/kaggle/santander-customer-satisfaction/save/";
     public final static String SCALER = OUTPUT_DIR + "scaler.all.model";
@@ -18,7 +19,7 @@ public class FilesConstants {
 
     public final static String LOCAL_DIR_QS = "/Users/mdao/ws/minh/ml/kaggle/santander-customer-satisfaction/";
     public final static String LOCAL_DIR_MAC86 = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/";
-    public final static String LOCAL_DIR = LOCAL_DIR_QS;
+    public final static String LOCAL_DIR = LOCAL_DIR_MAC86;
     public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR + "data-extract/";
     public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR + "ano-detect/";
     public final static String TRAIN_KAGGLE = LOCAL_DIR + "train.csv";
