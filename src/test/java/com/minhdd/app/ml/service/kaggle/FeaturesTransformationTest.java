@@ -2,6 +2,8 @@ package com.minhdd.app.ml.service.kaggle;
 
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
+import com.minhdd.app.ml.outil.CsvUtil;
+import com.minhdd.app.ml.outil.DataFrameUtil;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.DataFrame;
@@ -15,8 +17,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 
 import java.io.IOException;
-
-import static org.apache.spark.sql.functions.lit;
 
 /**
  * Created by minhdao on 10/03/16.

@@ -4,7 +4,7 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
-import com.minhdd.app.ml.service.kaggle.CsvUtil;
+import com.minhdd.app.ml.outil.CsvUtil;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS;

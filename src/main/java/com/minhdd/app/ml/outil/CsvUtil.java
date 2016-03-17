@@ -1,21 +1,16 @@
-package com.minhdd.app.ml.service.kaggle;
+package com.minhdd.app.ml.outil;
 
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.ml.feature.MinMaxScalerModel;
-import org.apache.spark.ml.feature.StandardScaler;
 import org.apache.spark.ml.feature.StandardScalerModel;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
-import org.apache.spark.sql.types.DataTypes;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by minhdao on 06/03/16.

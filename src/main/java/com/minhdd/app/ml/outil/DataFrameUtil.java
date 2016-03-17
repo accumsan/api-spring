@@ -1,18 +1,17 @@
-package com.minhdd.app.ml.service.kaggle;
+package com.minhdd.app.ml.outil;
 
+import com.google.common.primitives.Doubles;
 import org.apache.spark.ml.feature.VectorAssembler;
-import org.apache.spark.mllib.linalg.DenseVector;
+import org.apache.spark.mllib.linalg.DenseMatrix;
+import org.apache.spark.mllib.linalg.Matrices;
 import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.linalg.Vector;
-import org.apache.spark.mllib.linalg.Vectors;
+import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.types.DataTypes;
-import scala.collection.Seq;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.spark.sql.functions.avg;
 
 /**
  * Created by minhdao on 10/03/16.
@@ -25,6 +24,7 @@ public class DataFrameUtil {
         CsvUtil.save(first, firstFilePath, true);
         CsvUtil.save(second, secondFilePath, true);
     }
+
     public static DataFrame randomFractioned(DataFrame df, double fraction) {
         return df.randomSplit(new double[]{fraction, 1 - fraction})[0];
     }
@@ -59,23 +59,55 @@ public class DataFrameUtil {
         return columns;
     }
 
-    //return mean vector for multivariate gaussian distribution
-    public static Vector mean(DataFrame input) {
-        DataFrame meanDf = input.cube().avg().toDF();
-        String[] columns = meanDf.columns();
-        DataFrame meanAssembled = new VectorAssembler().setInputCols(columns).setOutputCol("features").transform(meanDf);
-        Vector mean = meanAssembled.first().getAs("features");
-        return mean;
+    public static Vector vectorFromRow(DataFrame df, long row) {
+        String[] columns = df.columns();
+        DataFrame meanAssembled = new VectorAssembler().setInputCols(columns).setOutputCol("features").transform(df);
+        return meanAssembled.collectAsList().get((int) row).getAs("features");
     }
 
-    public static void printArray(String[] strings) {
-        for (String s : strings) {
-            System.out.print(s);
+    //return mean vector for multivariate gaussian distribution
+    public static Vector mean(DataFrame input) {
+        DataFrame meanDf = input.cube().avg();
+        return vectorFromRow(meanDf, 0);
+    }
+
+    public static DataFrame subtractedByVector(DataFrame input, Vector v) {
+        int n = input.first().length();
+        if (n == v.size()) {
+            String[] columns = input.columns();
+            DataFrame output = input;
+            for (int i = 0; i < n; i++) {
+                output = output.withColumn(columns[i], input.col(columns[i]).minus(v.apply(i)));
+            }
+            return output;
+        } else {
+            return null;
         }
     }
 
-    //return sigma matrix for multivariate gaussian distribution
-    public static Matrix sigma(DataFrame train) {
-        return null;
+    public static RowMatrix convertToRowMatrix(DataFrame df) {
+        DataFrame assembled = new VectorAssembler().setInputCols(df.columns()).setOutputCol("features").transform(df);
+        return new RowMatrix(assembled.toJavaRDD().map(row -> (Vector) row.getAs("features")).rdd());
     }
+
+    public static DenseMatrix convertToDenseMatrix(DataFrame df) {
+        int n = df.first().length();
+        double[] values = Doubles.toArray(df.toJavaRDD().flatMap(row -> {
+            List<Double> d = new ArrayList<Double>();
+            for (int i = 0; i < n; i++) {
+                d.add(row.getDouble(i));
+            }
+            return d;
+        }).collect());
+        return (DenseMatrix) Matrices.dense(n, (int) df.count(), values);
+    }
+
+    //return sigma matrix for multivariate gaussian distribution
+    public static Matrix sigma(DataFrame input) {
+        DenseMatrix elementary_sigma = convertToDenseMatrix(subtractedByVector(input, mean(input)));
+        Matrix sigma = elementary_sigma.multiply(elementary_sigma.transpose());
+        MatrixUtil.divide(sigma, input.count());
+        return sigma;
+    }
+
 }

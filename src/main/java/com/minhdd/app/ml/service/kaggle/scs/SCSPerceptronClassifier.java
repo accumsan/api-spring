@@ -4,7 +4,7 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
-import com.minhdd.app.ml.service.kaggle.CsvUtil;
+import com.minhdd.app.ml.outil.CsvUtil;
 import org.apache.spark.ml.classification.MultilayerPerceptronClassificationModel;
 import org.apache.spark.ml.classification.MultilayerPerceptronClassifier;
 import org.apache.spark.sql.DataFrame;

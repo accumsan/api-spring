@@ -2,7 +2,10 @@ package com.minhdd.app.ml.service.kaggle;
 
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
+import com.minhdd.app.ml.outil.CsvUtil;
+import com.minhdd.app.ml.outil.DataFrameUtil;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
+import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
@@ -46,11 +49,19 @@ public class KagglePreprocessor {
 
 
     @Test
-    public void testMeanVector() {
+    public void meanVector() {
         DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_MIN, true, true).drop("ID").drop("TARGET");
         DataFrame extract = data.randomSplit(new double[]{0.0025, 0.9975})[0];
         Vector mean = DataFrameUtil.mean(extract);
         System.out.println(mean);
+    }
+
+    @Test
+    public void sigmaMatrix() {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_MIN, true, true).drop("ID").drop("TARGET").select("var3", "var15", "var38");
+        DataFrame extract = data.randomSplit(new double[]{0.0025, 0.9975})[0];
+        Matrix m = DataFrameUtil.sigma(extract);
+        System.out.println(m);
     }
 
 

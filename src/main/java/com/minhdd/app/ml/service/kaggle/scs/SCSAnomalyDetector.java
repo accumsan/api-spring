@@ -4,15 +4,20 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
-import com.minhdd.app.ml.service.kaggle.CsvUtil;
-import com.minhdd.app.ml.service.kaggle.DataFrameUtil;
+import com.minhdd.app.ml.outil.CsvUtil;
+import com.minhdd.app.ml.outil.DataFrameUtil;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.stat.distribution.MultivariateGaussian;
 import org.apache.spark.sql.DataFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import scala.Tuple2;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +38,19 @@ public class SCSAnomalyDetector extends MlServiceAbstract implements MLService {
 
     @Override
     public Map<String, Object> getResults() {
+        MultivariateGaussian multivariateGaussian = (MultivariateGaussian) model;
+        DataFrame validation = (DataFrame) dataSet.getCrossValidation();
+        List<Tuple2<Double, Double>> predictionsAndLabelList = new ArrayList();
+        long m = validation.count();
+        for (long i=1; i<m; i++) {
+            Vector x = DataFrameUtil.vectorFromRow(validation, i);
+            Double target = validation.select("TARGET").collectAsList().get((int) i).getDouble(0);
+            Tuple2<Double, Double> t = new Tuple2(multivariateGaussian.pdf(x), target);
+            predictionsAndLabelList.add(t);
+        }
+        System.out.println(predictionsAndLabelList);
+
+
         return null;
     }
 
