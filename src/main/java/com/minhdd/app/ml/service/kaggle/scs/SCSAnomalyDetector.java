@@ -60,7 +60,7 @@ public class SCSAnomalyDetector extends MlServiceAbstract implements MLService {
         String[] features = DataFrameUtil.getFeatureColumns(2, validation);
         List<Row> targets = validation.select("TARGET").collectAsList();
         for (long i=1; i<m; i++) {
-            System.out.print(".");
+            System.out.println("---" + i%5);
             double target = (double) targets.get((int) i).getInt(0);
             double prediction = multivariateGaussian.pdf(DataFrameUtil.extractVector(validation, features, i));
             if ((prediction > 0.0) || (prediction == 0.0 && target == 1.0)) {
