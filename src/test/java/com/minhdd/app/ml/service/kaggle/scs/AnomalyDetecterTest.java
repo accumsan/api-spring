@@ -36,7 +36,7 @@ public class AnomalyDetecterTest {
 
     @Test
     public void trainAndTest() {
-        anomalyDetector.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        anomalyDetector.setFile(null, FilesConstants.TRAIN_ANO_DETECT, FilesConstants.VALIDATION_ANO_DETECT, FilesConstants.TEST_ANO_DETECT);
         anomalyDetector.configure(null).loadData().train().getResults();
     }
 

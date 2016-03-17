@@ -43,14 +43,15 @@ public class SCSAnomalyDetector extends MlServiceAbstract implements MLService {
         List<Tuple2<Double, Double>> predictionsAndLabelList = new ArrayList();
         long m = validation.count();
         for (long i=1; i<m; i++) {
-            Vector x = DataFrameUtil.vectorFromRow(validation, i);
-            Double target = validation.select("TARGET").collectAsList().get((int) i).getDouble(0);
+            Vector x = DataFrameUtil.extractVector(validation, DataFrameUtil.getFeatureColumns(2, validation), i);
+            double target = (double) validation.select("TARGET").collectAsList().get((int) i).getInt(0);
+            double prediction = multivariateGaussian.pdf(x);
+            if (prediction > 0.0) {
+                System.out.println(prediction + " - " + target);
+            }
             Tuple2<Double, Double> t = new Tuple2(multivariateGaussian.pdf(x), target);
             predictionsAndLabelList.add(t);
         }
-        System.out.println(predictionsAndLabelList);
-
-
         return null;
     }
 
