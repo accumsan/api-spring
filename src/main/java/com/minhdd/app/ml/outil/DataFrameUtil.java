@@ -59,8 +59,7 @@ public class DataFrameUtil {
         return columns;
     }
 
-    public static Vector vectorFromRow(DataFrame df, long row) {
-        String[] columns = df.columns();
+    public static Vector extractVector(DataFrame df, String[] columns, long row) {
         DataFrame meanAssembled = new VectorAssembler().setInputCols(columns).setOutputCol("features").transform(df);
         return meanAssembled.collectAsList().get((int) row).getAs("features");
     }
@@ -68,7 +67,7 @@ public class DataFrameUtil {
     //return mean vector for multivariate gaussian distribution
     public static Vector mean(DataFrame input) {
         DataFrame meanDf = input.cube().avg();
-        return vectorFromRow(meanDf, 0);
+        return extractVector(meanDf, meanDf.columns(), 0);
     }
 
     public static DataFrame subtractedByVector(DataFrame input, Vector v) {
