@@ -8,6 +8,7 @@ public class FilesConstants {
     public final static String VALIDATION_MIN = "data/kaggle/santander-customer-satisfaction/validation_min.csv";
     public final static String TEST_MIN = "data/kaggle/santander-customer-satisfaction/test_min.csv";
     public final static String POSITIVES_MIN = "data/kaggle/santander-customer-satisfaction/positives_min.csv";
+    public final static String POSITIVES_20 = "data/kaggle/santander-customer-satisfaction/positives_20.csv";
 
     public final static String OUTPUT_DIR = "data/kaggle/santander-customer-satisfaction/save/";
     public final static String SCALER = OUTPUT_DIR + "scaler.all.model";
