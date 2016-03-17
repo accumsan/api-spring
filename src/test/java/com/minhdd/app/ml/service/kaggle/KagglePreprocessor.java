@@ -5,6 +5,7 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.outil.CsvUtil;
 import com.minhdd.app.ml.outil.DataFrameUtil;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
+import org.apache.spark.mllib.linalg.Matrices;
 import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.sql.DataFrame;
@@ -16,6 +17,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by minhdao on 10/03/16.
@@ -57,11 +60,32 @@ public class KagglePreprocessor {
     }
 
     @Test
-    public void sigmaMatrix() {
+    public void sigmaMatrixFromDataSet() {
         DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_MIN, true, true).drop("ID").drop("TARGET").select("var3", "var15", "var38");
         DataFrame extract = data.randomSplit(new double[]{0.0025, 0.9975})[0];
         Matrix m = DataFrameUtil.sigma(extract, DataFrameUtil.mean(extract));
         System.out.println(m);
+    }
+
+    /**
+     *  Using this matrix example
+     +---+---+
+     |  a|  b|
+     +---+---+
+     |  1|  2|
+     |  3|  8|
+     | 13| 21|
+     +---+---+
+     *
+     */
+
+    @Test
+    public void sigmaMatrix() {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, "data/dataframe/test1.csv", true, true);
+        Matrix m = DataFrameUtil.sigma(data, DataFrameUtil.mean(data));
+        Matrix expected = Matrices.dense (2, 2, new double[]{27.555555555555554, 41.11111111111111, 41.11111111111111, 62.88888888888889});
+        System.out.println(expected);
+        assertEquals(expected, m);
     }
 
 
