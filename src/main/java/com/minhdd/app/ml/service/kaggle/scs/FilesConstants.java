@@ -18,9 +18,9 @@ public class FilesConstants {
 
     public final static String LOCAL_DIR_QS = "/Users/mdao/ws/minh/ml/kaggle/santander-customer-satisfaction/";
     public final static String LOCAL_DIR_MAC86 = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/";
-    public final static String LOCAL_DIR = LOCAL_DIR_MAC86;
-    public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR_MAC86 + "data-extract/";
-    public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR_MAC86 + "ano-detect/";
+    public final static String LOCAL_DIR = LOCAL_DIR_QS;
+    public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR + "data-extract/";
+    public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR + "ano-detect/";
     public final static String TRAIN_KAGGLE = LOCAL_DIR + "train.csv";
     public final static String TEST_KAGGLE = LOCAL_DIR + "test.csv";
     public static final String TRAIN_80 = LOCAL_DIR_EXTRACT + "train_80.csv";

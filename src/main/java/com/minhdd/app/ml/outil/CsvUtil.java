@@ -20,6 +20,7 @@ public class CsvUtil {
     public static final String CSV_FORMAT = "com.databricks.spark.csv";
 
     public static DataFrame loadCsvFile(SQLContext sqlContext, String filePath, boolean header, boolean inferSchema) {
+        if (filePath == null) return null;
         return sqlContext.read().format(CSV_FORMAT)
                 .option("inferSchema", inferSchema ? "true" : "false")
                 .option("header", header ? "true" : "false")

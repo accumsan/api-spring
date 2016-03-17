@@ -92,7 +92,7 @@ public class DataFrameUtil {
     public static DenseMatrix convertToDenseMatrix(DataFrame df) {
         int n = df.first().length();
         double[] values = Doubles.toArray(df.toJavaRDD().flatMap(row -> {
-            List<Double> d = new ArrayList<Double>();
+            List<Double> d = new ArrayList<>();
             for (int i = 0; i < n; i++) {
                 d.add(row.getDouble(i));
             }
@@ -102,8 +102,8 @@ public class DataFrameUtil {
     }
 
     //return sigma matrix for multivariate gaussian distribution
-    public static Matrix sigma(DataFrame input) {
-        DenseMatrix elementary_sigma = convertToDenseMatrix(subtractedByVector(input, mean(input)));
+    public static Matrix sigma(DataFrame input, Vector mean) {
+        DenseMatrix elementary_sigma = convertToDenseMatrix(subtractedByVector(input, mean));
         Matrix sigma = elementary_sigma.multiply(elementary_sigma.transpose());
         MatrixUtil.divide(sigma, input.count());
         return sigma;

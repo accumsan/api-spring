@@ -42,9 +42,9 @@ public class KagglePreprocessor {
         DataFrame normals_20_test = normal_splits[1];
         DataFrame validation = normals_20_validation.unionAll(positives_validation);
         DataFrame test = normals_20_test.unionAll(positives_test);
-//        CsvUtil.save(train, FilesConstants.TRAIN_ANO, true);
-//        CsvUtil.save(validation, FilesConstants.VALIDATION_ANO, true);
-//        CsvUtil.save(test, FilesConstants.TEST_ANO, true);
+        CsvUtil.save(train, FilesConstants.TRAIN_ANO_DETECT, true);
+        CsvUtil.save(validation, FilesConstants.VALIDATION_ANO_DETECT, true);
+        CsvUtil.save(test, FilesConstants.TEST_ANO_DETECT, true);
     }
 
 
@@ -60,7 +60,7 @@ public class KagglePreprocessor {
     public void sigmaMatrix() {
         DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_MIN, true, true).drop("ID").drop("TARGET").select("var3", "var15", "var38");
         DataFrame extract = data.randomSplit(new double[]{0.0025, 0.9975})[0];
-        Matrix m = DataFrameUtil.sigma(extract);
+        Matrix m = DataFrameUtil.sigma(extract, DataFrameUtil.mean(extract));
         System.out.println(m);
     }
 

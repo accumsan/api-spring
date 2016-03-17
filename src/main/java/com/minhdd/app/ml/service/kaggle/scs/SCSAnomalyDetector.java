@@ -10,6 +10,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.stat.distribution.MultivariateGaussian;
 import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
@@ -37,30 +38,38 @@ public class SCSAnomalyDetector extends MlServiceAbstract implements MLService {
     }
 
     @Override
-    public Map<String, Object> getResults() {
-        MultivariateGaussian multivariateGaussian = (MultivariateGaussian) model;
-        DataFrame validation = (DataFrame) dataSet.getCrossValidation();
-        List<Tuple2<Double, Double>> predictionsAndLabelList = new ArrayList();
-        long m = validation.count();
-        for (long i=1; i<m; i++) {
-            Vector x = DataFrameUtil.extractVector(validation, DataFrameUtil.getFeatureColumns(2, validation), i);
-            double target = (double) validation.select("TARGET").collectAsList().get((int) i).getInt(0);
-            double prediction = multivariateGaussian.pdf(x);
-            if ((prediction > 0.0) || (prediction == 0.0 && target == 1.0)) {
-                System.out.println(prediction + " - " + target);
-            }
-            Tuple2<Double, Double> t = new Tuple2(multivariateGaussian.pdf(x), target);
-            predictionsAndLabelList.add(t);
-        }
-        return null;
+    protected MLAlgorithm<MultivariateGaussian, DataFrame> algorithm() {
+        return (train -> {
+            System.out.println("------------------");
+            System.out.println("- begin training -");
+            Vector mean = DataFrameUtil.mean(train);
+            MultivariateGaussian multivariateGaussian = new MultivariateGaussian(mean, DataFrameUtil.sigma(train, mean));
+            System.out.println("-  fin training  -");
+            System.out.println("------------------");
+            return multivariateGaussian;
+        });
     }
 
     @Override
-    protected MLAlgorithm<MultivariateGaussian, DataFrame> algorithm() {
-        DataFrame train = (DataFrame) dataSet.getTraining();
-        MultivariateGaussian multivariateGaussian = new MultivariateGaussian(DataFrameUtil.mean(train), DataFrameUtil.sigma(train));
-        return (training -> multivariateGaussian);
+    public Map<String, Object> getResults() {
+        System.out.println("-- begin printing results --");
+        MultivariateGaussian multivariateGaussian = (MultivariateGaussian) model;
+        DataFrame validation = (DataFrame) dataSet.getCrossValidation();
+//        List<Tuple2<Double, Double>> predictionsAndLabelList = new ArrayList();
+        long m = validation.count();
+        String[] features = DataFrameUtil.getFeatureColumns(2, validation);
+        List<Row> targets = validation.select("TARGET").collectAsList();
+        for (long i=1; i<m; i++) {
+            System.out.print(".");
+            double target = (double) targets.get((int) i).getInt(0);
+            double prediction = multivariateGaussian.pdf(DataFrameUtil.extractVector(validation, features, i));
+            if ((prediction > 0.0) || (prediction == 0.0 && target == 1.0)) {
+                System.out.println(prediction + " - " + target);
+            }
+//            predictionsAndLabelList.add(new Tuple2(prediction, target));
+        }
+        System.out.println("--  fin printing results  --");
+        return null;
     }
-
 
 }
