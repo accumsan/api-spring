@@ -1,0 +1,13 @@
+package com.minhdd.app.partials.sms;
+
+import org.junit.Test;
+
+/**
+ * Created by mdao on 18/03/2016.
+ */
+public class SenderTest {
+    @Test
+    public void test() {
+        Sender.sendUsingEsendex("message test", "minhdd", "0624427004");
+    }
+}
