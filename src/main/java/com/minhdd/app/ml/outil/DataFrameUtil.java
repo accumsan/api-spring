@@ -1,6 +1,7 @@
 package com.minhdd.app.ml.outil;
 
 import com.google.common.primitives.Doubles;
+import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.linalg.DenseMatrix;
 import org.apache.spark.mllib.linalg.Matrices;
@@ -11,6 +12,7 @@ import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.types.DataTypes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,8 +34,9 @@ public class DataFrameUtil {
     public static String[] getFeatureColumns(int offset, DataFrame data) {
         String[] columns = new String[data.columns().length - offset];
         int i = 0;
+
         for (String column : data.columns()) {
-            if (!column.equals("TARGET") && !column.equals("ID")) {
+            if (!column.equals("TARGET") && !column.equals("ID") && !FilesConstants.EXCLUDED_COLUMNS.contains(column)) {
                 columns[i++] = column;
             }
         }

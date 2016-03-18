@@ -1,5 +1,8 @@
 package com.minhdd.app.ml.service.kaggle.scs;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by minhdao on 10/03/16.
  */
@@ -20,7 +23,7 @@ public class FilesConstants {
 
     public final static String LOCAL_DIR_QS = "/Users/mdao/ws/minh/ml/kaggle/santander-customer-satisfaction/";
     public final static String LOCAL_DIR_MAC86 = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/";
-    public final static String LOCAL_DIR = LOCAL_DIR_MAC86;
+    public final static String LOCAL_DIR = LOCAL_DIR_QS;
     public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR + "data-extract/";
     public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR + "ano-detect/";
     public final static String TRAIN_KAGGLE = LOCAL_DIR + "train.csv";
@@ -32,5 +35,7 @@ public class FilesConstants {
     public static final String TRAIN_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_train.csv";
     public static final String VALIDATION_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_validation.csv";
     public static final String TEST_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_test.csv";
+
+    public static final List<String> EXCLUDED_COLUMNS = Arrays.asList("delta_num_aport_var33_1y3", "delta_imp_aport_var33_1y3");
 
 }
