@@ -35,15 +35,15 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public MLService loadData() {
-        DataFrame train = CsvUtil.getDataFrameFromCsv(trainPath, sqlContext, 2, false, schema).select("ID", "features", "TARGET");
-        DataFrame validation = CsvUtil.getDataFrameFromCsv(validationPath, sqlContext, 2, false, schema).select("ID", "features", "TARGET");
-        DataFrame test = CsvUtil.getDataFrameFromCsv(testPath, sqlContext, 2, false, schema).select("ID", "features", "TARGET");
+        DataFrame train = CsvUtil.getDataFrameFromCsv(trainPath, sqlContext, 2, false).select("ID", "features", "TARGET");
+        DataFrame validation = CsvUtil.getDataFrameFromCsv(validationPath, sqlContext, 2, false).select("ID", "features", "TARGET");
+        DataFrame test = CsvUtil.getDataFrameFromCsv(testPath, sqlContext, 2, false).select("ID", "features", "TARGET");
         return super.loadData(train, train, validation, test);
     }
 
     @Override
     public MLService loadInput(String inputPath) {
-        DataFrame data = CsvUtil.getDataFrameFromCsv(inputPath, sqlContext, 1, false, schema).select("ID", "features");
+        DataFrame data = CsvUtil.getDataFrameFromCsv(inputPath, sqlContext, 1, false).select("ID", "features");
         return super.setInput(data);
     }
 
@@ -51,12 +51,12 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     protected MLAlgorithm<PipelineModel, DataFrame> algorithm() {
         Object classifier = null;
         if (conf != null) {
-            if (MLConstants.GradientBoostedTree.equals(conf.getAlgorithm())) {
+            if (MLEnum.GradientBoostedTree.equals(conf.getAlgorithm())) {
                 classifier = new GBTClassifier()
                         .setLabelCol("indexedLabel")
                         .setFeaturesCol("indexedFeatures")
                         .setMaxIter(conf.getMaxIteration());
-            } else if (MLConstants.RandomForest.equals(conf.getAlgorithm())) {
+            } else if (MLEnum.RandomForest.equals(conf.getAlgorithm())) {
                 classifier = new RandomForestClassifier()
                         .setLabelCol("indexedLabel")
                         .setFeaturesCol("indexedFeatures");
@@ -66,13 +66,13 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
         StringIndexerModel labelIndexer = new StringIndexer()
                 .setInputCol("TARGET")
                 .setOutputCol("indexedLabel")
-                .fit((DataFrame) dataSet.getData());
+                .fit((DataFrame) dataSet.getTraining());
 
         VectorIndexerModel featureIndexer = new VectorIndexer()
                 .setInputCol("features")
                 .setOutputCol("indexedFeatures")
                 .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
-                .fit((DataFrame) dataSet.getData());
+                .fit((DataFrame) dataSet.getTraining());
 
         Pipeline pipeline = new Pipeline()
                 .setStages(new PipelineStage[]{labelIndexer, featureIndexer, (PipelineStage) classifier});
@@ -101,9 +101,9 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
         predictionsToShow.filter("TARGET = 0").filter("prediction = 1.0").count());
         System.out.println("Bad predictions (to 0) of target 1 : " +
         predictionsToShow.filter("TARGET = 1").filter("prediction = 0.0").count());
-        if (MLConstants.GradientBoostedTree.equals(conf.getAlgorithm())) {
+        if (MLEnum.GradientBoostedTree.equals(conf.getAlgorithm())) {
             printGBTResults(predictions);
-        } else if (MLConstants.RandomForest.equals(conf.getAlgorithm())) {
+        } else if (MLEnum.RandomForest.equals(conf.getAlgorithm())) {
             printRFCResults(predictions);
         }
         return null;

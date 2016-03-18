@@ -60,15 +60,15 @@ public class MLConfiguration {
 
     private NeuralNetworkConfiguration neuralNetworkConfiguration;
 
-    public MLConfiguration setAlgorithm(String algorithm) {
+    public MLConfiguration setAlgorithm(MLEnum algorithm) {
         this.algorithm = algorithm;
         return this;
     }
-    public String getAlgorithm() {
+    public MLEnum getAlgorithm() {
         return algorithm;
     }
 
-    private String algorithm;
+    private MLEnum algorithm;
     private int maxIteration;
     private double regParam;
     private double elasticNetParam;

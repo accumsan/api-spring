@@ -3,7 +3,7 @@ package com.minhdd.app.ml.service.kaggle.scs;
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLConfiguration;
-import com.minhdd.app.ml.domain.MLConstants;
+import com.minhdd.app.ml.domain.MLEnum;
 import com.minhdd.app.ml.domain.MLService;
 import org.apache.spark.SparkContext;
 import org.apache.spark.sql.SQLContext;
@@ -45,7 +45,7 @@ public class LogisticRegressionWithLBFGSTest {
     @Test
     public void trainWithBinaryClassificationAndProduce() {
         scfBinaryClassification.setFile(null, null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
-        MLConfiguration conf = new MLConfiguration().setAlgorithm(MLConstants.BinaryClassification);
+        MLConfiguration conf = new MLConfiguration().setAlgorithm(MLEnum.BinaryClassification);
         scfBinaryClassification.configure(conf).loadData().train().save(FilesConstants.BinaryClassification_MODEL);
         scfBinaryClassification.test().produce(FilesConstants.TEST_OUTPUT);
     }
