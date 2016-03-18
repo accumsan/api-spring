@@ -32,9 +32,8 @@ public class DataFrameUtil {
     }
 
     public static String[] getFeatureColumns(int offset, DataFrame data) {
-        String[] columns = new String[data.columns().length - offset];
+        String[] columns = new String[data.columns().length - offset - FilesConstants.EXCLUDED_COLUMNS.size()];
         int i = 0;
-
         for (String column : data.columns()) {
             if (!column.equals("TARGET") && !column.equals("ID") && !FilesConstants.EXCLUDED_COLUMNS.contains(column)) {
                 columns[i++] = column;
