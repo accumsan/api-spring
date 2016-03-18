@@ -33,33 +33,18 @@ public class Sender {
         if (!target.startsWith("00") && target.charAt(0) != '+') {
             target = String.format("0033%s", target.substring(1));
         }
-        try {
-            message = message.replace("ç", "c").replace("é", "e").replace("è", "e").replace("à", "a").replace("ù", "u");
-        } catch (Exception e) {
-            logger.error("Encoding non supporté !");
-            return resultBean;
+        message = message.replaceAll("ç", "c").replaceAll("é", "e").replaceAll("è", "e").replaceAll("à", "a").replaceAll("ù", "u");
+        SmsMessageRequest m = new SmsMessageRequest(target, message);
+        m.setValidity(1); // renvoi pendant 1h max si erreur
+        if (sender != null) {
+            m.setFrom(sender);
         }
+        BasicServiceFactory factory = ServiceFactory.createBasicAuthenticatingFactory(new UserPassword("md.insa@gmail.com", "krYrZxQcMWRT"));
+        MessagingService service = factory.getMessagingService();
+        long startTime = System.currentTimeMillis();
+        MessageResultResponse resp;
         try {
-            SmsMessageRequest m = new SmsMessageRequest(target, message);
-            m.setValidity(1); // renvoi pendant 1h max si erreur
-            if (sender != null) {
-                m.setFrom(sender);
-            }
-            BasicServiceFactory factory = ServiceFactory.createBasicAuthenticatingFactory(new UserPassword("md.insa@gmail.com", "krYrZxQcMWRT"));
-            MessagingService service = factory.getMessagingService();
-            long startTime = System.currentTimeMillis();
-            MessageResultResponse resp;
-            try {
-                resp = service.sendMessage("EX0207664", m);
-            } catch (HttpException e) {
-                logger.error("Erreur de connexion avec le service d'envoi de SMS Esendex (identifiants invalides ?)", e);
-                resultBean.setSendStatus(SmsResultBean.SendStatus.ERROR);
-                return resultBean;
-            } catch (EsendexException e) { // Indique un problème avec le service
-                logger.error("Une erreur est survenue avec le service d'envoi de SMS Esendex", e);
-                resultBean.setSendStatus(SmsResultBean.SendStatus.ERROR);
-                return resultBean;
-            }
+            resp = service.sendMessage("EX0207664", m);
             logger.info("Durée d'envoi du SMS Esendex : " + (System.currentTimeMillis() - startTime) + " ms");
             resultBean.setSendStatus(SmsResultBean.SendStatus.ERROR);
 
@@ -83,9 +68,16 @@ public class Sender {
             } else {
                 logger.error("Erreur lors de l'envoi du SMS Esendex.");
             }
-        } catch (Exception e) {
-            logger.error("Erreur lors de l'envoi du SMS Esendex", e);
+        } catch (HttpException e) {
+            logger.error("Erreur de connexion avec le service d'envoi de SMS Esendex (identifiants invalides ?)", e);
+            resultBean.setSendStatus(SmsResultBean.SendStatus.ERROR);
+            return resultBean;
+        } catch (EsendexException e) { // Indique un problème avec le service
+            logger.error("Une erreur est survenue avec le service d'envoi de SMS Esendex", e);
+            resultBean.setSendStatus(SmsResultBean.SendStatus.ERROR);
+            return resultBean;
+        } finally {
+            return resultBean;
         }
-        return resultBean;
     }
 }
