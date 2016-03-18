@@ -5,7 +5,9 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLConfiguration;
 import com.minhdd.app.ml.domain.MLConstants;
 import com.minhdd.app.ml.domain.MLService;
+import com.minhdd.app.ml.outil.CsvUtil;
 import org.apache.spark.SparkContext;
+import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +48,8 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void getSavedAndProduce() {
-        santanderCustomerSatisfaction.restore(FilesConstants.RFP_MODEL);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        santanderCustomerSatisfaction.schema(data.schema()).restore(FilesConstants.RFP_MODEL);
         santanderCustomerSatisfaction.loadInput(FilesConstants.TEST_KAGGLE).produce(FilesConstants.TEST_OUTPUT);
     }
 
@@ -56,14 +59,16 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void trainWithRandomForestAndTest() {
-        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        santanderCustomerSatisfaction.setFile(data.schema(), null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
         MLConfiguration conf = new MLConfiguration().setAlgorithm(MLConstants.RandomForest);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
 
     @Test
     public void trainWithRandomForestAndProduce() {
-        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        santanderCustomerSatisfaction.setFile(data.schema(), null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
         MLConfiguration conf = new MLConfiguration().setAlgorithm(MLConstants.RandomForest);
         santanderCustomerSatisfaction.configure(conf).loadData().train();
         santanderCustomerSatisfaction.test().produce(FilesConstants.TEST_OUTPUT);
@@ -72,7 +77,8 @@ public class SantanderCustomerSatisfactionTest {
     //Modify training file input, max iteration
     @Test
     public void trainWithRandomForestAndSave() {
-        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        santanderCustomerSatisfaction.setFile(data.schema(), null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
         MLConfiguration conf = new MLConfiguration().setAlgorithm(MLConstants.RandomForest);
         santanderCustomerSatisfaction.configure(conf).loadData().train().save(FilesConstants.RFP_MODEL);
     }
@@ -83,7 +89,8 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void trainWithGradientBoostedAndTest() {
-        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        santanderCustomerSatisfaction.setFile(data.schema(), null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setAlgorithm(MLConstants.GradientBoostedTree);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
@@ -91,7 +98,8 @@ public class SantanderCustomerSatisfactionTest {
     //Modify training file input, max iteration, test file input
     @Test
     public void trainWithGradientBoostedAndProduce() {
-        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        santanderCustomerSatisfaction.setFile(data.schema(), null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setAlgorithm(MLConstants.GradientBoostedTree);
         santanderCustomerSatisfaction.configure(conf).loadData().train();
         santanderCustomerSatisfaction.test().produce(FilesConstants.TEST_OUTPUT);
@@ -100,7 +108,8 @@ public class SantanderCustomerSatisfactionTest {
     //Modify training file input, max iteration
     @Test
     public void trainWithGradientBoostedAndSave() {
-        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        santanderCustomerSatisfaction.setFile(data.schema(), null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setAlgorithm(MLConstants.GradientBoostedTree);
         santanderCustomerSatisfaction.configure(conf).loadData().train().save(FilesConstants.GBT_MODEL);
     }

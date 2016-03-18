@@ -8,6 +8,7 @@ import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.types.StructType;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,8 +28,25 @@ public class CsvUtil {
                 .load(filePath);
     }
 
-    public static DataFrame getDataFrameFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, boolean scale) {
+    public static DataFrame loadCsvFile(SQLContext sqlContext, String filePath, boolean header, StructType schema) {
+        if (filePath == null) return null;
+        return sqlContext.read().format(CSV_FORMAT)
+                .schema(schema)
+                .option("header", header ? "true" : "false")
+                .load(filePath);
+    }
+
+    public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext, int offset, boolean scale) {
         DataFrame data = loadCsvFile(sqlContext, filePath, true, true);
+        return transformDataFrame(offset, scale, data);
+    }
+
+    public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext, int offset, boolean scale, StructType schema) {
+        DataFrame data = loadCsvFile(sqlContext, filePath, true, schema);
+        return transformDataFrame(offset, scale, data);
+    }
+
+    private static DataFrame transformDataFrame(int offset, boolean scale, DataFrame data) {
         String[] columns = DataFrameUtil.getFeatureColumns(offset, data);
         if (scale) {
             VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("assembledFeatures");
@@ -45,7 +63,7 @@ public class CsvUtil {
     }
 
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, String labelColName) {
-        return getLabeledPointJavaRDD(getDataFrameFromKaggleCsv(filePath, sqlContext, offset, false).select(labelColName, "features"));
+        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, offset, false).select(labelColName, "features"));
     }
 
     public static void save(DataFrame predictions, String output, boolean header) {

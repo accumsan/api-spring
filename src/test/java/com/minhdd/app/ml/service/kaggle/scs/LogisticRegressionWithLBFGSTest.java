@@ -38,13 +38,13 @@ public class LogisticRegressionWithLBFGSTest {
 
     @Test
     public void trainWithBinaryClassificationAndTest() {
-        scfBinaryClassification.setFile(null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
+        scfBinaryClassification.setFile(null, null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
         scfBinaryClassification.loadData().train().test().getResults();
     }
 
     @Test
     public void trainWithBinaryClassificationAndProduce() {
-        scfBinaryClassification.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        scfBinaryClassification.setFile(null, null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
         MLConfiguration conf = new MLConfiguration().setAlgorithm(MLConstants.BinaryClassification);
         scfBinaryClassification.configure(conf).loadData().train().save(FilesConstants.BinaryClassification_MODEL);
         scfBinaryClassification.test().produce(FilesConstants.TEST_OUTPUT);

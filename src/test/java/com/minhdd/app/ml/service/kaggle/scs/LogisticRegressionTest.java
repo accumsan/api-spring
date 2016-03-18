@@ -38,7 +38,7 @@ public class LogisticRegressionTest {
 
     @Test
     public void trainAndTest() {
-        scfRegression.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        scfRegression.setFile(null, null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(100000);
         scfRegression.configure(conf).loadData().train().getResults();
     }

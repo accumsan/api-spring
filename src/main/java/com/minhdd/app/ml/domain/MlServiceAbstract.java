@@ -3,6 +3,7 @@ package com.minhdd.app.ml.domain;
 import org.apache.spark.SparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.types.StructType;
 
 /**
  * Created by mdao on 04/03/2016.
@@ -11,6 +12,7 @@ public abstract class MlServiceAbstract implements MLService {
     protected SQLContext sqlContext;
     protected SparkContext sparkContext;
     protected String fileType;
+    protected StructType schema;
     protected String trainPath;
     protected String validationPath;
     protected String testPath;
@@ -30,7 +32,13 @@ public abstract class MlServiceAbstract implements MLService {
         return this;
     }
 
-    @Override public MLService setFile(String fileType, String trainPath, String validationPath, String testPath) {
+    @Override public MLService schema(StructType schema) {
+        this.schema = schema;
+        return this;
+    }
+
+    @Override public MLService setFile(StructType schema, String fileType, String trainPath, String validationPath, String testPath) {
+        this.schema = schema;
         this.fileType = fileType;
         this.trainPath = trainPath;
         this.validationPath = validationPath;

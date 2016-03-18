@@ -42,7 +42,7 @@ public class Classification {
     public ResponseEntity<Map<String, Object>> lor() {
         MLService logisticRegressionService = new LogisticRegressionService().context(sqlContext, sparkContext);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setRegParam(0.3).setElasticNetParam(0.8);
-        logisticRegressionService.setFile("libsvm", "data/mllib/sample_libsvm_data.txt", null, null);
+        logisticRegressionService.setFile(null, "libsvm", "data/mllib/sample_libsvm_data.txt", null, null);
         return new ResponseEntity<>(logisticRegressionService.loadData().configure(conf).train().getResults(), HttpStatus.OK);
     }
 
@@ -50,7 +50,7 @@ public class Classification {
     @RequestMapping(value = "/dtc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> dtc() {
         MLService decisionTreeClassifierService = new DecisionTreeClassifierService().context(sqlContext, sparkContext);
-        decisionTreeClassifierService.setFile("libsvm", "data/mllib/sample_libsvm_data.txt", null, null);
+        decisionTreeClassifierService.setFile(null, "libsvm", "data/mllib/sample_libsvm_data.txt", null, null);
         return new ResponseEntity<>(decisionTreeClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
 
@@ -58,7 +58,7 @@ public class Classification {
     @RequestMapping(value = "/rfc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> rfc() {
         MLService randomForestClassifierService = new RandomForestClassifierService().context(sqlContext, sparkContext);
-        randomForestClassifierService.setFile("libsvm", "data/mllib/sample_libsvm_data.txt", null, null);
+        randomForestClassifierService.setFile(null, "libsvm", "data/mllib/sample_libsvm_data.txt", null, null);
         return new ResponseEntity<>(randomForestClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
 
@@ -66,7 +66,7 @@ public class Classification {
     @RequestMapping(value = "/gtc", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String, Object>> gtc() {
         MLService gradientBoostedTreeClassifierService = new GradientBoostedTreeClassifierService().context(sqlContext, sparkContext);
-        gradientBoostedTreeClassifierService.setFile("libsvm", "data/mllib/sample_libsvm_data.txt", null, null);
+        gradientBoostedTreeClassifierService.setFile(null, "libsvm", "data/mllib/sample_libsvm_data.txt", null, null);
         return new ResponseEntity<>(gradientBoostedTreeClassifierService.loadData().train().test().getResults(), HttpStatus.OK);
     }
 
@@ -76,7 +76,7 @@ public class Classification {
         MLService multilayerPerceptronClassifierService = new MultilayerPerceptronClassifierService().context(sqlContext, sparkContext);
         NeuralNetworkConfiguration nnConf = new NeuralNetworkConfiguration().setLayers(new int[]{4, 5, 4, 3}).setBlockSize(128).setSeed(1234L);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(100).setNeuralNetworkConfiguration(nnConf);
-        multilayerPerceptronClassifierService.setFile("libsvm", "data/mllib/sample_multiclass_classification_data.txt", null, null);
+        multilayerPerceptronClassifierService.setFile(null, "libsvm", "data/mllib/sample_multiclass_classification_data.txt", null, null);
         return new ResponseEntity<>(multilayerPerceptronClassifierService.loadData().configure(conf).train().test().getResults(), HttpStatus.OK);
     }
 
@@ -85,7 +85,7 @@ public class Classification {
     public ResponseEntity<Map<String, Object>> ovr() {
         MLService oneVsRestClassifierService = new OneVsRestClassifierService().context(sqlContext, sparkContext);
         MLConfiguration conf = new MLConfiguration().setFractionTest(0.2).setTol(1E-6);
-        oneVsRestClassifierService.setFile("libsvm", "data/mllib/sample_multiclass_classification_data.txt", null, null);
+        oneVsRestClassifierService.setFile(null, "libsvm", "data/mllib/sample_multiclass_classification_data.txt", null, null);
         return new ResponseEntity<>(oneVsRestClassifierService.configure(conf).loadData().train().test().getResults(), HttpStatus.OK);
     }
 

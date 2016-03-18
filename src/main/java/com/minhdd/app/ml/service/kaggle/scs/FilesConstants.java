@@ -36,6 +36,6 @@ public class FilesConstants {
     public static final String VALIDATION_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_validation.csv";
     public static final String TEST_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_test.csv";
 
-    public static final List<String> EXCLUDED_COLUMNS = Arrays.asList("delta_num_aport_var33_1y3", "delta_imp_aport_var33_1y3");
+    public static final List<String> EXCLUDED_COLUMNS = Arrays.asList();
 
 }
