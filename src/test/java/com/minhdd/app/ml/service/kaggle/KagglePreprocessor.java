@@ -90,7 +90,7 @@ public class KagglePreprocessor {
 
     @Test
     public void getColumnsFromValue() {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.VALIDATION_MIN, true, true);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.VALIDATION_20, true, true);
         System.out.println(DataFrameUtil.getColumnsFromValue(data, -0.5));
 
     }
