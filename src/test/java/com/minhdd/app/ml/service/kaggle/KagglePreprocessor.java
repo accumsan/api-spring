@@ -88,5 +88,12 @@ public class KagglePreprocessor {
         assertEquals(expected, m);
     }
 
+    @Test
+    public void getColumnsFromValue() {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.VALIDATION_MIN, true, true);
+        System.out.println(DataFrameUtil.getColumnsFromValue(data, -0.5));
+
+    }
+
 
 }
