@@ -56,7 +56,7 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void trainWithRandomForestAndTest() {
-        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
         MLConfiguration conf = new MLConfiguration().setAlgorithm(MLConstants.RandomForest);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
@@ -83,7 +83,7 @@ public class SantanderCustomerSatisfactionTest {
 
     @Test
     public void trainWithGradientBoostedAndTest() {
-        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
+        santanderCustomerSatisfaction.setFile(null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setAlgorithm(MLConstants.GradientBoostedTree);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
