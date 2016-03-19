@@ -3,6 +3,7 @@ package com.minhdd.app.ml.outil;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.ml.feature.PCAModel;
 import org.apache.spark.ml.feature.StandardScalerModel;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.regression.LabeledPoint;
@@ -47,14 +48,13 @@ public class CsvUtil {
     }
 
     private static DataFrame transformDataFrame(int offset, boolean scale, DataFrame data) {
-        String[] columns = DataFrameUtil.getFeatureColumns(offset, data);
         if (scale) {
-            VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("assembledFeatures");
             StandardScalerModel scalerModel = StandardScalerModel.load(FilesConstants.SCALER);
-            return scalerModel.transform(assembler.transform(data));
+            return scalerModel.transform(DataFrameUtil.assembled(data, offset, "assembledFeatures"));
         } else {
-            VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol("features");
-            return assembler.transform(data);
+            DataFrame df = DataFrameUtil.assembled(data, 2, "pca");
+            PCAModel pcaModel = PCAModel.load(FilesConstants.OUTPUT_DIR+"pca.model");
+            return pcaModel.transform(df);
         }
     }
 

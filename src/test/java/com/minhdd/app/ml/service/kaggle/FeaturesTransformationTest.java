@@ -71,17 +71,23 @@ public class FeaturesTransformationTest {
     }
 
     @Test
-    public void featuresTest() {
-        DataFrame df = CsvUtil.getDataFrameFromCsv(FilesConstants.TRAIN_KAGGLE, sqlContext, 2, false);
+    public void pcaModel() {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        df = DataFrameUtil.assembled(df, 2, "pca");
         PCAModel pca = new PCA()
-                .setInputCol("features")
-                .setOutputCol("pca")
-                .setK(2)
+                .setInputCol("pca")
+                .setOutputCol("features")
+                .setK(300)
                 .fit(df);
-        DataFrame pcad = pca.transform(df).select("ID", "pca", "TARGET");
-        DataFrame result = DataFrameUtil.splitVectorColumn(sqlContext, pcad, "pca", 2, "ID").drop("pca");
-        System.out.println(df.count());
-        System.out.println(result.count());
+        try {
+            pca.save(FilesConstants.OUTPUT_DIR+"pca.model");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        DataFrame pcad = pca.transform(df).select("ID", "pca", "TARGET");
+//        DataFrame result = DataFrameUtil.splitVectorColumn(sqlContext, pcad, "pca", 2, "ID").drop("pca");
+//        System.out.println(df.count());
+//        System.out.println(result.count());
 //        result.filter("TARGET = 1").show(false);
 //        CsvUtil.save(result, FilesConstants.LOCAL_DIR + "pca.csv", true);
     }

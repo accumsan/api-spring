@@ -66,6 +66,12 @@ public class DataFrameUtil {
         return columns;
     }
 
+    public static DataFrame assembled(DataFrame df, int offset, String out) {
+        String[] columns = DataFrameUtil.getFeatureColumns(offset, df);
+        VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol(out);
+        return assembler.transform(df);
+    }
+
     public static Vector extractVector(DataFrame df, String[] columns, long row) {
         DataFrame meanAssembled = new VectorAssembler().setInputCols(columns).setOutputCol("features").transform(df);
         return meanAssembled.collectAsList().get((int) row).getAs("features");
