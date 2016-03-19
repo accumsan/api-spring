@@ -9,6 +9,7 @@ import org.apache.spark.mllib.linalg.Matrices;
 import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,22 @@ import static org.junit.Assert.assertEquals;
 @SpringApplicationConfiguration(classes = Application.class)
 @ActiveProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)
 public class KagglePreprocessor {
-    @Inject SQLContext sqlContext;
+    @Inject
+    SQLContext sqlContext;
+
+    @Test
+    public void featuresFilter() {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        Row minDf = data.cube().min().first();
+        Row maxDf = data.cube().max().first();
+        String[] columns = data.columns();
+        for (int i = 0; i < columns.length; i++) {
+            if (minDf.get(i).equals(maxDf.get(i))) {
+                System.out.println(columns[i] + " - " + minDf.get(i));
+            }
+        }
+        ;
+    }
 
     @Test
     public void split_anomaly_detection() {
@@ -68,22 +84,21 @@ public class KagglePreprocessor {
     }
 
     /**
-     *  Using this matrix example
-     +---+---+
-     |  a|  b|
-     +---+---+
-     |  1|  2|
-     |  3|  8|
-     | 13| 21|
-     +---+---+
-     *
+     * Using this matrix example
+     * +---+---+
+     * |  a|  b|
+     * +---+---+
+     * |  1|  2|
+     * |  3|  8|
+     * | 13| 21|
+     * +---+---+
      */
 
     @Test
     public void sigmaMatrix() {
         DataFrame data = CsvUtil.loadCsvFile(sqlContext, "data/dataframe/test1.csv", true, true);
         Matrix m = DataFrameUtil.sigma(data, DataFrameUtil.mean(data));
-        Matrix expected = Matrices.dense (2, 2, new double[]{27.555555555555554, 41.11111111111111, 41.11111111111111, 62.88888888888889});
+        Matrix expected = Matrices.dense(2, 2, new double[]{27.555555555555554, 41.11111111111111, 41.11111111111111, 62.88888888888889});
         System.out.println(expected);
         assertEquals(expected, m);
     }

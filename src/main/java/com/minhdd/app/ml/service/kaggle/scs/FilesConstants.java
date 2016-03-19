@@ -23,7 +23,7 @@ public class FilesConstants {
 
     public final static String LOCAL_DIR_QS = "/Users/mdao/ws/minh/ml/kaggle/santander-customer-satisfaction/";
     public final static String LOCAL_DIR_MAC86 = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/";
-    public final static String LOCAL_DIR = LOCAL_DIR_QS;
+    public final static String LOCAL_DIR = LOCAL_DIR_MAC86;
     public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR + "data-extract/";
     public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR + "ano-detect/";
     public final static String TRAIN_KAGGLE = LOCAL_DIR + "train.csv";
@@ -36,6 +36,6 @@ public class FilesConstants {
     public static final String VALIDATION_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_validation.csv";
     public static final String TEST_ANO_DETECT = LOCAL_DIR_ANO_DETECT + "ano_detect_test.csv";
 
-    public static final List<String> EXCLUDED_COLUMNS = Arrays.asList();
+    public static final List<String> EXCLUDED_COLUMNS = Arrays.asList("ind_var2_0", "ind_var2", "ind_var27_0", "ind_var28_0", "ind_var28", "ind_var27", "ind_var41", "ind_var46_0", "ind_var46", "num_var27_0", "num_var28_0", "num_var28", "num_var27", "num_var41", "num_var46_0", "num_var46", "saldo_var28", "saldo_var27", "saldo_var41", "saldo_var46", "imp_amort_var18_hace3", "imp_amort_var34_hace3", "imp_reemb_var13_hace3", "imp_reemb_var33_hace3", "imp_trasp_var17_out_hace3", "imp_trasp_var33_out_hace3", "num_var2_0_ult1", "num_var2_ult1", "num_reemb_var13_hace3", "num_reemb_var33_hace3", "num_trasp_var17_out_hace3", "num_trasp_var33_out_hace3", "saldo_var2_ult1", "saldo_medio_var13_medio_hace3");
 
 }
