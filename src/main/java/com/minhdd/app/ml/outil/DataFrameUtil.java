@@ -2,6 +2,8 @@ package com.minhdd.app.ml.outil;
 
 import com.google.common.primitives.Doubles;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.linalg.DenseMatrix;
 import org.apache.spark.mllib.linalg.Matrices;
@@ -9,10 +11,13 @@ import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
 import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -111,4 +116,28 @@ public class DataFrameUtil {
         return sigma;
     }
 
+    private static String columnName(String prefix, int i) {
+        return prefix + "_" + i;
+    }
+
+    public static DataFrame splitVectorColumn(SQLContext sqlContext, DataFrame df, String column, int length, String idColumn) {
+        JavaRDD<Row> rowRDD = df.toJavaRDD().map(row -> {
+            Vector v = row.getAs(column);
+            Double[] splits = ArrayUtils.toObject(v.toArray());
+            int id = row.getAs(idColumn);
+            Double[] array = new Double[length + 1];
+            array[0] = Double.valueOf(Integer.valueOf(id).doubleValue());
+            for (int i = 0; i < length; i++) {
+                array[i + 1] = splits[i];
+            }
+            return RowFactory.create(array);
+        });
+        List<StructField> fields = new ArrayList<>();
+        fields.add(DataTypes.createStructField(idColumn, DataTypes.DoubleType, true));
+        for (int i = 0; i < length; i++) {
+            fields.add(DataTypes.createStructField(columnName(column, i), DataTypes.DoubleType, true));
+        }
+        DataFrame output = sqlContext.createDataFrame(rowRDD, DataTypes.createStructType(fields));
+        return output.join(df, idColumn);
+    }
 }

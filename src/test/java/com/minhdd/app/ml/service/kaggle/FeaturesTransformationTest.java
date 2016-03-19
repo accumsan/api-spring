@@ -5,12 +5,8 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.outil.CsvUtil;
 import com.minhdd.app.ml.outil.DataFrameUtil;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
-import org.apache.spark.ml.feature.MinMaxScalerModel;
-import org.apache.spark.ml.feature.StandardScaler;
-import org.apache.spark.ml.feature.StandardScalerModel;
-import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.DataFrame;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,9 +72,17 @@ public class FeaturesTransformationTest {
 
     @Test
     public void featuresTest() {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_MIN, true, true);
-        System.out.println(data.columns().length);
-        System.out.println(FilesConstants.EXCLUDED_COLUMNS.size());
-        System.out.println(DataFrameUtil.getFeatureColumns(2, data).length);
+        DataFrame df = CsvUtil.getDataFrameFromCsv(FilesConstants.TRAIN_KAGGLE, sqlContext, 2, false);
+        PCAModel pca = new PCA()
+                .setInputCol("features")
+                .setOutputCol("pca")
+                .setK(2)
+                .fit(df);
+        DataFrame pcad = pca.transform(df).select("ID", "pca", "TARGET");
+        DataFrame result = DataFrameUtil.splitVectorColumn(sqlContext, pcad, "pca", 2, "ID").drop("pca");
+        System.out.println(df.count());
+        System.out.println(result.count());
+//        result.filter("TARGET = 1").show(false);
+//        CsvUtil.save(result, FilesConstants.LOCAL_DIR + "pca.csv", true);
     }
 }
