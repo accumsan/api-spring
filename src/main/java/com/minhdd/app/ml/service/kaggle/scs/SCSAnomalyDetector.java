@@ -57,7 +57,7 @@ public class SCSAnomalyDetector extends MlServiceAbstract implements MLService {
         DataFrame validation = (DataFrame) dataSet.getCrossValidation();
 //        List<Tuple2<Double, Double>> predictionsAndLabelList = new ArrayList();
         long m = validation.count();
-        String[] features = DataFrameUtil.getFeatureColumns(2, validation);
+        String[] features = DataFrameUtil.getFeatureColumns(validation);
         List<Row> targets = validation.select("TARGET").collectAsList();
         for (long i=1; i<m; i++) {
             System.out.println("---" + i%5);

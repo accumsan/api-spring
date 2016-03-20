@@ -18,11 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,7 +48,7 @@ public class KagglePreprocessor {
     @Test
     public void rowDuplicationDetection() {
         DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
-        String[] columns = DataFrameUtil.getFeatureColumns(2, df);
+        String[] columns = DataFrameUtil.getFeatureColumns(df);
         System.out.println(df.count());
         DataFrame output = df.dropDuplicates(columns);
         System.out.println(output.count());
@@ -60,17 +56,32 @@ public class KagglePreprocessor {
     }
 
     @Test
-    public void columnDuplicationDetection() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+    public void columnDuplicationOrProportionalDetection() {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        String[] features = DataFrameUtil.getFeatureColumns(data);
         for (String column : FilesConstants.EXCLUDED_COLUMNS) {
-            df = df.drop(column);
+            data = data.drop(column);
         }
-        DataFrame mean = df.cube().avg();
-        Map<Double, List<String>> duplicates = new HashMap();
-        String[] columns = mean.columns();
+        final DataFrame df = data;
+        String[] columns = df.columns();
+        Row meanRow = df.cube().avg().first();
+        Row maxRow = df.cube().max().first();
+        double[] result = new double[columns.length];
+        for (int i = 0; i < columns.length; i++) {
+            try {
+                result[i] = meanRow.getDouble(i) / maxRow.getInt(i);
+            } catch(ClassCastException e) {
+                try {
+                    result[i] = meanRow.getDouble(i) / maxRow.getLong(i);
+                } catch(ClassCastException e2) {
+                    result[i] = meanRow.getDouble(i) / maxRow.getDouble(i);
+                }
+            }
+        }
+        Map<Long, List<String>> duplicates = new HashMap();
         for (int i = 0; i < columns.length; i++) {
             String column = columns[i];
-            Double key = Double.valueOf(mean.select(column).first().getDouble(0));
+            Long key = Long.valueOf((int) (1000000000 * result[i]));
             if (duplicates.containsKey(key)) {
                 duplicates.get(key).add(column);
             } else {
@@ -79,9 +90,37 @@ public class KagglePreprocessor {
                 duplicates.put(key, list);
             }
         }
-        for (Double key : duplicates.keySet()) {
+        List<List<String>> verified = new ArrayList<>();
+        List<List<String>> toVerify = new ArrayList<>();
+//        duplicates.keySet().stream().sorted().filter(key -> duplicates.get(key).size() == 2).forEach(key -> {
+//            boolean verify = DataFrameUtil.sameRatio(df, duplicates.get(key).get(0), duplicates.get(key).get(1));
+//            if (verify) verified.add(duplicates.get(key));
+//            else toVerify.add(duplicates.get(key));
+//        });
+//        duplicates.keySet().stream().sorted().filter(key -> duplicates.get(key).size() == 3 ).forEach(key -> {
+//            System.out.println(duplicates.get(key));
+//            for (int i = 0; i<duplicates.get(key).size()-1; i++) {
+//                for (int j = i+1; j<duplicates.get(key).size(); j++) {
+//                    boolean verify = DataFrameUtil.sameRatio(df, duplicates.get(key).get(i), duplicates.get(key).get(j));
+//                    if (verify) verified.add(duplicates.get(key));
+//                    else toVerify.add(duplicates.get(key));
+//                }
+//            }
+//        });
+        duplicates.keySet().stream().sorted().filter(key -> duplicates.get(key).size() > 3 ).forEach(key -> {
             System.out.println(duplicates.get(key));
-        }
+            for (int i = 0; i<duplicates.get(key).size()-1; i++) {
+                boolean verify = DataFrameUtil.sameRatio(df, duplicates.get(key).get(i), duplicates.get(key).get(i+1));
+                if (verify) verified.add(duplicates.get(key));
+                else toVerify.add(duplicates.get(key));
+            }
+        });
+    }
+
+    @Test
+    public void compareTwoColumns() {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrameUtil.sameRatio(df, "delta_imp_aport_var33_1y3", "delta_imp_trasp_var33_out_1y3");
     }
 
     @Test

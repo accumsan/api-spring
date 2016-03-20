@@ -1,5 +1,6 @@
 package com.minhdd.app.ml.outil;
 
+import com.google.common.io.Files;
 import com.google.common.primitives.Doubles;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.commons.lang.ArrayUtils;
@@ -16,8 +17,11 @@ import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
+import org.apache.tomcat.jni.File;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,15 +40,19 @@ public class DataFrameUtil {
         return df.randomSplit(new double[]{fraction, 1 - fraction})[0];
     }
 
-    public static String[] getFeatureColumns(int offset, DataFrame data) {
-        String[] columns = new String[data.columns().length - offset - FilesConstants.EXCLUDED_COLUMNS.size()];
-        int i = 0;
+    public static String[] getFeatureColumns(DataFrame data) {
+        List<String> columns = new ArrayList<>();
+        List<String> excluded = Arrays.asList(FilesConstants.EXCLUDED_COLUMNS);
         for (String column : data.columns()) {
-            if (!column.equals("TARGET") && !column.equals("ID") && !FilesConstants.EXCLUDED_COLUMNS.contains(column)) {
-                columns[i++] = column;
+            if (!column.equals("TARGET") && !column.equals("ID") && !excluded.contains(column)) {
+                columns.add(column);
             }
         }
-        return columns;
+        System.out.println(data.columns().length + "-2-"
+                + FilesConstants.REDUNDANT_COLUMNS.length + "-"
+                + FilesConstants.ZEROS_COLUMNS.length + "=" + columns.size());
+//        return columns.toArray(new String[0]);
+        return columns.stream().toArray(String[]::new);
     }
 
     public static List<String> getColumnsFromValue(DataFrame data, double value) {
@@ -67,7 +75,7 @@ public class DataFrameUtil {
     }
 
     public static DataFrame assembled(DataFrame df, int offset, String out) {
-        String[] columns = DataFrameUtil.getFeatureColumns(offset, df);
+        String[] columns = DataFrameUtil.getFeatureColumns(df);
         VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol(out);
         return assembler.transform(df);
     }
@@ -145,5 +153,40 @@ public class DataFrameUtil {
         }
         DataFrame output = sqlContext.createDataFrame(rowRDD, DataTypes.createStructType(fields));
         return output.join(df, idColumn);
+    }
+
+    public static List<Double> doublesOfColumn(DataFrame df, String column1) {
+        return df.select(column1).toJavaRDD().map(row -> {
+            try {
+                int a = row.getInt(0);
+                return Double.valueOf((double) a);
+            } catch (ClassCastException e) {
+                try {
+                    long b = row.getLong(0);
+                    return Double.valueOf((double) b);
+                } catch (ClassCastException e2) {
+                    double c = row.getDouble(0);
+                    return Double.valueOf((double) c);
+                }
+            }
+        }).collect();
+    }
+
+    public static boolean sameRatio(DataFrame df, String column1, String column2) {
+        List<Double> doublesOfColumn1 = DataFrameUtil.doublesOfColumn(df, column1);
+        List<Double> doublesOfColumn2 = DataFrameUtil.doublesOfColumn(df, column2);
+        Double ratio = Collections.max(doublesOfColumn1) / Collections.max(doublesOfColumn2);
+        boolean redundant = true;
+        for (int i=1; i<doublesOfColumn1.size(); i++) {
+            if (doublesOfColumn1.get(i) != ratio * doublesOfColumn2.get(i)) {
+                System.out.println(column1 + " - " + column2 + " : not redundant : " + doublesOfColumn1.get(i) + "/" + doublesOfColumn2.get(i) + "!=" + ratio);
+                redundant = false;
+                break;
+            }
+        }
+        if (redundant) {
+            System.out.println(column1 + " - " + column2 + " = " + ratio);
+        }
+        return redundant;
     }
 }
