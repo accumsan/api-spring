@@ -53,7 +53,7 @@ public class CsvUtil {
             return scalerModel.transform(DataFrameUtil.assembled(data, offset, "assembledFeatures"));
         } else {
             DataFrame df = DataFrameUtil.assembled(data, 2, "pca");
-            PCAModel pcaModel = PCAModel.load(FilesConstants.OUTPUT_DIR+"pca.model");
+            PCAModel pcaModel = PCAModel.load(FilesConstants.PCA);
             return pcaModel.transform(df);
         }
     }
