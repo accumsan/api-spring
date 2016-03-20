@@ -19,6 +19,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -39,10 +44,44 @@ public class KagglePreprocessor {
         String[] columns = data.columns();
         for (int i = 0; i < columns.length; i++) {
             if (minDf.get(i).equals(maxDf.get(i))) {
-                System.out.println(columns[i] + " - " + minDf.get(i));
+                System.out.println(columns[i]);
             }
         }
-        ;
+    }
+
+    @Test
+    public void rowDuplicationDetection() {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        String[] columns = DataFrameUtil.getFeatureColumns(2, df);
+        System.out.println(df.count());
+        DataFrame output = df.dropDuplicates(columns);
+        System.out.println(output.count());
+        CsvUtil.save(output, FilesConstants.OUTPUT_DIR + "train_deduplicated.csv", true);
+    }
+
+    @Test
+    public void columnDuplicationDetection() {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        for (String column : FilesConstants.EXCLUDED_COLUMNS) {
+            df = df.drop(column);
+        }
+        DataFrame mean = df.cube().avg();
+        Map<Double, List<String>> duplicates = new HashMap();
+        String[] columns = mean.columns();
+        for (int i = 0; i < columns.length; i++) {
+            String column = columns[i];
+            Double key = Double.valueOf(mean.select(column).first().getDouble(0));
+            if (duplicates.containsKey(key)) {
+                duplicates.get(key).add(column);
+            } else {
+                List<String> list = new ArrayList<>();
+                list.add(column);
+                duplicates.put(key, list);
+            }
+        }
+        for (Double key : duplicates.keySet()) {
+            System.out.println(duplicates.get(key));
+        }
     }
 
     @Test
