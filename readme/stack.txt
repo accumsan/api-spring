@@ -8,3 +8,4 @@ spring websocket, websocket client (com.neovisionaries) spring websocket SockJS
 Many WebSockets libraries (for example SockJS and Socket.io) provide fallback-options using long polling, polling, ...
 This is why choosing SockJS as the client is a good idea.)
 spark mllib
+functionaljava
