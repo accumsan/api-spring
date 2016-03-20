@@ -15,6 +15,8 @@ public class FilesConstants {
 
     public final static String OUTPUT_DIR = "data/kaggle/santander-customer-satisfaction/save/";
     public final static String SCALER = OUTPUT_DIR + "scaler.all.model";
+    public final static String PCA = OUTPUT_DIR + "pca.model";
+    public final static String CHISQ = OUTPUT_DIR + "chisq.model";
     public final static String RFP_MODEL = OUTPUT_DIR + "random-forest-pipeline.model";
     public final static String GBT_MODEL = OUTPUT_DIR + "gradient-boosted-pipeline.model";
     public final static String LR_MODEL = OUTPUT_DIR + "logistic-regression.model";
