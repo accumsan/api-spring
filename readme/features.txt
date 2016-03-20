@@ -10,3 +10,5 @@ PropertyPlaceholderConfigurer : @PropertySource
 - sse event source (comment) : illustrated in front-end application
 - websocket spring
 - websocket communication with python scikitlearn
+
+- sms sender
