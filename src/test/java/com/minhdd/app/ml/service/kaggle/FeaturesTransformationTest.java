@@ -80,7 +80,7 @@ public class FeaturesTransformationTest {
                 .setK(300)
                 .fit(df);
         try {
-            pca.save(FilesConstants.OUTPUT_DIR+"pca.model");
+            pca.save(FilesConstants.PCA);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,4 +91,22 @@ public class FeaturesTransformationTest {
 //        result.filter("TARGET = 1").show(false);
 //        CsvUtil.save(result, FilesConstants.LOCAL_DIR + "pca.csv", true);
     }
+
+    @Test
+    public void chisqSelector() {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        df = DataFrameUtil.assembled(df, 2, "chisqselector");
+        ChiSqSelector selector = new ChiSqSelector()
+                .setNumTopFeatures(100)
+                .setFeaturesCol("chisqselector")
+                .setLabelCol("TARGET")
+                .setOutputCol("features");
+        ChiSqSelectorModel model = selector.fit(df);
+        try {
+            model.save(FilesConstants.CHISQ);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
