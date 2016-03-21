@@ -30,7 +30,7 @@
         <javax.websocket>1.1</javax.websocket>
         <com.neovisionaries>1.13</com.neovisionaries>
         <guava>19.0</guava>
-        <apache.spark>1.6.0</apache.spark>
+        <apache.spark>1.6.1</apache.spark>
         <databricks.csv>1.4.0</databricks.csv>
         <functionaljava>4.5</functionaljava>
 
