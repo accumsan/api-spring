@@ -35,16 +35,16 @@ public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract i
 
     @Override
     public MLService loadData() {
-        DataFrame data = CsvUtil.getDataFrameFromCsv(trainPath, sqlContext, 2, scale).select("ID", "features", "TARGET");
+        DataFrame data = ScsUtil.getDataFrameFromCsv(trainPath, sqlContext, scale).select("ID", "features", "TARGET");
         DataFrame train = data.withColumn("label", data.col("TARGET").cast(DataTypes.DoubleType));
-        DataFrame test = CsvUtil.getDataFrameFromCsv(testPath, sqlContext, 2, scale).select("ID", "features", "TARGET");
+        DataFrame test = ScsUtil.getDataFrameFromCsv(testPath, sqlContext, scale).select("ID", "features", "TARGET");
         test = test.withColumn("label", test.col("TARGET").cast(DataTypes.DoubleType));
         return super.loadData(train, train, null, test);
     }
 
     @Override
     public MLService loadInput(String inputPath) {
-        DataFrame data = CsvUtil.getDataFrameFromCsv(inputPath, sqlContext, 1, scale).select("ID", "features");
+        DataFrame data = ScsUtil.getDataFrameFromCsv(inputPath, sqlContext, scale).select("ID", "features");
         return super.setInput(data);
     }
 

@@ -73,10 +73,10 @@ public class FeaturesTransformationTest {
     @Test
     public void pcaModel() {
         DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
-        df = DataFrameUtil.assembled(df, 2, "pca");
+        df = DataFrameUtil.assembled(df, "pcain");
         PCAModel pca = new PCA()
-                .setInputCol("pca")
-                .setOutputCol("features")
+                .setInputCol("pcain")
+                .setOutputCol("pcaout")
                 .setK(260)
                 .fit(df);
         try {
@@ -95,7 +95,7 @@ public class FeaturesTransformationTest {
     @Test
     public void chisqSelector() {
         DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_DEDUPLICATED_KAGGLE, true, true);
-        df = DataFrameUtil.assembled(df, 2, "chisqselector");
+        df = DataFrameUtil.assembled(df, "chisqselector");
         ChiSqSelector selector = new ChiSqSelector()
                 .setNumTopFeatures(100)
                 .setFeaturesCol("chisqselector")

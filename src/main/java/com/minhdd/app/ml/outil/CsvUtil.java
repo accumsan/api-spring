@@ -5,6 +5,7 @@ import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.ml.feature.MinMaxScalerModel;
 import org.apache.spark.ml.feature.PCAModel;
+import org.apache.spark.ml.feature.PolynomialExpansion;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
@@ -34,36 +35,6 @@ public class CsvUtil {
                 .schema(schema)
                 .option("header", header ? "true" : "false")
                 .load(filePath);
-    }
-
-    public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext, int offset, boolean scale) {
-        DataFrame data = loadCsvFile(sqlContext, filePath, true, true);
-        return transformDataFrame(offset, scale, data);
-    }
-
-    public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext, int offset, boolean scale, StructType schema) {
-        DataFrame data = loadCsvFile(sqlContext, filePath, true, schema);
-        return transformDataFrame(offset, scale, data);
-    }
-
-    private static DataFrame transformDataFrame(int offset, boolean scale, DataFrame data) {
-        if (scale) {
-            MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
-            return scalerModel.transform(DataFrameUtil.assembled(data, offset, "assembledFeatures"));
-        } else {
-            DataFrame df = DataFrameUtil.assembled(data, 2, "pca");
-            PCAModel pcaModel = PCAModel.load(FilesConstants.PCA);
-            return pcaModel.transform(df);
-//            return  DataFrameUtil.assembled(data, 2, "features");
-        }
-    }
-
-    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDD(DataFrame df) {
-        return df.toJavaRDD().map(row -> new LabeledPoint(row.getInt(0), row.getAs(1)));
-    }
-
-    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, String labelColName, boolean scale) {
-        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, offset, scale).select(labelColName, "features"));
     }
 
     public static void save(DataFrame predictions, String output, boolean header) {

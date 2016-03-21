@@ -37,15 +37,15 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
 
     @Override
     public MLService loadData() {
-        JavaRDD<LabeledPoint> train = CsvUtil.getLabeledPointJavaRDDFromKaggleCsv(trainPath, sqlContext, 2, "TARGET", scale);
-        JavaRDD<LabeledPoint> validation = CsvUtil.getLabeledPointJavaRDDFromKaggleCsv(validationPath, sqlContext, 2, "TARGET", scale);
-        JavaRDD<LabeledPoint> test = CsvUtil.getLabeledPointJavaRDDFromKaggleCsv(testPath, sqlContext, 2, "TARGET", scale);
+        JavaRDD<LabeledPoint> train = ScsUtil.getLabeledPointJavaRDDFromKaggleCsv(trainPath, sqlContext, "TARGET", scale);
+        JavaRDD<LabeledPoint> validation = ScsUtil.getLabeledPointJavaRDDFromKaggleCsv(validationPath, sqlContext, "TARGET", scale);
+        JavaRDD<LabeledPoint> test = ScsUtil.getLabeledPointJavaRDDFromKaggleCsv(testPath, sqlContext, "TARGET", scale);
         return super.loadData(null, train, validation, test);
     }
 
     @Override
     public MLService loadInput(String inputPath) {
-        JavaRDD<LabeledPoint> input = CsvUtil.getLabeledPointJavaRDDFromKaggleCsv(inputPath, sqlContext, 1, "ID", scale);
+        JavaRDD<LabeledPoint> input = ScsUtil.getLabeledPointJavaRDDFromKaggleCsv(inputPath, sqlContext, "ID", scale);
         return super.setInput(input);
     }
 

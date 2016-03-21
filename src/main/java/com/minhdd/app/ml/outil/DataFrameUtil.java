@@ -74,7 +74,7 @@ public class DataFrameUtil {
         return columns;
     }
 
-    public static DataFrame assembled(DataFrame df, int offset, String out) {
+    public static DataFrame assembled(DataFrame df, String out) {
         String[] columns = DataFrameUtil.getFeatureColumns(df);
         VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol(out);
         return assembler.transform(df);
