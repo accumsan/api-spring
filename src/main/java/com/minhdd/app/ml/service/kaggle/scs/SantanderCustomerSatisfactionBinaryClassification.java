@@ -55,7 +55,6 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
         LogisticRegressionModel lrm = model.run(((JavaRDD<LabeledPoint>) dataSet.getTraining()).rdd());
         lrm.clearThreshold();
 
-        System.out.println("validation to select threshold");
         JavaRDD<Tuple2<Object, Object>> predictionAndLabels = ((JavaRDD<LabeledPoint>) dataSet.getCrossValidation()).map(p -> {
             Double prediction = lrm.predict(p.features());
             return new Tuple2<>(prediction, p.label());
@@ -69,7 +68,7 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
 //        Tuple2<Object, Object> precisionMax = precisions.reduce((a, b) ->
 //                ((Double) a._2() - (Double) b._2() > 0) ? a : b
 //        );
-        System.out.println("f1scoreMax: " + f1scoreMax);
+        System.out.println("Validation to select threshold with f1scoreMax: " + f1scoreMax);
         lrm.setThreshold((Double) f1scoreMax._1());
         return (JavaRDD<LabeledPoint> training) -> lrm;
     }
