@@ -60,6 +60,7 @@ public class SCSLogisticRegressionWithLBFGS extends MlServiceAbstract implements
             return new Tuple2<>(prediction, p.label());
         });
         BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(predictionAndLabels.rdd());
+        System.out.println("Area under ROC = " + metrics.areaUnderROC());
         JavaRDD<Tuple2<Object, Object>> f1Score = metrics.fMeasureByThreshold().toJavaRDD();
         Tuple2<Object, Object> f1scoreMax = f1Score.reduce((a, b) ->
                 ((Double) a._2() - (Double) b._2() > 0) ? a : b

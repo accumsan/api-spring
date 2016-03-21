@@ -84,7 +84,7 @@ public class SantanderCustomerSatisfactionTest {
     @Test
     public void trainWithGradientBoostedAndTest() {
         santanderCustomerSatisfaction.setFile(null, null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
-        MLConfiguration conf = new MLConfiguration().setMaxIteration(200).setAlgorithm(MLEnum.GradientBoostedTree);
+        MLConfiguration conf = new MLConfiguration().setMaxIteration(50).setAlgorithm(MLEnum.GradientBoostedTree);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
 

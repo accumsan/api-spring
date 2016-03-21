@@ -126,13 +126,14 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     private void printMetrics(JavaRDD<Tuple2<Object, Object>> predictionAndLabels) {
         BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(predictionAndLabels.rdd());
+        System.out.println("Area under ROC = " + metrics.areaUnderROC());
         // Precision by threshold
-        JavaRDD<Tuple2<Object, Object>> precision = metrics.precisionByThreshold().toJavaRDD();
+//        JavaRDD<Tuple2<Object, Object>> precision = metrics.precisionByThreshold().toJavaRDD();
         System.out.println();
         //System.out.println("Precision by threshold: \t" + precision.collect());
 
         // Recall by threshold
-        JavaRDD<Tuple2<Object, Object>> recall = metrics.recallByThreshold().toJavaRDD();
+//        JavaRDD<Tuple2<Object, Object>> recall = metrics.recallByThreshold().toJavaRDD();
         //System.out.println("Recall by threshold: \t\t" + recall.collect());
 
         // F Score by threshold
@@ -142,27 +143,21 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
         System.out.println("F1 Score max: " + f1Score.reduce((a, b) ->
                 ((Double) a._2() - (Double) b._2() > 0) ? a : b
         ));
-        JavaRDD<Tuple2<Object, Object>> f2Score = metrics.fMeasureByThreshold(2.0).toJavaRDD()
-                .filter((Tuple2<Object, Object> a) -> (double) a._2() > 0.2);
-        System.out.println("F2 Score by threshold: \t\t" + f2Score.collect());
+//        JavaRDD<Tuple2<Object, Object>> f2Score = metrics.fMeasureByThreshold(2.0).toJavaRDD()
+//                .filter((Tuple2<Object, Object> a) -> (double) a._2() > 0.2);
+//        System.out.println("F2 Score by threshold: \t\t" + f2Score.collect());
 
         // Precision-recall curve
-        JavaRDD<Tuple2<Object, Object>> prc = metrics.pr().toJavaRDD();
+//        JavaRDD<Tuple2<Object, Object>> prc = metrics.pr().toJavaRDD();
         //System.out.println("Precision-recall curve: \t" + prc.collect());
 
-        // Thresholds
-        JavaRDD<Double> thresholds = precision.map(
-                (Function<Tuple2<Object, Object>, Double>) t -> new Double(t._1().toString())
-        );
-        // ROC Curve
-        JavaRDD<Tuple2<Object, Object>> roc = metrics.roc().toJavaRDD();
-        //System.out.println("ROC curve: " + roc.collect());
+//        JavaRDD<Double> thresholds = precision.map(
+//                (Function<Tuple2<Object, Object>, Double>) t -> new Double(t._1().toString())
+//        );
+//        JavaRDD<Tuple2<Object, Object>> roc = metrics.roc().toJavaRDD();
+//        System.out.println("ROC curve: " + roc.collect());
 
-        // AUPRC
         //System.out.println("Area under precision-recall curve = " + metrics.areaUnderPR());
-
-        // AUROC
-        //System.out.println("Area under ROC = " + metrics.areaUnderROC());
     }
 
     @Override

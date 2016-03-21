@@ -14,6 +14,10 @@ import org.apache.spark.sql.SQLContext;
  * Created by mdao on 21/03/2016.
  */
 public class ScsUtil {
+    public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext) {
+        return getDataFrameFromCsv(filePath, sqlContext, false);
+    }
+
     public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext, boolean scale) {
         return getDataFrameFromCsv(filePath, sqlContext, scale, 1);
     }
@@ -50,6 +54,14 @@ public class ScsUtil {
     }
 
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromCsv(String filePath, SQLContext sqlContext, String labelColName, boolean scale) {
-        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, scale, 2).select(labelColName, "features"));
+        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, scale, 1).select(labelColName, "features"));
+    }
+
+    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromCsv(String filePath, SQLContext sqlContext, String labelColName) {
+        return getLabeledPointJavaRDDFromCsv(filePath, sqlContext, labelColName, false);
+    }
+
+    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromCsv(String filePath, SQLContext sqlContext) {
+        return getLabeledPointJavaRDDFromCsv(filePath, sqlContext, "TARGET");
     }
 }

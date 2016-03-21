@@ -5,11 +5,15 @@ import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.classification.LogisticRegressionModel;
+import org.apache.spark.mllib.classification.LogisticRegressionWithLBFGS;
 import org.apache.spark.mllib.regression.LabeledPoint;
+import org.apache.spark.sql.DataFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import scala.Tuple2;
 
 import java.util.Map;
 
@@ -28,9 +32,18 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
 
     @Override
     protected MLAlgorithm algorithm() {
-        JavaRDD<LabeledPoint> train = ScsUtil.getLabeledPointJavaRDDFromCsv(trainPath, sqlContext, "TARGET", false);
-        JavaRDD<LabeledPoint> validation = ScsUtil.getLabeledPointJavaRDDFromCsv(validationPath, sqlContext, "TARGET", false);
-        JavaRDD<LabeledPoint> test = ScsUtil.getLabeledPointJavaRDDFromCsv(testPath, sqlContext, "TARGET", false);
+        DataFrame train = ScsUtil.getDataFrameFromCsv(trainPath, sqlContext).select("TARGET", "features", "ID");
+        DataFrame validation = ScsUtil.getDataFrameFromCsv(validationPath, sqlContext).select("TARGET", "features", "ID");
+        DataFrame test = ScsUtil.getDataFrameFromCsv(testPath, sqlContext).select("TARGET", "features", "ID");
+        JavaRDD<LabeledPoint> trainRDD = ScsUtil.getLabeledPointJavaRDDFromCsv(trainPath, sqlContext, "TARGET");
+        JavaRDD<LabeledPoint> validationRDD = ScsUtil.getLabeledPointJavaRDDFromCsv(validationPath, sqlContext, "TARGET");
+        JavaRDD<LabeledPoint> testRDD = ScsUtil.getLabeledPointJavaRDDFromCsv(testPath, sqlContext, "TARGET");
+
+        final LogisticRegressionWithLBFGS model = new LogisticRegressionWithLBFGS().setNumClasses(2);
+        LogisticRegressionModel lrm = model.run(trainRDD.rdd());
+        lrm.clearThreshold();
+        JavaRDD<Tuple2<Object, Object>> predictionAndLabels = validationRDD.map(p -> new Tuple2<>(lrm.predict(p.features()), p.label()));
+
         return null;
     }
 
