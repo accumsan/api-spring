@@ -32,7 +32,8 @@ public class FilesConstants {
     /*******************************************************************/
     public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR + "extracts/";
     public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR + "ano-detect/";
-    public final static String TRAIN_KAGGLE = LOCAL_DIR + "train_deduplicated.csv";
+    public final static String TRAIN_ORIGINAL_KAGGLE = LOCAL_DIR + "train.csv";
+    public final static String TRAIN_DEDUPLICATED_KAGGLE = LOCAL_DIR + "train_deduplicated.csv";
     public final static String TEST_KAGGLE = LOCAL_DIR + "test.csv";
     public static final String TRAIN_80 = LOCAL_DIR_EXTRACT + "train_80.csv";
     public static final String TRAIN_60 = LOCAL_DIR_EXTRACT + "train_60.csv";
@@ -44,5 +45,5 @@ public class FilesConstants {
 
     public static final String[] ZEROS_COLUMNS = new String[]{"ind_var2_0", "ind_var2", "ind_var27_0", "ind_var28_0", "ind_var28", "ind_var27", "ind_var41", "ind_var46_0", "ind_var46", "num_var27_0", "num_var28_0", "num_var28", "num_var27", "num_var41", "num_var46_0", "num_var46", "saldo_var28", "saldo_var27", "saldo_var41", "saldo_var46", "imp_amort_var18_hace3", "imp_amort_var34_hace3", "imp_reemb_var13_hace3", "imp_reemb_var33_hace3", "imp_trasp_var17_out_hace3", "imp_trasp_var33_out_hace3", "num_var2_0_ult1", "num_var2_ult1", "num_reemb_var13_hace3", "num_reemb_var33_hace3", "num_trasp_var17_out_hace3", "num_trasp_var33_out_hace3", "saldo_var2_ult1", "saldo_medio_var13_medio_hace3"};
     public static final String[] REDUNDANT_COLUMNS = new String[]{"num_var44", "ind_var20_0", "num_var8", "num_var7_emit_ult1", "num_var20", "delta_num_reemb_var13_1y3", "num_reemb_var13_ult1", "saldo_medio_var13_medio_ult1" , "saldo_var29", "delta_num_trasp_var33_in_1y3", "delta_num_reemb_var17_1y3", "num_var32_0", "ind_var32_0", "num_var25_0", "num_var26_0", "num_var37_0", "ind_var25_0", "ind_var26_0", "ind_var37_0", "ind_var29_0", "num_var6_0", "num_var29_0", "ind_var39", "num_var40", "num_var39", "num_var34_0", "num_var18_0", "num_var13_medio_0", "ind_var34_0", "ind_var18_0", "ind_var13_medio_0"};
-    public static final String[] EXCLUDED_COLUMNS = (String[]) ArrayUtils.addAll(ZEROS_COLUMNS, new String[]{});
+    public static final String[] EXCLUDED_COLUMNS = (String[]) ArrayUtils.addAll(ZEROS_COLUMNS, REDUNDANT_COLUMNS);
 }

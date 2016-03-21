@@ -31,7 +31,7 @@ public class FeaturesTransformationTest {
     //you have to remove first folder FilesConstants.SCALER
     @Test
     public void scaler() throws IOException {
-        DataFrame train = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true).drop("TARGET").drop("ID");
+        DataFrame train = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true).drop("TARGET").drop("ID");
         DataFrame test = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TEST_KAGGLE, true, true).drop("ID");
         DataFrame data = train.unionAll(test);
         String[] columns = DataFrameUtil.getFeatureColumns(data);
@@ -72,7 +72,7 @@ public class FeaturesTransformationTest {
 
     @Test
     public void pcaModel() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_DEDUPLICATED_KAGGLE, true, true);
         df = DataFrameUtil.assembled(df, 2, "pca");
         PCAModel pca = new PCA()
                 .setInputCol("pca")
@@ -94,7 +94,7 @@ public class FeaturesTransformationTest {
 
     @Test
     public void chisqSelector() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_DEDUPLICATED_KAGGLE, true, true);
         df = DataFrameUtil.assembled(df, 2, "chisqselector");
         ChiSqSelector selector = new ChiSqSelector()
                 .setNumTopFeatures(100)

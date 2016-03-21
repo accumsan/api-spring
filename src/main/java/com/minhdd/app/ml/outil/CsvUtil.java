@@ -63,8 +63,8 @@ public class CsvUtil {
         return df.toJavaRDD().map(row -> new LabeledPoint(row.getInt(0), row.getAs(1)));
     }
 
-    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, String labelColName) {
-        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, offset, false).select(labelColName, "features"));
+    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromKaggleCsv(String filePath, SQLContext sqlContext, int offset, String labelColName, boolean scale) {
+        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, offset, scale).select(labelColName, "features"));
     }
 
     public static void save(DataFrame predictions, String output, boolean header) {

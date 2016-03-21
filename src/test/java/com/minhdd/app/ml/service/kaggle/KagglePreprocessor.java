@@ -34,7 +34,7 @@ public class KagglePreprocessor {
 
     @Test
     public void featuresFilter() {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
         Row minDf = data.cube().min().first();
         Row maxDf = data.cube().max().first();
         String[] columns = data.columns();
@@ -47,7 +47,7 @@ public class KagglePreprocessor {
 
     @Test
     public void rowDuplicationDetection() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
         String[] columns = DataFrameUtil.getFeatureColumns(df);
         System.out.println(df.count());
         DataFrame output = df.dropDuplicates(columns);
@@ -57,7 +57,7 @@ public class KagglePreprocessor {
 
     @Test
     public void columnDuplicationOrProportionalDetection() {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
         String[] features = DataFrameUtil.getFeatureColumns(data);
         for (String column : FilesConstants.EXCLUDED_COLUMNS) {
             data = data.drop(column);
@@ -119,7 +119,7 @@ public class KagglePreprocessor {
 
     @Test
     public void compareTwoColumns() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
         DataFrameUtil.sameRatio(df, "delta_imp_aport_var33_1y3", "delta_imp_trasp_var33_out_1y3");
     }
 
@@ -142,7 +142,7 @@ public class KagglePreprocessor {
 
     @Test
     public void split_anomaly_detection() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_KAGGLE, true, true);
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_DEDUPLICATED_KAGGLE, true, true);
         DataFrame positives = df.filter("TARGET = 1");
         DataFrame[] positives_splits = positives.randomSplit(new double[]{0.5, 0.5});
         DataFrame positives_validation = positives_splits[0];
