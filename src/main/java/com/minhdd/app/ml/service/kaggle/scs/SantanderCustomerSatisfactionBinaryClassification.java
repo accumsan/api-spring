@@ -64,10 +64,10 @@ public class SantanderCustomerSatisfactionBinaryClassification extends MlService
         Tuple2<Object, Object> f1scoreMax = f1Score.reduce((a, b) ->
                 ((Double) a._2() - (Double) b._2() > 0) ? a : b
         );
-        JavaRDD<Tuple2<Object, Object>> recalls = metrics.recallByThreshold().toJavaRDD();
-        Tuple2<Object, Object> recallMax = recalls.reduce((a, b) ->
-                ((Double) a._2() - (Double) b._2() > 0) ? a : b
-        );
+//        JavaRDD<Tuple2<Object, Object>> precisions = metrics.precisionByThreshold().toJavaRDD();
+//        Tuple2<Object, Object> precisionMax = precisions.reduce((a, b) ->
+//                ((Double) a._2() - (Double) b._2() > 0) ? a : b
+//        );
         System.out.println("f1scoreMax: " + f1scoreMax);
         lrm.setThreshold((Double) f1scoreMax._1());
         return (JavaRDD<LabeledPoint> training) -> lrm;
