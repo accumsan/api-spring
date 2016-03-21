@@ -90,7 +90,6 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     public Map<String, Object> getResults() {
         DataFrame predictions = (DataFrame) this.predictions;
         DataFrame predictionsToShow = predictions.select("ID", "TARGET", "prediction");
-        predictionsToShow.show(1000000000, false);
         System.out.println("================================================");
         System.out.println("Number of predictions : " + predictionsToShow.count());
         System.out.println("Number of target 1 : " + predictionsToShow.filter("TARGET = 1").count());

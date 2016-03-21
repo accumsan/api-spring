@@ -29,7 +29,7 @@ public class LogisticRegressionWithLBFGSTest {
 
     @Before
     public void init() {
-        scfBinaryClassification = new SantanderCustomerSatisfactionBinaryClassification().context(sqlContext, sparkContext);
+        scfBinaryClassification = new SCSLogisticRegressionWithLBFGS().context(sqlContext, sparkContext);
     }
 
     /****

@@ -9,40 +9,47 @@ import org.apache.spark.ml.feature.PolynomialExpansion;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
-import org.apache.spark.sql.types.StructType;
 
 /**
  * Created by mdao on 21/03/2016.
  */
 public class ScsUtil {
     public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext, boolean scale) {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, filePath, true, true);
-        return transformDataFrame(scale, data);
+        return getDataFrameFromCsv(filePath, sqlContext, scale, 1);
     }
 
-    public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext, boolean scale, StructType schema) {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, filePath, true, schema);
-        return transformDataFrame(scale, data);
+    public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext, boolean scale, int polynomialExpansionDegree) {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, filePath, true, true);
+        return transformDataFrame(data, scale, polynomialExpansionDegree);
     }
-    private static DataFrame transformDataFrame(boolean scale, DataFrame data) {
+
+    private static DataFrame transformDataFrame(DataFrame data, boolean scale, int polynomialExpansionDegree) {
         if (scale) {
             MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
             return scalerModel.transform(DataFrameUtil.assembled(data, "assembledFeatures"));
         } else {
             DataFrame df = DataFrameUtil.assembled(data, "pcain");
             PCAModel pcaModel = PCAModel.load(FilesConstants.PCA);
-            PolynomialExpansion polyExpansion = new PolynomialExpansion()
-                    .setInputCol("pcaout")
-                    .setOutputCol("features")
-                    .setDegree(2);
-            return polyExpansion.transform(pcaModel.transform(df));
+            DataFrame pcaOutput = pcaModel.transform(df);
+            if (polynomialExpansionDegree > 1) {
+                System.out.println("Polynomial expansion degree : " + polynomialExpansionDegree);
+                PolynomialExpansion polyExpansion = new PolynomialExpansion()
+                        .setInputCol("pcaout")
+                        .setOutputCol("features")
+                        .setDegree(polynomialExpansionDegree);
+                return polyExpansion.transform(pcaOutput);
+            } else {
+                return pcaOutput.withColumn("features", pcaOutput.col("pcaout"));
+            }
+
         }
     }
+
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDD(DataFrame df) {
         return df.toJavaRDD().map(row -> new LabeledPoint(row.getInt(0), row.getAs(1)));
     }
 
-    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromKaggleCsv(String filePath, SQLContext sqlContext, String labelColName, boolean scale) {
-        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, scale).select(labelColName, "features"));
+    public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromCsv(String filePath, SQLContext sqlContext, String labelColName, boolean scale) {
+        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, scale, 2).select(labelColName, "features"));
     }
 }

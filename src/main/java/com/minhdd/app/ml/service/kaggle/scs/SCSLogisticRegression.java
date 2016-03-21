@@ -4,7 +4,6 @@ import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.domain.MLAlgorithm;
 import com.minhdd.app.ml.domain.MLService;
 import com.minhdd.app.ml.domain.MlServiceAbstract;
-import com.minhdd.app.ml.outil.CsvUtil;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.ml.PipelineModel;
 import org.apache.spark.ml.classification.*;
@@ -29,8 +28,8 @@ import static org.apache.spark.sql.functions.max;
  */
 @Component
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
-public class SantanderCustomerSatisfactionRegression extends MlServiceAbstract implements MLService {
-    private final Logger logger = LoggerFactory.getLogger(SantanderCustomerSatisfactionRegression.class);
+public class SCSLogisticRegression extends MlServiceAbstract implements MLService {
+    private final Logger logger = LoggerFactory.getLogger(SCSLogisticRegression.class);
     boolean scale = false;
 
     @Override

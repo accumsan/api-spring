@@ -31,21 +31,21 @@ import java.util.Map;
  */
 @Component
 @Profile(Constants.SPRING_PROFILE_DEVELOPMENT)
-public class SantanderCustomerSatisfactionBinaryClassification extends MlServiceAbstract implements MLService {
-    private final Logger logger = LoggerFactory.getLogger(SantanderCustomerSatisfactionBinaryClassification.class);
+public class SCSLogisticRegressionWithLBFGS extends MlServiceAbstract implements MLService {
+    private final Logger logger = LoggerFactory.getLogger(SCSLogisticRegressionWithLBFGS.class);
     private boolean scale = false;
 
     @Override
     public MLService loadData() {
-        JavaRDD<LabeledPoint> train = ScsUtil.getLabeledPointJavaRDDFromKaggleCsv(trainPath, sqlContext, "TARGET", scale);
-        JavaRDD<LabeledPoint> validation = ScsUtil.getLabeledPointJavaRDDFromKaggleCsv(validationPath, sqlContext, "TARGET", scale);
-        JavaRDD<LabeledPoint> test = ScsUtil.getLabeledPointJavaRDDFromKaggleCsv(testPath, sqlContext, "TARGET", scale);
+        JavaRDD<LabeledPoint> train = ScsUtil.getLabeledPointJavaRDDFromCsv(trainPath, sqlContext, "TARGET", scale);
+        JavaRDD<LabeledPoint> validation = ScsUtil.getLabeledPointJavaRDDFromCsv(validationPath, sqlContext, "TARGET", scale);
+        JavaRDD<LabeledPoint> test = ScsUtil.getLabeledPointJavaRDDFromCsv(testPath, sqlContext, "TARGET", scale);
         return super.loadData(null, train, validation, test);
     }
 
     @Override
     public MLService loadInput(String inputPath) {
-        JavaRDD<LabeledPoint> input = ScsUtil.getLabeledPointJavaRDDFromKaggleCsv(inputPath, sqlContext, "ID", scale);
+        JavaRDD<LabeledPoint> input = ScsUtil.getLabeledPointJavaRDDFromCsv(inputPath, sqlContext, "ID", scale);
         return super.setInput(input);
     }
 

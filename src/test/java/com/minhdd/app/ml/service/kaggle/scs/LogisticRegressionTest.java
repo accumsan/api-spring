@@ -28,7 +28,7 @@ public class LogisticRegressionTest {
 
     @Before
     public void init() {
-        scfRegression = new SantanderCustomerSatisfactionRegression().context(sqlContext, sparkContext);
+        scfRegression = new SCSLogisticRegression().context(sqlContext, sparkContext);
     }
 
     /****
