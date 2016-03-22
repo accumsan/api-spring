@@ -205,4 +205,11 @@ public class DataFrameUtil {
         DataFrame validationAddedWithLogisticPrediction = df.join(predictionAndIDDataFrame, "ID");
         return DataFrameUtil.assembled(validationAddedWithLogisticPrediction, "features").select("ID", "features", "TARGET");
     }
+
+    public static void verifyTargetRatio(SQLContext sqlContext, String filePath, String fileName) {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, filePath, true, true);
+        long target1 = df.filter("TARGET = 1").count();
+        long all = df.count();
+        System.out.println(fileName + " : " + target1 + "/" + all + "-->" + (double) target1/all);
+    }
 }

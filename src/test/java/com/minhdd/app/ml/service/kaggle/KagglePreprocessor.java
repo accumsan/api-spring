@@ -202,5 +202,15 @@ public class KagglePreprocessor {
 
     }
 
+    @Test
+    public void verifyTargetRatio() {
+        DataFrameUtil.verifyTargetRatio(sqlContext, FilesConstants.TRAIN_50, "train50");
+        DataFrameUtil.verifyTargetRatio(sqlContext, FilesConstants.TRAIN_60, "train60");
+        DataFrameUtil.verifyTargetRatio(sqlContext, FilesConstants.VALIDATION_40, "validation40");
+        DataFrameUtil.verifyTargetRatio(sqlContext, FilesConstants.VALIDATION_20, "validation20");
+        DataFrameUtil.verifyTargetRatio(sqlContext, FilesConstants.TEST_20, "test20");
+        DataFrameUtil.verifyTargetRatio(sqlContext, FilesConstants.TEST_10, "test10");
+    }
+
 
 }

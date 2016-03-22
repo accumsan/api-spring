@@ -37,6 +37,13 @@ public class LogisticRegressionWithLBFGSTest {
      ****/
 
     @Test
+    public void trainWithBinaryClassificationAndTestOnCrossValidation() {
+        scfBinaryClassification.setFile(null, null, FilesConstants.TRAIN_80, FilesConstants.TEST_20, null);
+        scfBinaryClassification.loadData().train();
+    }
+
+
+    @Test
     public void trainWithBinaryClassificationAndTest() {
         scfBinaryClassification.setFile(null, null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
         scfBinaryClassification.loadData().train().test().getResults();

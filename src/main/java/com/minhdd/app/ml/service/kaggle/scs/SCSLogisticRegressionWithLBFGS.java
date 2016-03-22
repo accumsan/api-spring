@@ -38,8 +38,14 @@ public class SCSLogisticRegressionWithLBFGS extends MlServiceAbstract implements
     @Override
     public MLService loadData() {
         JavaRDD<LabeledPoint> train = ScsUtil.getLabeledPointJavaRDDFromCsv(trainPath, sqlContext, "TARGET", scale);
-        JavaRDD<LabeledPoint> validation = ScsUtil.getLabeledPointJavaRDDFromCsv(validationPath, sqlContext, "TARGET", scale);
-        JavaRDD<LabeledPoint> test = ScsUtil.getLabeledPointJavaRDDFromCsv(testPath, sqlContext, "TARGET", scale);
+        JavaRDD<LabeledPoint> validation = null;
+        if (validationPath != null) {
+            validation = ScsUtil.getLabeledPointJavaRDDFromCsv(validationPath, sqlContext, "TARGET", scale);
+        }
+        JavaRDD<LabeledPoint> test = null;
+        if (testPath!= null) {
+            test = ScsUtil.getLabeledPointJavaRDDFromCsv(testPath, sqlContext, "TARGET", scale);
+        }
         return super.loadData(null, train, validation, test);
     }
 
