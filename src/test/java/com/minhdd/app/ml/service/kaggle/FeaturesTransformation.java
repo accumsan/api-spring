@@ -23,7 +23,7 @@ import java.io.IOException;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @ActiveProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)
-public class FeaturesTransformationTest {
+public class FeaturesTransformation {
 
     @Inject
     SQLContext sqlContext;
