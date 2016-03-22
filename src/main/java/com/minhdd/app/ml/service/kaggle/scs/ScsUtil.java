@@ -46,6 +46,7 @@ public class ScsUtil {
             return scalerModel.transform(DataFrameUtil.assembled(data, "assembledFeatures"));
         } else {
             DataFrame df = DataFrameUtil.assembled(data, "pcain");
+            System.out.println("PCA used : " + pca);
             PCAModel pcaModel = PCAModel.load(pca);
             DataFrame pcaOutput = pcaModel.transform(df);
             if (polynomialExpansionDegree > 1) {
@@ -67,7 +68,7 @@ public class ScsUtil {
     }
 
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromCsv(String filePath, SQLContext sqlContext, String labelColName, boolean scale) {
-        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, scale, 1).select(labelColName, "features"));
+        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, scale, 2).select(labelColName, "features"));
     }
 
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromCsv(String filePath, SQLContext sqlContext, String labelColName) {

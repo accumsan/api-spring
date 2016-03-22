@@ -46,8 +46,8 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
         JavaRDD<LabeledPoint> trainRDD = ScsUtil.getLabeledPointJavaRDDFromCsv(trainPath, sqlContext, "TARGET");
         JavaRDD<LabeledPoint> validationFeaturesAndID = ScsUtil.getLabeledPointJavaRDDFromCsv(validationPath, sqlContext, "ID");
 
-        DataFrame validation = ScsUtil.getDataFrameFromCsv(sqlContext, validationPath, "features_0", FilesConstants.PCA_50).select("ID" ,"features_0", "TARGET");
-        DataFrame test = ScsUtil.getDataFrameFromCsv(sqlContext, testPath, "features_0", FilesConstants.PCA_50).select("ID" ,"features_0", "TARGET");
+        DataFrame validation = ScsUtil.getDataFrameFromCsv(sqlContext, validationPath, "features_0", FilesConstants.PCA_10).select("ID" ,"features_0", "TARGET");
+        DataFrame test = ScsUtil.getDataFrameFromCsv(sqlContext, testPath, "features_0", FilesConstants.PCA_10).select("ID" ,"features_0", "TARGET");
         JavaRDD<LabeledPoint> testFeaturesAndID = ScsUtil.getLabeledPointJavaRDDFromCsv(testPath, sqlContext, "ID");
         final LogisticRegressionWithLBFGS model = new LogisticRegressionWithLBFGS().setNumClasses(2);
         LogisticRegressionModel lrm = model.run(trainRDD.rdd());

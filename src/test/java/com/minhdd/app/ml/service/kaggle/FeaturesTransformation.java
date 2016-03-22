@@ -77,10 +77,10 @@ public class FeaturesTransformation {
         PCAModel pca = new PCA()
                 .setInputCol("pcain")
                 .setOutputCol("pcaout")
-                .setK(50)
+                .setK(10)
                 .fit(df);
         try {
-            pca.save(FilesConstants.PCA_50);
+            pca.save(FilesConstants.PCA_10);
         } catch (IOException e) {
             e.printStackTrace();
         }
