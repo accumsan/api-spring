@@ -76,7 +76,7 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
                 .setStages(new PipelineStage[]{labelIndexer, featureIndexer, (PipelineStage) classifier});
         PipelineModel pipelineModel = pipeline.fit(validationInput);
         predictions = pipelineModel.transform(test);
-        return training -> null;
+        return training -> pipelineModel;
     }
 
     @Override
@@ -93,10 +93,8 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
                 predictionsToShow.filter("TARGET = 0").filter("prediction = 1.0").count());
         System.out.println("Bad predictions (to 0) of target 1 : " +
                 predictionsToShow.filter("TARGET = 1").filter("prediction = 0.0").count());
-
         JavaRDD<Tuple2<Object, Object>> predictionAndLabels =
-                predictions.select("prediction", "indexedLabel").toJavaRDD()
-                        .map(a -> new Tuple2<>(a.get(0), a.get(1)));
+            predictions.select("prediction", "indexedLabel").toJavaRDD().map(a -> new Tuple2<>(a.get(0), a.get(1)));
         BinaryClassificationMetrics metrics = new BinaryClassificationMetrics(predictionAndLabels.rdd());
         System.out.println("Area under ROC = " + metrics.areaUnderROC());
         return null;

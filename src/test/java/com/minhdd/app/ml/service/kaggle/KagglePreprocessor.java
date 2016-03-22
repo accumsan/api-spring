@@ -125,19 +125,16 @@ public class KagglePreprocessor {
 
     @Test
     public void split() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.LOCAL_DIR+"extracts/test_20.csv", true, true);
-//        DataFrame[] splits = df.randomSplit(new double[]{0.8, 0.2});
-//        DataFrame train_80 = splits[0];
-//        DataFrame test_20 = splits[1];
-//        CsvUtil.save(train_80, FilesConstants.LOCAL_DIR+"extracts/train_80.csv", true);
-//        CsvUtil.save(test_20, FilesConstants.LOCAL_DIR+"extracts/test_20.csv", true);
-//        DataFrame[] splits2 = train_80.randomSplit(new double[]{0.75, 0.25});
-//        DataFrame train_60 = splits2[0];
-//        DataFrame validation_20 = splits2[1];
-//        CsvUtil.save(train_60, FilesConstants.LOCAL_DIR+"extracts/train_60.csv", true);
-//        CsvUtil.save(validation_20, FilesConstants.LOCAL_DIR+"extracts/validation_20.csv", true);
-        DataFrame test_min = DataFrameUtil.randomFractioned(df, 0.01);
-        CsvUtil.save(test_min, FilesConstants.LOCAL_DIR+"extracts/test_min.csv", true);
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_DEDUPLICATED_KAGGLE, true, true);
+        DataFrame[] splits = df.randomSplit(new double[]{0.5, 0.5});
+        DataFrame train_50 = splits[0];
+        DataFrame validation_test = splits[1];
+        CsvUtil.save(train_50, FilesConstants.TRAIN_50, true);
+        DataFrame[] splits2 = validation_test.randomSplit(new double[]{0.8, 0.2});
+        DataFrame validation_40 = splits2[0];
+        DataFrame test_10 = splits2[1];
+        CsvUtil.save(validation_40, FilesConstants.VALIDATION_40, true);
+        CsvUtil.save(test_10, FilesConstants.TEST_10, true);
     }
 
     @Test
