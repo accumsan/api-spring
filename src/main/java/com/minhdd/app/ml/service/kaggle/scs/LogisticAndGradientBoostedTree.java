@@ -47,16 +47,13 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
         JavaRDD<LabeledPoint> validationFeaturesAndID = ScsUtil.getLabeledPointJavaRDDFromCsv(validationPath, sqlContext, "ID");
         DataFrame validation = CsvUtil.loadCsvFile(sqlContext, validationPath, true, true);
         DataFrame test = ScsUtil.getDataFrameFromCsv(testPath, sqlContext).select("TARGET", "features", "ID");
-
         final LogisticRegressionWithLBFGS model = new LogisticRegressionWithLBFGS().setNumClasses(2);
         LogisticRegressionModel lrm = model.run(trainRDD.rdd());
         lrm.clearThreshold();
         JavaRDD<Tuple2<Object, Object>> predictionAndID = validationFeaturesAndID.map(p -> new Tuple2<>(lrm.predict(p.features()), p.label()));
         DataFrame predictionAndIDDataFrame = DataFrameUtil.doublesFromJavaRDD(sqlContext, predictionAndID, "logistic_prediction", "ID");
-
         DataFrame validationAddedWithLogisticPrediction = predictionAndIDDataFrame.join(validation, "ID");
         DataFrame validationInput = DataFrameUtil.assembled(validationAddedWithLogisticPrediction, "features");
-
         GBTClassifier classifier = new GBTClassifier()
                 .setLabelCol("indexedLabel")
                 .setFeaturesCol("indexedFeatures")
@@ -65,15 +62,13 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
                 .setInputCol("TARGET")
                 .setOutputCol("indexedLabel")
                 .fit(validationInput);
-
         VectorIndexerModel featureIndexer = new VectorIndexer()
                 .setInputCol("features")
                 .setOutputCol("indexedFeatures")
                 .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
                 .fit(validationInput);
-
         Pipeline pipeline = new Pipeline()
-                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, (PipelineStage) classifier});
+                .setStages(new PipelineStage[]{labelIndexer, featureIndexer, classifier});
         PipelineModel pipelineModel = pipeline.fit(validationInput);
         predictions = pipelineModel.transform(test);
         return training -> pipelineModel;
