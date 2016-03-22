@@ -90,7 +90,10 @@ public abstract class MlServiceAbstract implements MLService {
 
     /** train and test **/
     @Override public MLService train() {
-        model = algorithm().fit(dataSet.getTraining());
+        MLAlgorithm algorithm = algorithm();
+        if (dataSet != null) {
+            model = algorithm.fit(dataSet.getTraining());
+        }
         return this;
     }
 

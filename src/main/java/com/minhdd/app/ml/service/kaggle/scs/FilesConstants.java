@@ -30,7 +30,7 @@ public class FilesConstants {
     public final static String LOCAL_DIR_QS = "/Users/mdao/ws/minh/ml/kaggle/santander-customer-satisfaction/";
     public final static String LOCAL_DIR_MAC86 = "/Users/minhdao/Workspace/ml/kaggle/santander-customer-satisfaction/data/";
     /****************************** to modify ***************************/
-    public final static String LOCAL_DIR = LOCAL_DIR_MAC86;
+    public final static String LOCAL_DIR = LOCAL_DIR_QS;
     /*******************************************************************/
     public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR + "extracts/";
     public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR + "ano-detect/";

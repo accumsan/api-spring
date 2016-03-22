@@ -45,15 +45,15 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
     protected MLAlgorithm algorithm() {
         JavaRDD<LabeledPoint> trainRDD = ScsUtil.getLabeledPointJavaRDDFromCsv(trainPath, sqlContext, "TARGET");
         JavaRDD<LabeledPoint> validationFeaturesAndID = ScsUtil.getLabeledPointJavaRDDFromCsv(validationPath, sqlContext, "ID");
-        DataFrame validation = CsvUtil.loadCsvFile(sqlContext, validationPath, true, true);
-        DataFrame test = ScsUtil.getDataFrameFromCsv(testPath, sqlContext).select("TARGET", "features", "ID");
+
+        DataFrame validation = ScsUtil.getDataFrameFromCsv(sqlContext, validationPath, "features_0").select("ID" ,"features_0", "TARGET");
+        DataFrame test = ScsUtil.getDataFrameFromCsv(sqlContext, testPath, "features_0").select("ID" ,"features_0", "TARGET");
+        JavaRDD<LabeledPoint> testFeaturesAndID = ScsUtil.getLabeledPointJavaRDDFromCsv(testPath, sqlContext, "ID");
         final LogisticRegressionWithLBFGS model = new LogisticRegressionWithLBFGS().setNumClasses(2);
         LogisticRegressionModel lrm = model.run(trainRDD.rdd());
         lrm.clearThreshold();
-        JavaRDD<Tuple2<Object, Object>> predictionAndID = validationFeaturesAndID.map(p -> new Tuple2<>(lrm.predict(p.features()), p.label()));
-        DataFrame predictionAndIDDataFrame = DataFrameUtil.doublesFromJavaRDD(sqlContext, predictionAndID, "logistic_prediction", "ID");
-        DataFrame validationAddedWithLogisticPrediction = predictionAndIDDataFrame.join(validation, "ID");
-        DataFrame validationInput = DataFrameUtil.assembled(validationAddedWithLogisticPrediction, "features");
+        DataFrame validationInput = DataFrameUtil.withFeatureLogisticScores(sqlContext, validationFeaturesAndID, validation, lrm);
+        DataFrame testInput = DataFrameUtil.withFeatureLogisticScores(sqlContext, testFeaturesAndID, test, lrm);
         GBTClassifier classifier = new GBTClassifier()
                 .setLabelCol("indexedLabel")
                 .setFeaturesCol("indexedFeatures")
@@ -70,14 +70,17 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
         Pipeline pipeline = new Pipeline()
                 .setStages(new PipelineStage[]{labelIndexer, featureIndexer, classifier});
         PipelineModel pipelineModel = pipeline.fit(validationInput);
-        predictions = pipelineModel.transform(test);
-        return training -> pipelineModel;
+        predictions = pipelineModel.transform(testInput);
+        return null;
     }
+
+
 
     @Override
     public Map<String, Object> getResults() {
         DataFrame predictions = (DataFrame) this.predictions;
         DataFrame predictionsToShow = predictions.select("ID", "TARGET", "prediction");
+        predictionsToShow.show(false);
         System.out.println("================================================");
         System.out.println("Number of predictions : " + predictionsToShow.count());
         System.out.println("Number of target 1 : " + predictionsToShow.filter("TARGET = 1").count());

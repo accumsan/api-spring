@@ -1,23 +1,23 @@
 package com.minhdd.app.ml.outil;
 
-import com.google.common.io.Files;
 import com.google.common.primitives.Doubles;
 import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.mllib.classification.LogisticRegressionModel;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.mllib.linalg.DenseMatrix;
 import org.apache.spark.mllib.linalg.Matrices;
 import org.apache.spark.mllib.linalg.Matrix;
 import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.distributed.RowMatrix;
+import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
-import org.apache.tomcat.jni.File;
 import scala.Tuple2;
 
 import java.util.ArrayList;
@@ -178,7 +178,7 @@ public class DataFrameUtil {
         List<Double> doublesOfColumn2 = DataFrameUtil.doublesOfColumn(df, column2);
         Double ratio = Collections.max(doublesOfColumn1) / Collections.max(doublesOfColumn2);
         boolean redundant = true;
-        for (int i=1; i<doublesOfColumn1.size(); i++) {
+        for (int i = 1; i < doublesOfColumn1.size(); i++) {
             if (doublesOfColumn1.get(i) != ratio * doublesOfColumn2.get(i)) {
                 System.out.println(column1 + " - " + column2 + " : not redundant : " + doublesOfColumn1.get(i) + "/" + doublesOfColumn2.get(i) + "!=" + ratio);
                 redundant = false;
@@ -192,10 +192,17 @@ public class DataFrameUtil {
     }
 
     public static DataFrame doublesFromJavaRDD(SQLContext sqlContext, JavaRDD<Tuple2<Object, Object>> javaRDD, String column0, String column1) {
-        JavaRDD<Row> rowRDD = javaRDD.map(t -> RowFactory.create(new Double[] {(Double)t._1(), (Double)t._2()}));
+        JavaRDD<Row> rowRDD = javaRDD.map(t -> RowFactory.create(new Double[]{(Double) t._1(), (Double) t._2()}));
         List<StructField> fields = new ArrayList<>();
         fields.add(DataTypes.createStructField(column0, DataTypes.DoubleType, true));
         fields.add(DataTypes.createStructField(column1, DataTypes.DoubleType, true));
         return sqlContext.createDataFrame(rowRDD, DataTypes.createStructType(fields));
+    }
+
+    public static DataFrame withFeatureLogisticScores(SQLContext sqlContext, JavaRDD<LabeledPoint> featuresAndID, DataFrame df, LogisticRegressionModel lrm) {
+        JavaRDD<Tuple2<Object, Object>> predictionAndID = featuresAndID.map(p -> new Tuple2<>(lrm.predict(p.features()), p.label()));
+        DataFrame predictionAndIDDataFrame = DataFrameUtil.doublesFromJavaRDD(sqlContext, predictionAndID, "logistic_score", "ID");
+        DataFrame validationAddedWithLogisticPrediction = df.join(predictionAndIDDataFrame, "ID");
+        return DataFrameUtil.assembled(validationAddedWithLogisticPrediction, "features").select("ID", "features", "TARGET");
     }
 }

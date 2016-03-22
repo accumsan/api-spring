@@ -14,6 +14,10 @@ import org.apache.spark.sql.SQLContext;
  * Created by mdao on 21/03/2016.
  */
 public class ScsUtil {
+    public static DataFrame getDataFrameFromCsv(SQLContext sqlContext, String filePath, String assembledColumnName) {
+        return getDataFrameFromCsv(sqlContext, filePath, assembledColumnName, false, 1);
+    }
+
     public static DataFrame getDataFrameFromCsv(String filePath, SQLContext sqlContext) {
         return getDataFrameFromCsv(filePath, sqlContext, false);
     }
@@ -27,7 +31,16 @@ public class ScsUtil {
         return transformDataFrame(data, scale, polynomialExpansionDegree);
     }
 
+    public static DataFrame getDataFrameFromCsv(SQLContext sqlContext, String filePath, String assembledColumnName, boolean scale, int polynomialExpansionDegree) {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, filePath, true, true);
+        return transformDataFrame(data, assembledColumnName, scale, polynomialExpansionDegree);
+    }
+
     private static DataFrame transformDataFrame(DataFrame data, boolean scale, int polynomialExpansionDegree) {
+        return transformDataFrame(data, "features", scale, polynomialExpansionDegree);
+    }
+
+    private static DataFrame transformDataFrame(DataFrame data, String finalColumnName, boolean scale, int polynomialExpansionDegree) {
         if (scale) {
             MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
             return scalerModel.transform(DataFrameUtil.assembled(data, "assembledFeatures"));
@@ -39,11 +52,11 @@ public class ScsUtil {
                 System.out.println("Polynomial expansion degree : " + polynomialExpansionDegree);
                 PolynomialExpansion polyExpansion = new PolynomialExpansion()
                         .setInputCol("pcaout")
-                        .setOutputCol("features")
+                        .setOutputCol(finalColumnName)
                         .setDegree(polynomialExpansionDegree);
                 return polyExpansion.transform(pcaOutput);
             } else {
-                return pcaOutput.withColumn("features", pcaOutput.col("pcaout"));
+                return pcaOutput.withColumn(finalColumnName, pcaOutput.col("pcaout"));
             }
 
         }
