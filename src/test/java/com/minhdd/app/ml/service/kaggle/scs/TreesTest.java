@@ -23,7 +23,7 @@ import javax.inject.Inject;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = Application.class)
 @ActiveProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)
-public class SantanderCustomerSatisfactionTest {
+public class TreesTest {
     MLService santanderCustomerSatisfaction;
     @Inject
     SQLContext sqlContext;
