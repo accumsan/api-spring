@@ -36,7 +36,7 @@ public class LogisticAndGradientBoostedTreeTest {
     @Test
     public void trainAndTest() {
         scf.setFile(null, null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
-        MLConfiguration conf = new MLConfiguration().setMaxIteration(100);
+        MLConfiguration conf = new MLConfiguration().setMaxIteration(50);
         scf.configure(conf).train().getResults();
     }
 }

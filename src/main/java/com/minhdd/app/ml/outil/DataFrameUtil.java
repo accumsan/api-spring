@@ -18,6 +18,7 @@ import org.apache.spark.sql.SQLContext;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 import org.apache.tomcat.jni.File;
+import scala.Tuple2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,5 +189,13 @@ public class DataFrameUtil {
             System.out.println(column1 + " - " + column2 + " = " + ratio);
         }
         return redundant;
+    }
+
+    public static DataFrame doublesFromJavaRDD(SQLContext sqlContext, JavaRDD<Tuple2<Object, Object>> javaRDD, String column0, String column1) {
+        JavaRDD<Row> rowRDD = javaRDD.map(t -> RowFactory.create(new Double[] {(Double)t._1(), (Double)t._2()}));
+        List<StructField> fields = new ArrayList<>();
+        fields.add(DataTypes.createStructField(column0, DataTypes.DoubleType, true));
+        fields.add(DataTypes.createStructField(column1, DataTypes.DoubleType, true));
+        return sqlContext.createDataFrame(rowRDD, DataTypes.createStructType(fields));
     }
 }

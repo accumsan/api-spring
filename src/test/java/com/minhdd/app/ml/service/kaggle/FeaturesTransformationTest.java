@@ -77,10 +77,10 @@ public class FeaturesTransformationTest {
         PCAModel pca = new PCA()
                 .setInputCol("pcain")
                 .setOutputCol("pcaout")
-                .setK(260)
+                .setK(290)
                 .fit(df);
         try {
-            pca.save(FilesConstants.PCA);
+            pca.save(FilesConstants.PCA_290);
         } catch (IOException e) {
             e.printStackTrace();
         }
