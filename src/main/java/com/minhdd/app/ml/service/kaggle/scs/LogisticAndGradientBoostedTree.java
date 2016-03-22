@@ -64,13 +64,13 @@ public class LogisticAndGradientBoostedTree extends MlServiceAbstract implements
         StringIndexerModel labelIndexer = new StringIndexer()
                 .setInputCol("TARGET")
                 .setOutputCol("indexedLabel")
-                .fit((DataFrame) dataSet.getTraining());
+                .fit(validationInput);
 
         VectorIndexerModel featureIndexer = new VectorIndexer()
                 .setInputCol("features")
                 .setOutputCol("indexedFeatures")
                 .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
-                .fit((DataFrame) dataSet.getTraining());
+                .fit(validationInput);
 
         Pipeline pipeline = new Pipeline()
                 .setStages(new PipelineStage[]{labelIndexer, featureIndexer, (PipelineStage) classifier});
