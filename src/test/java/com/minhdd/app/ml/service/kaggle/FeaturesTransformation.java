@@ -8,6 +8,7 @@ import com.minhdd.app.ml.service.kaggle.scs.FilesConstants;
 import org.apache.spark.ml.feature.*;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.types.DataTypes;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -15,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -94,19 +96,28 @@ public class FeaturesTransformation {
 
     @Test
     public void chisqSelector() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_DEDUPLICATED_KAGGLE, true, true);
-        df = DataFrameUtil.assembled(df, "chisqselector");
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
+        df = DataFrameUtil.assembled(df, "chisqin");
+        //PCAModel pcaModel = PCAModel.load(FilesConstants.PCA_200);
+//        DataFrame pcaOutput = pcaModel.transform(df);
+        DataFrame data = df.withColumn("label", df.col("TARGET").cast(DataTypes.DoubleType));
         ChiSqSelector selector = new ChiSqSelector()
-                .setNumTopFeatures(100)
-                .setFeaturesCol("chisqselector")
-                .setLabelCol("TARGET")
+                .setNumTopFeatures(1)
+                .setFeaturesCol("chisqin")
+                .setLabelCol("label")
                 .setOutputCol("features");
-        ChiSqSelectorModel model = selector.fit(df);
+        ChiSqSelectorModel model = selector.fit(data);
         try {
             model.save(FilesConstants.CHISQ);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void getColumnName() {
+        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
+        System.out.println(DataFrameUtil.getFeatureColumns(df)[139]);
     }
 
 }
