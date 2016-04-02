@@ -1,14 +1,15 @@
 package com.minhdd.app.ml.service.kaggle.scs;
 
+import com.google.common.collect.ImmutableMap;
 import com.minhdd.app.ml.outil.CsvUtil;
 import com.minhdd.app.ml.outil.DataFrameUtil;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.ml.feature.MinMaxScalerModel;
-import org.apache.spark.ml.feature.PCAModel;
-import org.apache.spark.ml.feature.PolynomialExpansion;
+import org.apache.spark.ml.feature.*;
 import org.apache.spark.mllib.regression.LabeledPoint;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
+
+import static org.apache.spark.sql.functions.lit;
 
 /**
  * Created by mdao on 21/03/2016.
@@ -37,7 +38,7 @@ public class ScsUtil {
     }
 
     private static DataFrame transformDataFrame(DataFrame data, boolean scale, int polynomialExpansionDegree) {
-        return transformDataFrame(data, "features", scale, polynomialExpansionDegree, FilesConstants.PCA);
+        return transformDataFrame(data, "features", scale, polynomialExpansionDegree, FilesConstants.PCA_261);
     }
 
     private static DataFrame transformDataFrame(DataFrame data, String finalColumnName, boolean scale, int polynomialExpansionDegree, String pca) {
@@ -45,10 +46,11 @@ public class ScsUtil {
             MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
             return scalerModel.transform(DataFrameUtil.assembled(data, "assembledFeatures"));
         } else {
-            DataFrame df = DataFrameUtil.assembled(data, "pcain");
+            DataFrame df = data.na().replace("var3", ImmutableMap.of(-999999, 2)).withColumn("n0", lit(0.0));
+            df = DataFrameUtil.assembled(df, "pcain", DataFrameUtil.getFeatureColumns(data));
             System.out.println("PCA used : " + pca);
             PCAModel pcaModel = PCAModel.load(pca);
-            DataFrame pcaOutput = pcaModel.transform(df);
+            DataFrame pcaOutput = pcaModel.transform(data);
             if (polynomialExpansionDegree > 1) {
                 System.out.println("Polynomial expansion degree : " + polynomialExpansionDegree);
                 PolynomialExpansion polyExpansion = new PolynomialExpansion()
@@ -59,7 +61,6 @@ public class ScsUtil {
             } else {
                 return pcaOutput.withColumn(finalColumnName, pcaOutput.col("pcaout"));
             }
-
         }
     }
 
@@ -68,7 +69,7 @@ public class ScsUtil {
     }
 
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromCsv(String filePath, SQLContext sqlContext, String labelColName, boolean scale) {
-        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, scale, 2).select(labelColName, "features"));
+        return getLabeledPointJavaRDD(getDataFrameFromCsv(filePath, sqlContext, scale, 1).select(labelColName, "features"));
     }
 
     public static JavaRDD<LabeledPoint> getLabeledPointJavaRDDFromCsv(String filePath, SQLContext sqlContext, String labelColName) {

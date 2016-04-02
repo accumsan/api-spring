@@ -1,5 +1,6 @@
 package com.minhdd.app.ml.service.kaggle;
 
+import com.google.common.collect.ImmutableMap;
 import com.minhdd.app.Application;
 import com.minhdd.app.config.Constants;
 import com.minhdd.app.ml.outil.CsvUtil;
@@ -19,6 +20,8 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
+import static org.apache.spark.sql.functions.lit;
+
 /**
  * Created by minhdao on 10/03/16.
  */
@@ -36,25 +39,26 @@ public class FeaturesTransformation {
         DataFrame train = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true).drop("TARGET").drop("ID");
         DataFrame test = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TEST_KAGGLE, true, true).drop("ID");
         DataFrame data = train.unionAll(test);
-        String[] columns = DataFrameUtil.getFeatureColumns(data);
+        data = data.na().replace("var3", ImmutableMap.of(-999999, 2));
+        data = data.withColumn("n0", lit(0.0));
         VectorAssembler assembler = new VectorAssembler()
-                .setInputCols(columns)
+                .setInputCols(DataFrameUtil.getFeatureColumns(data))
                 .setOutputCol("assembledFeatures");
 
         DataFrame df = assembler.transform(data);
-
-        MinMaxScaler scaler = new MinMaxScaler().setMin(0).setMax(1)
-                .setInputCol("assembledFeatures")
-                .setOutputCol("features");
+//
+//        MinMaxScaler scaler = new MinMaxScaler().setMin(0).setMax(1)
+//                .setInputCol("assembledFeatures")
+//                .setOutputCol("features");
 
 //        MinMaxScalerModel scalerModel = scaler.fit(df);
-//        StandardScaler scaler = new StandardScaler()
-//                .setInputCol("assembledFeatures")
-//                .setOutputCol("features")
-//                .setWithStd(true)
-//                .setWithMean(false);
+        StandardScaler scaler = new StandardScaler()
+                .setInputCol("assembledFeatures")
+                .setOutputCol("features")
+                .setWithStd(true)
+                .setWithMean(false);
 
-        MinMaxScalerModel scalerModel = scaler.fit(df);
+        StandardScalerModel scalerModel = scaler.fit(df);
         scalerModel.save(FilesConstants.SCALER);
     }
 
@@ -74,15 +78,19 @@ public class FeaturesTransformation {
 
     @Test
     public void pcaModel() {
-        DataFrame df = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
-        df = DataFrameUtil.assembled(df, "pcain");
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
+        data = data.na().replace("var3", ImmutableMap.of(-999999, 2)).withColumn("n0", lit(0.0));
+        VectorAssembler assembler = new VectorAssembler()
+                .setInputCols(DataFrameUtil.getFeatureColumns(data))
+                .setOutputCol("pcain");
+        DataFrame df = assembler.transform(data);
         PCAModel pca = new PCA()
                 .setInputCol("pcain")
                 .setOutputCol("pcaout")
-                .setK(10)
+                .setK(261)
                 .fit(df);
         try {
-            pca.save(FilesConstants.PCA_10);
+            pca.save(FilesConstants.PCA_261);
         } catch (IOException e) {
             e.printStackTrace();
         }
