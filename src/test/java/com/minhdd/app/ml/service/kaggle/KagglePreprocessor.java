@@ -197,9 +197,8 @@ public class KagglePreprocessor {
 
     @Test
     public void getColumnsFromValue() {
-        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.VALIDATION_20, true, true);
-        System.out.println(DataFrameUtil.getColumnsFromValue(data, -0.5));
-
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, FilesConstants.TRAIN_ORIGINAL_KAGGLE, true, true);
+        System.out.println(DataFrameUtil.getColumnsFromIntValue(data.select("var3"), -999999));
     }
 
     @Test
