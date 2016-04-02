@@ -36,7 +36,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
     @Override
     public MLService loadData() {
         DataFrame train = ScsUtil.getDataFrameFromCsv(trainPath, sqlContext, false).select("ID", "features", "TARGET");
-        DataFrame validation = ScsUtil.getDataFrameFromCsv(validationPath, sqlContext, false).select("ID", "features", "TARGET");
+        DataFrame validation = validationPath == null ? null : ScsUtil.getDataFrameFromCsv(validationPath, sqlContext, false).select("ID", "features", "TARGET");
         DataFrame test = ScsUtil.getDataFrameFromCsv(testPath, sqlContext, false).select("ID", "features", "TARGET");
         return super.loadData(train, train, validation, test);
     }
@@ -71,7 +71,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
         VectorIndexerModel featureIndexer = new VectorIndexer()
                 .setInputCol("features")
                 .setOutputCol("indexedFeatures")
-                .setMaxCategories(3) // features with > 3 distinct values are treated as continuous
+                .setMaxCategories(2) // features with > 3 distinct values are treated as continuous
                 .fit((DataFrame) dataSet.getTraining());
 
         Pipeline pipeline = new Pipeline()
@@ -82,7 +82,7 @@ public class SantanderCustomerSatisfaction extends MlServiceAbstract implements 
 
     @Override
     public MLService test() {
-        predictions = ((PipelineModel) model).transform((DataFrame) dataSet.getCrossValidation());
+        predictions = ((PipelineModel) model).transform((DataFrame) dataSet.getTest());
         return super.test();
     }
 

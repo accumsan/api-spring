@@ -83,7 +83,7 @@ public class TreesTest {
 
     @Test
     public void trainWithGradientBoostedAndTest() {
-        santanderCustomerSatisfaction.setFile(null, null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
+        santanderCustomerSatisfaction.setFile(null, null, FilesConstants.TRAIN_80, null, FilesConstants.TEST_20);
         MLConfiguration conf = new MLConfiguration().setMaxIteration(50).setAlgorithm(MLEnum.GradientBoostedTree);
         santanderCustomerSatisfaction.configure(conf).loadData().train().test().getResults();
     }
@@ -92,7 +92,7 @@ public class TreesTest {
     @Test
     public void trainWithGradientBoostedAndProduce() {
         santanderCustomerSatisfaction.setFile(null, null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
-        MLConfiguration conf = new MLConfiguration().setMaxIteration(10).setAlgorithm(MLEnum.GradientBoostedTree);
+        MLConfiguration conf = new MLConfiguration().setMaxIteration(50).setAlgorithm(MLEnum.GradientBoostedTree);
         santanderCustomerSatisfaction.configure(conf).loadData().train();
         santanderCustomerSatisfaction.test().produce(FilesConstants.TEST_OUTPUT);
     }
