@@ -67,7 +67,7 @@ public class DataFrameUtil {
         data.collectAsList().forEach(row -> {
             for (int index : indexes) {
                 if (row.getDouble(index) == value) {
-                    System.out.println(index);
+                    System.out.println(row.getDouble(index));
                     columns.add(data.columns()[index]);
                 }
             }
@@ -75,10 +75,33 @@ public class DataFrameUtil {
         return columns;
     }
 
-    public static DataFrame assembled(DataFrame df, String out) {
-        String[] columns = DataFrameUtil.getFeatureColumns(df);
+    public static List<String> getColumnsFromIntValue(DataFrame data, int value) {
+        List<String> columns = new ArrayList();
+        List<Integer> indexes = new ArrayList();
+        for (int i = 0; i < data.columns().length; i++) {
+            if (data.schema().apply(i).dataType().equals(DataTypes.IntegerType)) {
+                indexes.add(i);
+            }
+        }
+        data.collectAsList().forEach(row -> {
+            for (int index : indexes) {
+                if (row.getInt(index) == value) {
+                    System.out.println(row.getInt(index));
+                    columns.add(data.columns()[index]);
+                }
+            }
+        });
+        return columns;
+    }
+
+    public static DataFrame assembled(DataFrame df, String out, String[] columns) {
         VectorAssembler assembler = new VectorAssembler().setInputCols(columns).setOutputCol(out);
         return assembler.transform(df);
+    }
+
+    public static DataFrame assembled(DataFrame df, String out) {
+        String[] columns = DataFrameUtil.getFeatureColumns(df);
+        return assembled(df, out, columns);
     }
 
     public static Vector extractVector(DataFrame df, String[] columns, long row) {
