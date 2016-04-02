@@ -47,10 +47,10 @@ public class ScsUtil {
             return scalerModel.transform(DataFrameUtil.assembled(data, "assembledFeatures"));
         } else {
             DataFrame df = data.na().replace("var3", ImmutableMap.of(-999999, 2)).withColumn("n0", lit(0.0));
-            df = DataFrameUtil.assembled(df, "pcain", DataFrameUtil.getFeatureColumns(data));
+            df = DataFrameUtil.assembled(df, "pcain", DataFrameUtil.getFeatureColumns(df));
             System.out.println("PCA used : " + pca);
             PCAModel pcaModel = PCAModel.load(pca);
-            DataFrame pcaOutput = pcaModel.transform(data);
+            DataFrame pcaOutput = pcaModel.transform(df);
             if (polynomialExpansionDegree > 1) {
                 System.out.println("Polynomial expansion degree : " + polynomialExpansionDegree);
                 PolynomialExpansion polyExpansion = new PolynomialExpansion()
