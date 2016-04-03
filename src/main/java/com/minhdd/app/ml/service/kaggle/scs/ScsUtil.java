@@ -32,6 +32,15 @@ public class ScsUtil {
         return transformDataFrame(data, scale, polynomialExpansionDegree);
     }
 
+    public static DataFrame getDataFrameFromCsvJoinedWithXgboost(String filePath, SQLContext sqlContext, boolean scale, int polynomialExpansionDegree) {
+        DataFrame data = CsvUtil.loadCsvFile(sqlContext, filePath, true, true);
+        DataFrame xb_df_test = CsvUtil.loadCsvFile(sqlContext, FilesConstants.XGBOOSTED_TEST, true, true);
+        DataFrame xb_df_train = CsvUtil.loadCsvFile(sqlContext, FilesConstants.XGBOOSTED_TRAIN, true, true);
+        DataFrame xb_df = xb_df_train.unionAll(xb_df_test);
+        data = data.join(xb_df, "ID");
+        return transformDataFrame(data, scale, polynomialExpansionDegree);
+    }
+
     public static DataFrame getDataFrameFromCsv(SQLContext sqlContext, String filePath, String assembledColumnName, boolean scale, int polynomialExpansionDegree, String pca) {
         DataFrame data = CsvUtil.loadCsvFile(sqlContext, filePath, true, true);
         return transformDataFrame(data, assembledColumnName, scale, polynomialExpansionDegree, pca);
@@ -46,21 +55,23 @@ public class ScsUtil {
             MinMaxScalerModel scalerModel = MinMaxScalerModel.load(FilesConstants.SCALER);
             return scalerModel.transform(DataFrameUtil.assembled(data, "assembledFeatures"));
         } else {
-            DataFrame df = data.na().replace("var3", ImmutableMap.of(-999999, 2)).withColumn("n0", lit(0.0));
-            df = DataFrameUtil.assembled(df, "pcain", DataFrameUtil.getFeatureColumns(df));
-            System.out.println("PCA used : " + pca);
-            PCAModel pcaModel = PCAModel.load(pca);
-            DataFrame pcaOutput = pcaModel.transform(df);
-            if (polynomialExpansionDegree > 1) {
-                System.out.println("Polynomial expansion degree : " + polynomialExpansionDegree);
-                PolynomialExpansion polyExpansion = new PolynomialExpansion()
-                        .setInputCol("pcaout")
-                        .setOutputCol(finalColumnName)
-                        .setDegree(polynomialExpansionDegree);
-                return polyExpansion.transform(pcaOutput);
-            } else {
-                return pcaOutput.withColumn(finalColumnName, pcaOutput.col("pcaout"));
-            }
+            DataFrame df = data.na().replace("var3", ImmutableMap.of(-999999, 2));
+            return DataFrameUtil.assembled(df, "features", DataFrameUtil.getFeatureColumns(df));
+//            DataFrame df = data.na().replace("var3", ImmutableMap.of(-999999, 2)).withColumn("n0", lit(0.0));
+//            df = DataFrameUtil.assembled(df, "pcain", DataFrameUtil.getFeatureColumns(df));
+//            System.out.println("PCA used : " + pca);
+//            PCAModel pcaModel = PCAModel.load(pca);
+//            DataFrame pcaOutput = pcaModel.transform(df);
+//            if (polynomialExpansionDegree > 1) {
+//                System.out.println("Polynomial expansion degree : " + polynomialExpansionDegree);
+//                PolynomialExpansion polyExpansion = new PolynomialExpansion()
+//                        .setInputCol("pcaout")
+//                        .setOutputCol(finalColumnName)
+//                        .setDegree(polynomialExpansionDegree);
+//                return polyExpansion.transform(pcaOutput);
+//            } else {
+//                return pcaOutput.withColumn(finalColumnName, pcaOutput.col("pcaout"));
+//            }
         }
     }
 

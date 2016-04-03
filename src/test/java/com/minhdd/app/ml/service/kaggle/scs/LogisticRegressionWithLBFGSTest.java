@@ -42,19 +42,10 @@ public class LogisticRegressionWithLBFGSTest {
         scfBinaryClassification.loadData().train();
     }
 
-
-    @Test
-    public void trainWithBinaryClassificationAndTest() {
-        scfBinaryClassification.setFile(null, null, FilesConstants.TRAIN_60, FilesConstants.VALIDATION_20, FilesConstants.TEST_20);
-        scfBinaryClassification.loadData().train().test().getResults();
-    }
-
     @Test
     public void trainWithBinaryClassificationAndProduce() {
-        scfBinaryClassification.setFile(null, null, FilesConstants.TRAIN_MIN, FilesConstants.VALIDATION_MIN, FilesConstants.TEST_MIN);
-        MLConfiguration conf = new MLConfiguration().setAlgorithm(MLEnum.BinaryClassification);
-        scfBinaryClassification.configure(conf).loadData().train().save(FilesConstants.BinaryClassification_MODEL);
-        scfBinaryClassification.test().produce(FilesConstants.TEST_OUTPUT);
+        scfBinaryClassification.setFile(null, null, FilesConstants.TRAIN_ORIGINAL_KAGGLE, FilesConstants.TRAIN_ORIGINAL_KAGGLE, FilesConstants.TRAIN_ORIGINAL_KAGGLE);
+        scfBinaryClassification.loadData().loadInput(FilesConstants.TEST_KAGGLE).train().produce(FilesConstants.TEST_OUTPUT);
     }
 
     @Test

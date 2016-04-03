@@ -39,6 +39,8 @@ public class FilesConstants {
     public final static String LOCAL_DIR_EXTRACT = LOCAL_DIR + "extracts/";
     public final static String LOCAL_DIR_ANO_DETECT = LOCAL_DIR + "ano-detect/";
     public final static String TRAIN_ORIGINAL_KAGGLE = LOCAL_DIR + "train.csv";
+    public final static String XGBOOSTED_TRAIN = LOCAL_DIR + "xgboosted/xgboosted_train.csv";
+    public final static String XGBOOSTED_TEST = LOCAL_DIR + "xgboosted/xgboosted_test.csv";
     public final static String TRAIN_DEDUPLICATED_KAGGLE = LOCAL_DIR + "train_deduplicated.csv";
     public final static String TEST_KAGGLE = LOCAL_DIR + "test.csv";
     public static final String TRAIN_80 = LOCAL_DIR_EXTRACT + "train_80.csv";

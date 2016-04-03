@@ -129,15 +129,21 @@ public class SCSLogisticRegressionWithLBFGS extends MlServiceAbstract implements
 
     @Override
     public void produce(String output) {
-        JavaRDD<Tuple2<Object, Object>> predictions = getTuple2PredictionAndLabels((JavaRDD<LabeledPoint>) dataSet.getInput());
+        LogisticRegressionModel lrm = (LogisticRegressionModel) model;
+        lrm.clearThreshold();
+        JavaRDD<LabeledPoint> input = (JavaRDD<LabeledPoint>) dataSet.getInput();
+        JavaRDD<Tuple2<Object, Object>> predictions = input.map(p -> {
+            Double prediction = lrm.predict(p.features());
+            return new Tuple2<>(prediction, p.label());
+        });
         JavaRDD<Row> modifiedRDD = predictions.map(t -> {
             double target = ((Double) t._1()).doubleValue() ;
             double id = ((Double) t._2()).doubleValue();
-            return RowFactory.create((int) id, (int) target);
+            return RowFactory.create((int) id, target);
         });
         StructType schema = DataTypes.createStructType(Arrays.asList(
                 DataTypes.createStructField("ID", DataTypes.IntegerType, true),
-                DataTypes.createStructField("TARGET", DataTypes.IntegerType, true)));
+                DataTypes.createStructField("TARGET", DataTypes.DoubleType, true)));
         DataFrame results = sqlContext.createDataFrame(modifiedRDD, schema);
         CsvUtil.save(results, output, true);
     }
