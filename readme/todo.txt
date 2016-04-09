@@ -1,13 +1,8 @@
-spark mllib
-java 8 fp, guava, java performance
-Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
 spring security
 redis
     http://redis.io/topics/data-types
     Spring Data Redis
-Logback
 --------------------------------------------------
-jbehave
 js : angularjs 1.5 component, requirejs ...
 parkaging : selectionner seulement les fichiers nécessaires
 ssh heroku

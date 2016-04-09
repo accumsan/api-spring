@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * Created by mdao on 18/03/2016.
  */
-public class SenderTest {
+public class SenderTry {
     @Test
     public void test() {
         Sender.sendUsingEsendex("message test", "minhdd", "0624427004");

@@ -1,6 +1,6 @@
 maven 3
 redis redistogo
-SLF4J
+SLF4J, Logback
 spring core, boot, security 3.2, schedule, rest,
 no-xml Spring MVC 4 web application for Servlet 3.0 environment, Thymeleaf
 spring websocket, websocket client (com.neovisionaries) spring websocket SockJS
@@ -9,3 +9,5 @@ Many WebSockets libraries (for example SockJS and Socket.io) provide fallback-op
 This is why choosing SockJS as the client is a good idea.)
 spark mllib
 functionaljava
+java 8 fp, guava, java performance
+Testing (JUnit/Mockito/MockMVC/AssertJ/Hamcrest)
