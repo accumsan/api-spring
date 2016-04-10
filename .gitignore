@@ -10,8 +10,7 @@ target/
 *.class
  
 # Package Files #
-*.jar
-*.war 
+*.war
 *.ear
 *.db
  
