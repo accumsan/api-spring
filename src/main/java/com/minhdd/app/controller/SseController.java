@@ -40,7 +40,6 @@ public class SseController {
                 logger.error("In catch: {}", e.getMessage());
             }
         } , 1000, 1000, TimeUnit.MILLISECONDS);
-
         return emitter;
     }
 
