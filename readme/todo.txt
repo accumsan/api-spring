@@ -4,7 +4,7 @@ redis
     Spring Data Redis
 --------------------------------------------------
 js : angularjs 1.5 component, requirejs ...
-parkaging : selectionner seulement les fichiers nécessaires
+parkaging front : selectionner seulement les fichiers nécessaires
 ssh heroku
 
 
