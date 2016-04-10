@@ -1,4 +1,4 @@
-package com.minhdd.app.rest;
+package com.minhdd.app.partials.user;
 
 import com.minhdd.app.repository.StringRedisRepository;
 import org.slf4j.Logger;

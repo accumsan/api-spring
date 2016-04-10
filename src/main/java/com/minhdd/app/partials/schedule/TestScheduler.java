@@ -1,4 +1,4 @@
-package com.minhdd.app.service.schedule;
+package com.minhdd.app.partials.schedule;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

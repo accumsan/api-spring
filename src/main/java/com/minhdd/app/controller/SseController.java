@@ -1,4 +1,4 @@
-package com.minhdd.app.controller.sse;
+package com.minhdd.app.controller;
 
 import org.springframework.stereotype.Controller;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class SseController {
             try {
                 emitter.send(SseEmitter.event().data("Thread writing: " + Thread.currentThread()).name("ping"));
             }
-            catch (Throwable e) {
+            catch (Exception e) {
                 logger.error("In catch: {}", e.getMessage());
             }
         } , 1000, 1000, TimeUnit.MILLISECONDS);

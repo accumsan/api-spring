@@ -1,4 +1,4 @@
-package com.minhdd.app.domain;
+package com.minhdd.app.partials.record;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
